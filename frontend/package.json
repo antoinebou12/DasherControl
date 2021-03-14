@@ -46,6 +46,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "tailwindcss": "^2.0.3",
     "vue": "^2.6.12",
     "vue-grid-layout": "^2.3.12"
   }

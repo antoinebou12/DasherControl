@@ -13,6 +13,7 @@ extern crate rocket_cors;
 extern crate serde;
 extern crate serde_json;
 
+// use rocket_contrib::serve::StaticFiles;
 use rocket::http::Method;
 use rocket::response::NamedFile;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
@@ -21,7 +22,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 
-const FRONTEND_PATH: &'static str = "../dist";
+const FRONTEND_PATH: &'static str = "dist";
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
@@ -74,6 +75,7 @@ fn main() {
     };
 
     rocket::ignite()
+        // .mount("/public", StaticFiles::from(FRONTEND_PATH.to_owned() + "public"))
         .mount("/", routes![index, files, hello])
         .attach(options)
         .launch();

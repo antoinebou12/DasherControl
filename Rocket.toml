@@ -11,7 +11,7 @@ limits = { forms = 32768 }
 
 [staging]
 address = "0.0.0.0"
-port = 80
+port = 9081
 # workers = [number of cpus * 2]
 keep_alive = 5
 read_timeout = 5
@@ -30,3 +30,5 @@ write_timeout = 5
 log = "critical"
 #secret_key = [randomly generated at launch]
 limits = { forms = 32768 }
+tls = { certs = "certs/cert.crt", key = "certs/cert.key" }
+
