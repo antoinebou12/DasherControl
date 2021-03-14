@@ -1,9 +1,13 @@
 [package]
-name = "bruhland"
+name = "rocketrustvuejs3"
 version = "0.1.0"
 authors = ["Antoine Boucher <antoine.bou13@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "main"
+path = "backend/main.rs"
 
 [dependencies]
 rocket = "0.4.7"

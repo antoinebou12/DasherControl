@@ -11,7 +11,7 @@ limits = { forms = 32768 }
 
 [staging]
 address = "0.0.0.0"
-port = 8000
+port = 80
 # workers = [number of cpus * 2]
 keep_alive = 5
 read_timeout = 5
@@ -22,7 +22,7 @@ limits = { forms = 32768 }
 
 [production]
 address = "0.0.0.0"
-port = 8000
+port = 443
 #workers = [number of cpus * 2]
 keep_alive = 5
 read_timeout = 5

@@ -22,12 +22,12 @@ use std::path::{Path, PathBuf};
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
-    NamedFile::open("views/dist/index.html")
+    NamedFile::open("dist/index.html")
 }
 
 #[get("/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("views/dist/").join(file)).ok()
+    NamedFile::open(Path::new("dist").join(file)).ok()
 }
 
 #[derive(Serialize, Debug)]
@@ -35,9 +35,9 @@ struct Test {
     message: &'static str
 }
 
-#[get("/hello")]
+#[get("/json")]
 fn hello() -> String {
-    let hello_message = Test { message: "hello world" };
+    let hello_message = Test { message: "json exemple" };
     serde_json::to_string(&hello_message).unwrap()
 }
 
