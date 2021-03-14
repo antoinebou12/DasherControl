@@ -11,7 +11,7 @@ module.exports = (env, argv) => ({
   entry: './main.js',
   node: false,
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '../dist'),
     filename: '[name]-[fullhash].js'
   },
   module: {
@@ -56,7 +56,7 @@ module.exports = (env, argv) => ({
     new CopyWebpackPlugin({
         patterns: [{
             from: path.resolve(__dirname, 'public'),
-            to: path.resolve(__dirname, 'dist'),
+            to: path.resolve(__dirname, '../dist'),
             globOptions: {
                 ignore: [path.resolve(__dirname, 'public/index*')]
             },

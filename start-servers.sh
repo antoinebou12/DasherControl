@@ -1,2 +1,2 @@
-cargo run &
-cd views && npm run serve & 
+cd views && npm run build
+cargo run

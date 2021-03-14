@@ -20,25 +20,24 @@ use rocket_cors::{AllowedHeaders, AllowedOrigins};
 use std::io;
 use std::path::{Path, PathBuf};
 
+
+const FRONTEND_PATH: &'static str = "../dist";
+
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
-    NamedFile::open("../frontend/dist/main.html")
+    NamedFile::open(FRONTEND_PATH.to_owned() + "/main.html")
 }
 
 #[get("/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("../frontend/dist").join(file)).ok()
+    NamedFile::open(Path::new(FRONTEND_PATH).join(file)).ok()
 }
 
-#[derive(Serialize, Debug)]
-struct Test {
-    message: &'static str
-}
 
 #[get("/json")]
 fn hello() -> String {
-    let hello_message = Test { message: "json exemple" };
-    serde_json::to_string(&hello_message).unwrap()
+    let message = Test { message: "json exemple" };
+    serde_json::to_string(&message).unwrap()
 }
 
 //#[get("/admin")]
@@ -55,6 +54,11 @@ fn hello() -> String {
 //fn admin_panel_redirect() -> &'static str {
    
 //}
+
+#[derive(Serialize, Debug)]
+struct Test {
+    message: &'static str
+}
 
 
 fn main() {

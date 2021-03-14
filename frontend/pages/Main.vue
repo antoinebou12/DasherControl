@@ -2,11 +2,16 @@
 <template>
   <div class="main">
    {{ msg }}
+   <GridLayout />
   </div>
 </template>
 
 <script>
+import GridLayout from '../components/GridLayout.vue'
 export default {
+  components: {
+    GridLayout
+  },
   props: {
       msg: String,
   },

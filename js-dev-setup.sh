@@ -4,3 +4,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 source ~/.bashrc
 nvm install 14
+cd frontend
+npm install
+npm run build
