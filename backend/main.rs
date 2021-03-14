@@ -22,12 +22,12 @@ use std::path::{Path, PathBuf};
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
-    NamedFile::open("dist/index.html")
+    NamedFile::open("../frontend/dist/main.html")
 }
 
 #[get("/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("dist").join(file)).ok()
+    NamedFile::open(Path::new("../frontend/dist").join(file)).ok()
 }
 
 #[derive(Serialize, Debug)]
@@ -40,11 +40,6 @@ fn hello() -> String {
     let hello_message = Test { message: "json exemple" };
     serde_json::to_string(&hello_message).unwrap()
 }
-
-//#[get("/<path..>")]
-//fn files(path: PathBuf) -> Option<NamedFile> {
-//    NamedFile::open(Path::new("static/").join(path)).ok()
-//}
 
 //#[get("/admin")]
 //fn admin_panel(admin: AdminUser) -> &'static str {

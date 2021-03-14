@@ -1,19 +1,16 @@
 
 <template>
-  <div id="app">
-    <Main msg="Hello World" />
+  <div class="main">
+   {{ msg }}
   </div>
 </template>
 
 <script>
-import Main from './pages/Main.vue'
-
 export default {
-  name: 'app',
-  components: {
-    Main
-  }
-}
+  props: {
+      msg: String,
+  },
+};
 </script>
 
 <style>
