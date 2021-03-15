@@ -11,7 +11,7 @@ module.exports = (env, argv) => ({
   entry: './main.js',
   node: false,
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name]-[fullhash].js'
   },
   module: {
@@ -47,22 +47,30 @@ module.exports = (env, argv) => ({
     new CleanWebpackPlugin({
         cleanAfterEveryBuildPatterns: ['dist']
     }),
+    new CopyWebpackPlugin({
+      patterns: [{
+          from: path.resolve(__dirname, 'public'),
+          to: path.resolve(__dirname, 'dist/public'),
+          globOptions: {
+              ignore: [path.resolve(__dirname, 'public/index*')]
+          },
+          toType: 'dir'
+      },
+      {
+        from: path.resolve(__dirname, 'templates'),
+        to: path.resolve(__dirname, 'dist/templates'),
+        globOptions: {
+          ignore: [path.resolve(__dirname, 'dist/templates/base*')]
+      },
+        toType: 'dir'
+    }]
+  }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'public', 'index.html'),
-      filename: '[name].html',
+      template: path.resolve(__dirname, 'templates', 'base.html.tera'),
+      filename: path.resolve(__dirname, 'dist/templates', 'main.html.tera'),
       inject: true
     }),
     new VueLoaderPlugin(),
-    new CopyWebpackPlugin({
-        patterns: [{
-            from: path.resolve(__dirname, 'public'),
-            to: path.resolve(__dirname, '../dist/public'),
-            globOptions: {
-                ignore: [path.resolve(__dirname, 'public/index*')]
-            },
-            toType: 'dir'
-        }]
-    }),
   ],
   optimization: {
     // splitChunks: {

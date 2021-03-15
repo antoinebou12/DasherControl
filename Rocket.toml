@@ -1,3 +1,6 @@
+[global]
+template_dir = "frontend/dist/templates"
+
 [development]
 address = "0.0.0.0"
 port = 8081
@@ -22,7 +25,7 @@ limits = { forms = 32768 }
 
 [production]
 address = "0.0.0.0"
-port = 443
+port = 8080
 #workers = [number of cpus * 2]
 keep_alive = 5
 read_timeout = 5

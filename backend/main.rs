@@ -3,67 +3,49 @@
 
 #![feature(proc_macro_hygiene, decl_macro, plugin)]
 
-#[macro_use]
-extern crate serde_derive;
+// use std::io;
+// use std::env;
+use std::path::{Path, PathBuf};
+use std::collections::HashMap;
 
-#[macro_use]
-extern crate rocket;
+#[macro_use] extern crate serde_derive;
 
-extern crate rocket_cors;
 extern crate serde;
 extern crate serde_json;
 
-// use rocket_contrib::serve::StaticFiles;
+#[macro_use] extern crate rocket;
+
+use rocket::Request;
 use rocket::http::Method;
 use rocket::response::NamedFile;
+
+use rocket_contrib::templates::Template;
+// use rocket_contrib::serve::StaticFiles;
+
+extern crate rocket_cors;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
-use std::io;
-use std::path::{Path, PathBuf};
 
+mod router;
 
-const FRONTEND_PATH: &'static str = "dist";
-
-#[get("/")]
-fn index() -> io::Result<NamedFile> {
-    NamedFile::open(FRONTEND_PATH.to_owned() + "/main.html")
-}
 
 #[get("/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new(FRONTEND_PATH).join(file)).ok()
+    // static file manager
+    NamedFile::open(Path::new("frontend/dist").join(file)).ok()
 }
 
-
-#[get("/json")]
-fn hello() -> String {
-    let message = Test { message: "json exemple" };
-    serde_json::to_string(&message).unwrap()
+#[catch(404)]
+fn not_found(req: &Request<'_>) -> Template {
+    // 404
+    let mut map = HashMap::new();
+    map.insert("path", req.uri().path());
+    Template::render("errors/404", &map)
 }
 
-//#[get("/admin")]
-//fn admin_panel(admin: AdminUser) -> &'static str {
-
-//}
-
-//#[get("/admin", rank = 2)]
-//fn admin_panel_user(user: User) -> &'static str {
-
-//}
-
-//#[get("/admin", rank = 3)]
-//fn admin_panel_redirect() -> &'static str {
-   
-//}
-
-#[derive(Serialize, Debug)]
-struct Test {
-    message: &'static str
-}
-
-
-fn main() {
-    let (allowed_origins, failed_origins) = AllowedOrigins::some(&["http://0.0.0.0:8000", "http://0.0.0.0:8081"]);
+fn create_cors() -> rocket_cors::Cors {
+    let urls = &["http://0.0.0.0:8000", "http://0.0.0.0:8081"];
+    let (allowed_origins, failed_origins) = AllowedOrigins::some(urls);
     assert!(failed_origins.is_empty());
 
     let options = rocket_cors::Cors {
@@ -73,10 +55,29 @@ fn main() {
         allow_credentials: true,
         ..Default::default()
     };
+    return options
+} 
 
+fn start_rocket(options: rocket_cors::Cors) -> () {
+    // routes
+    let routes = routes![
+        router::index,
+        router::json,
+        files
+    ];
+
+    // Start Rocket app
     rocket::ignite()
-        // .mount("/public", StaticFiles::from(FRONTEND_PATH.to_owned() + "public"))
-        .mount("/", routes![index, files, hello])
+        .mount("/", routes)
         .attach(options)
+        .attach(Template::fairing())
+        .register(catchers![not_found])
         .launch();
+}
+
+fn main() {
+    // CORS
+    let options = create_cors();
+    // Start rocket with CORS
+    start_rocket(options);
 }
