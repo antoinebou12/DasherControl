@@ -7,15 +7,14 @@ edition = "2018"
 
 [dependencies]
 rocket = { version = "0.4.7", features = ["tls"] }
-rocket_contrib = {version="0.4.5", features=["json", "tera_templates"]}
-rocket_codegen = "0.4.2"
+rocket_contrib = {version="0.4.5", features=["json", "tera_templates", "diesel_postgres_pool"]}
+rocket-multipart-form-data = "0.9.5"
+rocket_codegen = "0.4.7"
+rocket_cors = "0.4.0"
 serde = "1.0.99"
 serde_derive = "1.0.99"
 serde_json = "1.0.40"
-rocket_cors = "0.4.0"
-chrono = "0.4"
-diesel = { version = "1.4.4", features = ["postgres"] }
+diesel = { version = "1.4.5", features = ["postgres"] }
+postgres = { version = "0.15", features = ["with-chrono"] }
+r2d2 = "0.8.9"
 dotenv = "0.15.0"
-rust-crypto = "^0.2"
-rand = "0.7.3"
-tera = "1"

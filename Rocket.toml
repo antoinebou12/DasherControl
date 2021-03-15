@@ -35,3 +35,7 @@ log = "critical"
 limits = { forms = 32768 }
 tls = { certs = "certs/cert.crt", key = "certs/cert.key" }
 
+
+[global.databases]
+postgres_db = { url = "postgres://postgres:root@localhost/diesel" }
+

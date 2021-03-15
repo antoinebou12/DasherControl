@@ -1,9 +1,16 @@
 extern crate serde;
 extern crate serde_json;
 
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+use rocket::State;
+use rocket::response::content;
+
 use rocket_contrib::templates::Template;
 
-pub const FRONTEND_PATH: &'static str = "frontend/dist";
+pub const FRONTEND_PATH: &'static str = "frontend/dist/public";
+
+pub struct HitCount(pub AtomicUsize);
 
 #[derive(Serialize)]
 struct TemplateContext {
@@ -31,3 +38,17 @@ pub fn json() -> String {
     };
     serde_json::to_string(&message).unwrap()
 }
+
+#[get("/show_count")]
+pub fn show_count(hit_count: State<HitCount>) -> content::Html<String> {
+    hit_count.0.fetch_add(1, Ordering::Relaxed);
+    let msg = "Your visit has been recorded!";
+    let count = format!("Visits: {}", count(hit_count));
+    content::Html(format!("{}<br /><br />{}", msg, count))
+}
+
+#[get("/count")]
+pub fn count(hit_count: State<HitCount>) -> String {
+    hit_count.0.load(Ordering::Relaxed).to_string()
+}
+

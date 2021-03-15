@@ -11,7 +11,7 @@ module.exports = (env, argv) => ({
   entry: './main.js',
   node: false,
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist/public'),
     filename: '[name]-[fullhash].js'
   },
   module: {
