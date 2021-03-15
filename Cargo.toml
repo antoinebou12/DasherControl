@@ -1,16 +1,9 @@
 [package]
-name = "rocketrustvuejs3"
-version = "0.1.0"
+name = "rocketrustvuejs"
+version = "0.1.1"
 authors = ["Antoine Boucher <antoine.bou13@gmail.com>"]
 edition = "2018"
 
-[[bin]]
-name = "main"
-path = "backend/main.rs"
-
-[lib]
-name = "lib"
-path = "backend/lib/lib.rs"
 
 [dependencies]
 rocket = { version = "0.4.7", features = ["tls"] }

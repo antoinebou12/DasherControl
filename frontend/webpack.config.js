@@ -60,14 +60,14 @@ module.exports = (env, argv) => ({
         from: path.resolve(__dirname, 'templates'),
         to: path.resolve(__dirname, 'dist/templates'),
         globOptions: {
-          ignore: [path.resolve(__dirname, 'dist/templates/base*')]
+          ignore: [path.resolve(__dirname, 'templates/base*')]
       },
         toType: 'dir'
     }]
   }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'templates', 'base.html.tera'),
-      filename: path.resolve(__dirname, 'dist/templates', 'main.html.tera'),
+      filename: path.resolve(__dirname, 'dist/templates', 'base.html.tera'),
       inject: true
     }),
     new VueLoaderPlugin(),

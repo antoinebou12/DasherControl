@@ -14,6 +14,7 @@ extern crate serde;
 extern crate serde_json;
 
 #[macro_use] extern crate rocket;
+#[macro_use] extern crate diesel;
 
 use rocket::Request;
 use rocket::http::Method;
@@ -25,14 +26,15 @@ use rocket_contrib::templates::Template;
 extern crate rocket_cors;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
-
 mod router;
+
+mod db;
 
 
 #[get("/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
     // static file manager
-    NamedFile::open(Path::new("frontend/dist").join(file)).ok()
+    NamedFile::open(Path::new(router::FRONTEND_PATH).join(file)).ok()
 }
 
 #[catch(404)]
@@ -78,6 +80,9 @@ fn start_rocket(options: rocket_cors::Cors) -> () {
 fn main() {
     // CORS
     let options = create_cors();
+
+    db::establish_connection();
+
     // Start rocket with CORS
     start_rocket(options);
 }
