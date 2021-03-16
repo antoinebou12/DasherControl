@@ -1,16 +1,18 @@
 
 <template>
   <div class="main">
-   {{ msg }}
+   <Navbar />
    <GridLayout />
   </div>
 </template>
 
 <script>
 import GridLayout from '../components/GridLayout.vue'
+import Navbar from '../components/Navbar.vue'
 export default {
   components: {
-    GridLayout
+    GridLayout,
+    Navbar
   },
   props: {
       msg: String,

@@ -1,13 +1,15 @@
 <template>
-    <grid-layout :layout.sync="layout"
+    <grid-layout 
+                :layout.sync="layout"
                  :col-num="12"
-                 :row-height="30"
+                 :row-height="24"
                  :is-draggable="draggable"
                  :is-resizable="resizable"
                  :vertical-compact="true"
                  :use-css-transforms="true"
     >
-        <grid-item v-for="item in layout"
+        <grid-item 
+                   v-for="item in layout"
                    v-bind:key="item.i"
                    :static="item.static"
                    :x="item.x"
@@ -16,7 +18,12 @@
                    :h="item.h"
                    :i="item.i"
         >
-            <span class="text">{{itemTitle(item)}}</span>
+            <div class="grid-item-container">
+                <span class="text">{{itemTitle(item)}}</span>
+                <div class="grid-item-main">
+                 <img width="200" height="200" src="https://external-content.duckduckgo.com/iu/?u=https://scitechdaily.com/images/Cat-COVID-19-Mask.jpg&f=1&nofb=1"/>
+                 </div>
+            </div>
         </grid-item>
     </grid-layout>
 </template>
@@ -31,29 +38,13 @@ export default {
     data() {
         return {
             layout: [
-                {"x":0,"y":0,"w":2,"h":2,"i":"0", static: false},
-                {"x":2,"y":0,"w":2,"h":4,"i":"1", static: true},
-                {"x":4,"y":0,"w":2,"h":5,"i":"2", static: false},
-                {"x":6,"y":0,"w":2,"h":3,"i":"3", static: false},
-                {"x":8,"y":0,"w":2,"h":3,"i":"4", static: false},
-                {"x":10,"y":0,"w":2,"h":3,"i":"5", static: false},
-                {"x":0,"y":5,"w":2,"h":5,"i":"6", static: false},
-                {"x":2,"y":5,"w":2,"h":5,"i":"7", static: false},
-                {"x":4,"y":5,"w":2,"h":5,"i":"8", static: false},
-                {"x":6,"y":3,"w":2,"h":4,"i":"9", static: true},
-                {"x":8,"y":4,"w":2,"h":4,"i":"10", static: false},
-                {"x":10,"y":4,"w":2,"h":4,"i":"11", static: false},
-                {"x":0,"y":10,"w":2,"h":5,"i":"12", static: false},
-                {"x":2,"y":10,"w":2,"h":5,"i":"13", static: false},
-                {"x":4,"y":8,"w":2,"h":4,"i":"14", static: false},
-                {"x":6,"y":8,"w":2,"h":4,"i":"15", static: false},
-                {"x":8,"y":10,"w":2,"h":5,"i":"16", static: false},
-                {"x":10,"y":4,"w":2,"h":2,"i":"17", static: false},
-                {"x":0,"y":9,"w":2,"h":3,"i":"18", static: false},
-                {"x":2,"y":6,"w":2,"h":2,"i":"19", static: false}
+                {"x":0,"y":0,"w":6,"h":12,"i":"0", static: false},
+                {"x":6,"y":0,"w":6,"h":12,"i":"1", static: false},
             ],
             draggable: true,
             resizable: true,
+            colNum: 12,
+            rowHeight: 24,
             index: 0
         }
     },
@@ -71,11 +62,12 @@ export default {
 
 <style scoped>
 .vue-grid-layout {
-    background: #eee;
+    background: #FFF;
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
-    background: #ccc;
+    box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
     border: 1px solid black;
+    border-radius: .5rem;
 }
 .vue-grid-item .resizing {
     opacity: 0.9;
