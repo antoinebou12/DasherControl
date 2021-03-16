@@ -17,9 +17,10 @@ export default {
 </script>
 
 <style>
+:root {
+
+}
 #app {
-  font-size: 18px;
-  font-family: 'Roboto', sans-serif;
-  color: blue;
+  
 }
 </style>

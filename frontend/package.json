@@ -49,6 +49,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "@editorjs/editorjs": "^2.19.3",
     "vue": "^2.6.12",
     "vue-grid-layout": "^2.3.12"
   }

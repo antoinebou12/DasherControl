@@ -6,8 +6,7 @@
                  :is-draggable="draggable"
                  :is-resizable="resizable"
                  :vertical-compact="true"
-                 :use-css-transforms="true"
-    >
+                 :use-css-transforms="true">
         <grid-item 
                    v-for="item in layout"
                    v-bind:key="item.i"
@@ -16,13 +15,12 @@
                    :y="item.y"
                    :w="item.w"
                    :h="item.h"
-                   :i="item.i"
-        >
+                   :i="item.i">
             <div class="grid-item-container">
                 <span class="text">{{itemTitle(item)}}</span>
                 <div class="grid-item-main">
-                 <img width="200" height="200" src="https://external-content.duckduckgo.com/iu/?u=https://scitechdaily.com/images/Cat-COVID-19-Mask.jpg&f=1&nofb=1"/>
-                 </div>
+                    <Editor class="editor" />
+                </div>
             </div>
         </grid-item>
     </grid-layout>
@@ -30,10 +28,12 @@
 
 <script>
 import { GridLayout, GridItem } from "vue-grid-layout"
+import Editor from './applets/Editor.vue'
 export default {
     components: {
         GridLayout,
-        GridItem
+        GridItem,
+        Editor
     },
     data() {
         return {
@@ -110,5 +110,15 @@ export default {
     background-origin: content-box;
     box-sizing: border-box;
     cursor: pointer;
+}
+.grid-item-container{
+    width: 100%;
+    height: 100%;
+}
+
+.editor{
+    background: rgba(0,128,255,0.1);
+    height: 200px;
+    margin: 25px;
 }
 </style>

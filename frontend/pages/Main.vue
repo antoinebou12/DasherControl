@@ -3,16 +3,20 @@
   <div class="main">
    <Navbar />
    <GridLayout />
+
   </div>
 </template>
 
 <script>
+
 import GridLayout from '../components/GridLayout.vue'
 import Navbar from '../components/Navbar.vue'
+import Editor from '../components/applets/Editor.vue'
 export default {
   components: {
     GridLayout,
-    Navbar
+    Navbar,
+    Editor
   },
   props: {
       msg: String,
@@ -21,9 +25,4 @@ export default {
 </script>
 
 <style>
-#app {
-  font-size: 18px;
-  font-family: 'Roboto', sans-serif;
-  color: blue;
-}
 </style>

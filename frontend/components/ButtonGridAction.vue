@@ -1,8 +1,6 @@
-
-
 <template>
   <div class="">
-    <button @click="runAction">{{ label}}</button>
+    <button @click="runAction">{{label}}</button>
   </div>
 </template>
 
@@ -10,7 +8,6 @@
 
 export default {
   name: 'Navbar',
-  props
 }
 </script>
 
