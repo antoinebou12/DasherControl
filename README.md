@@ -5,8 +5,6 @@
   </a>
 </p>
 
-> Bruhland website
-
 ### [Demo](bruhland.com)
 
 ## Install
@@ -20,12 +18,3 @@ npm install && cargo run
 ```sh
 npm test
 ```
-
-## Author
-
-👤 **Antoine Boucher**
-
-* Website: bruhland.com
-* Github: [@antoinebou13](https://github.com/antoinebou13)
-
-***
