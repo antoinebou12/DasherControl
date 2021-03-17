@@ -5,7 +5,7 @@ use diesel::prelude::*;
 
 use crate::tenants::model::Tenant;
 use crate::tenants::schema::tenants;
-use crate::tenants::model::InsertableTenant;
+use crate::tenants::model::CreateTenant;
 
 pub fn all(connection: &PgConnection) -> QueryResult<Vec<Tenant>> {
     tenants::table.load::<Tenant>(&*connection)
@@ -17,7 +17,7 @@ pub fn get(id: i32, connection: &PgConnection) -> QueryResult<Tenant> {
 
 pub fn insert(tenant: Tenant, connection: &PgConnection) -> QueryResult<Tenant> {
     diesel::insert_into(tenants::table)
-        .values(&InsertableTenant::from_tenant(tenant))
+        .values(&CreateTenant::from_tenant(tenant))
         .get_result(connection)
 }
 

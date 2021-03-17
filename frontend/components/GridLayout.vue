@@ -28,7 +28,7 @@
 
 <script>
 import { GridLayout, GridItem } from "vue-grid-layout"
-import Editor from './applets/Editor.vue'
+import Editor from './applets/Editor/Editor.vue'
 export default {
     components: {
         GridLayout,
@@ -118,7 +118,6 @@ export default {
 
 .editor{
     background: rgba(0,128,255,0.1);
-    height: 200px;
     margin: 25px;
 }
 </style>

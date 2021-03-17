@@ -39,17 +39,20 @@
     "postcss": "^8.2.8",
     "postcss-loader": "^5.2.0",
     "rimraf": "^3.0.2",
+    "sass": "^1.32.8",
+    "sass-loader": "^11.0.1",
     "vue": "^2.6.12",
     "vue-friendly-iframe": "^0.20.0",
     "vue-loader": "^15.9.6",
     "vue-style-loader": "^4.1.3",
     "vue-template-compiler": "^2.6.12",
-    "webpack": "^5.25.0",
+    "webpack": "^5.26.2",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "@editorjs/editorjs": "^2.19.3",
+    "tiptap": "^1.32.1",
+    "tiptap-extensions": "^1.35.1",
     "vue": "^2.6.12",
     "vue-grid-layout": "^2.3.12"
   }

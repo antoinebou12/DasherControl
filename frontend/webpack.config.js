@@ -6,6 +6,9 @@ const { VueLoaderPlugin } = require('vue-loader')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
+const NODE_ENV = process.env.NODE_ENV;
+const IS_PRODUCTION = NODE_ENV === "production";
+
 module.exports = (env, argv) => ({
   mode: argv && argv.mode || 'development',
   entry: './main.js',
@@ -16,9 +19,10 @@ module.exports = (env, argv) => ({
   },
   module: {
     rules: [
-      { test: /\.js$/,  use: 'babel-loader' },
-      { test: /\.vue$/, use: 'vue-loader' },
+      { test: /\.js$/, exclude: /node_modules/,  loader: 'babel-loader', options: { cacheDirectory: true } },
+      { test: /\.vue$/, use: ['vue-loader'] },
       { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
+      { test: /\.scss$/, use: ['vue-style-loader', 'css-loader', 'sass-loader'] }
     ]
   },
   resolve: {
@@ -73,28 +77,10 @@ module.exports = (env, argv) => ({
     new VueLoaderPlugin(),
   ],
   optimization: {
-    // splitChunks: {
-    //   chunks: 'all',
-    //   minSize: 30000,
-    //   maxSize: 0,
-    //   cacheGroups: {
-    //     vendors: {
-    //       test: /[\\/]node_modules[\\/]/,
-    //       priority: -10
-    //     },
-    //     default: {
-    //       minChunks: 2,
-    //       priority: -20,
-    //       reuseExistingChunk: true
-    //     }
-    //   }
-    // },
-    // runtimeChunk: {
-    //   name: entrypoint => `runtime~${entrypoint.name}`
-    // },
-    // mangleWasmImports: true,
-    // removeAvailableModules: true,
-    // removeEmptyChunks: true,
-    // mergeDuplicateChunks: true
-  },
+    runtimeChunk: false,
+    splitChunks: {
+      cacheGroups: {
+    }
+  }
+}
 });
