@@ -5,16 +5,17 @@
   </a>
 </p>
 
-### [Demo](bruhland.com)
-
 ## Install
 
 ```sh
-npm install && cargo run
+
+cargo run &
+cd frontend && npm install && npm run build
 ```
 
 ## Run tests
 
 ```sh
-npm test
+cargo test
+cd frontend && npm test
 ```
