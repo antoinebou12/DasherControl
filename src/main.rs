@@ -4,8 +4,10 @@
 #![feature(proc_macro_hygiene, decl_macro, plugin)]
 
 #[macro_use] extern crate rocket;
+#[macro_use] extern crate diesel;
 // #[macro_use] extern crate rocket_contrib;
 #[macro_use] extern crate serde_derive;
+
 
 // use std::io;
 // use std::env;
@@ -25,8 +27,12 @@ use rocket_contrib::templates::Template;
 extern crate rocket_cors;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
+mod tenants;
+mod schema;
 mod router;
 mod db;
+
+
 
 
 #[get("/public/<file..>")]
@@ -68,24 +74,28 @@ fn get_routes() -> Vec<rocket::Route> {
     ];
 }
 
-fn start_rocket(options: rocket_cors::Cors) -> rocket::Rocket {
+fn start_rocket() -> rocket::Rocket {
     // routes
     let routes = get_routes();
+    //route tenants
+    let tenants_routes = tenants::router::create_tenants_routes();
+
+    // CORS
+    let cors = create_cors();
 
     // Start Rocket app
     return rocket::ignite()
+     // .attach(db::DbConnRocket::fairing())
+        .manage(db::init_pool())
+        .attach(cors)
         .mount("/", routes)
+        .mount("/tenant", tenants_routes)
         .manage(router::HitCount(AtomicUsize::new(0)))
-        .attach(db::DbConn::fairing())
-        .attach(options)
         .attach(Template::fairing())
         .register(catchers![not_found]);
 }
 
 fn main() {
-    // CORS
-    let options = create_cors();
-
     // Start rocket with CORS
-    start_rocket(options).launch();
+    start_rocket().launch();
 }
