@@ -3,5 +3,6 @@ CREATE TABLE tenants (
   email VARCHAR NOT NULL,
   name VARCHAR NOT NULL,
   username VARCHAR NOT NULL,
+  password VARCHAR NOT NULL,
   role VARCHAR NOT NULL
 )

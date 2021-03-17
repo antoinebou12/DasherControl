@@ -1,10 +1,10 @@
 table! {
     tenants (id) {
-        id -> Int4,
+        id -> Integer,
         email -> Varchar,
         name -> Varchar,
         username -> Varchar,
-        password -> Varchar,
         role -> Varchar,
+        password -> Varchar,
     }
 }

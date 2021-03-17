@@ -3,7 +3,7 @@ use diesel::result::Error;
 
 use crate::db::DbConn;
 use crate::tenants;
-use crate::tenants::Tenant;
+use crate::tenants::model::Tenant;
 
 use rocket::http::Status;
 use rocket::response::status;
@@ -22,7 +22,7 @@ pub fn port() -> String {
 
 #[get("/")]
 pub fn all(connection: DbConn) -> Result<Json<Vec<Tenant>>, Status> {
-    tenants::repository::all(&connection)
+    tenants::helpers::all(&connection)
         .map(|tenants| Json(tenants))
         .map_err(|error| error_status(error))
 }
@@ -36,14 +36,14 @@ fn error_status(error: Error) -> Status {
 
 #[get("/<id>")]
 pub fn get(id: i32, connection: DbConn) -> Result<Json<Tenant>, Status> {
-    tenants::repository::get(id, &connection)
+    tenants::helpers::get(id, &connection)
         .map(|tenant| Json(tenant))
         .map_err(|error| error_status(error))
 }
 
 #[post("/", format = "application/json", data = "<tenant>")]
 pub fn post(tenant: Json<Tenant>, connection: DbConn) -> Result<status::Created<Json<Tenant>>, Status> {
-    tenants::repository::insert(tenant.into_inner(), &connection)
+    tenants::helpers::insert(tenant.into_inner(), &connection)
         .map(|tenant| tenant_created(tenant))
         .map_err(|error| error_status(error))
 }
@@ -56,15 +56,15 @@ fn tenant_created(tenant: Tenant) -> status::Created<Json<Tenant>> {
 
 #[put("/<id>", format = "application/json", data = "<tenant>")]
 pub fn put(id: i32, tenant: Json<Tenant>, connection: DbConn) -> Result<Json<Tenant>, Status> {
-    tenants::repository::update(id, tenant.into_inner(), &connection)
+    tenants::helpers::update(id, tenant.into_inner(), &connection)
         .map(|tenant| Json(tenant))
         .map_err(|error| error_status(error))
 }
 
 #[delete("/<id>")]
 pub fn delete(id: i32, connection: DbConn) -> Result<Status, Status> {
-    match tenants::repository::get(id, &connection) {
-        Ok(_) => tenants::repository::delete(id, &connection)
+    match tenants::helpers::get(id, &connection) {
+        Ok(_) => tenants::helpers::delete(id, &connection)
             .map(|_| Status::NoContent)
             .map_err(|error| error_status(error)),
         Err(error) => Err(error_status(error))

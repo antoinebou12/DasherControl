@@ -1,6 +1,3 @@
-// #![feature(plugin)]
-// #![plugin(rocket_codegen)]
-
 #![feature(proc_macro_hygiene, decl_macro, plugin)]
 
 #[macro_use] extern crate rocket;
@@ -28,7 +25,6 @@ extern crate rocket_cors;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 mod tenants;
-mod schema;
 mod router;
 mod db;
 
