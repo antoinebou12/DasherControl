@@ -201,7 +201,7 @@ export default {
 };
 </script>
 
-<style lanf="scss" scoped>
+<style lang="scss" scoped>
 .menubar {
   display: flex;
 }
@@ -224,8 +224,8 @@ export default {
     pre {
       padding: 0.7rem 1rem;
       border-radius: 5px;
-      background: $color-black;
-      color: $color-white;
+      background: var(--darcula-bg);
+      color: var(--darcula-fg);
       font-size: 0.8rem;
       overflow-x: auto;
 
@@ -239,8 +239,8 @@ export default {
       border-radius: 5px;
       font-size: 0.8rem;
       font-weight: bold;
-      background: rgba($color-black, 0.1);
-      color: rgba($color-black, 0.8);
+      background: rgba(var(--darcula-bg-rgb), 0.1);
+      color: rgba(var(--darcula-fg-rgb), 0.8);
     }
 
     ul,
@@ -259,8 +259,8 @@ export default {
     }
 
     blockquote {
-      border-left: 3px solid rgba($color-black, 0.1);
-      color: rgba($color-black, 0.8);
+      border-left: 3px solid rgba(var(--darcula-bg-rgb), 0.1);
+      color: rgba(var(--darcula-bg-rgb), 0.8);
       padding-left: 0.8rem;
       font-style: italic;
 
@@ -284,7 +284,7 @@ export default {
       td,
       th {
         min-width: 1em;
-        border: 2px solid $color-grey;
+        border: 2px solid var(--darcula-fg-rgb);
         padding: 3px 5px;
         vertical-align: top;
         box-sizing: border-box;

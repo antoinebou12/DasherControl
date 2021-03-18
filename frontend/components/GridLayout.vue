@@ -25,6 +25,7 @@
           <span class="text">{{ itemTitle(item) }}</span>
           <div class="grid-item-main">
             <Editor class="editor" />
+            <IFrame />
           </div>
         </div>
       </grid-item>
@@ -35,11 +36,13 @@
 <script>
 import { GridLayout, GridItem } from "vue-grid-layout";
 import Editor from "./applets/Editor/Editor.vue";
+import IFrame from "./applets/IFrame/IFrame.vue";
 export default {
   components: {
     GridLayout,
     GridItem,
-    Editor
+    Editor,
+    IFrame
   },
   data() {
     return {
@@ -47,7 +50,7 @@ export default {
         { x: 0, y: 0, w: 6, h: 12, i: "0", static: false },
         { x: 6, y: 0, w: 6, h: 12, i: "1", static: false }
       ],
-      draggable: false,
+      draggable: true,
       resizable: true,
       verticalCompact: true,
       useCssTransforms: true,
@@ -84,6 +87,13 @@ export default {
     removeItem: function(val) {
       const index = this.layout.map(item => item.i).indexOf(val);
       this.layout.splice(index, 1);
+    },
+    lockGridLayout: function() {
+        this.draggable = false
+        this.resizable = false
+        for (const item in this.layout) {
+            this.layout[item].static = true;
+        }
     }
   }
 };

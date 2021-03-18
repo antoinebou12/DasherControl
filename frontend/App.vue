@@ -19,7 +19,9 @@ export default {
 <style lang="scss">
 :root {
   --darcula-bg: #282a36;
+  --darcula-bg-rgb: 40, 42, 54;
   --darcula-fg: #f8f8f2;
+  --darcula-fg-rgb: 248, 248, 242;
 }
 html {
   background: var(--darcula-bg);
