@@ -36,6 +36,11 @@
     "copy-webpack-plugin": "^8.0.0",
     "css-loader": "^5.1.2",
     "html-webpack-plugin": "^5.3.1",
+    "image-minimizer-webpack-plugin": "^2.2.0",
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-jpegtran": "^7.0.0",
+    "imagemin-optipng": "^8.0.0",
+    "imagemin-svgo": "^9.0.0",
     "postcss": "^8.2.8",
     "postcss-loader": "^5.2.0",
     "rimraf": "^3.0.2",
@@ -54,6 +59,7 @@
     "tiptap": "^1.32.1",
     "tiptap-extensions": "^1.35.1",
     "vue": "^2.6.12",
-    "vue-grid-layout": "^2.3.12"
+    "vue-grid-layout": "^2.3.12",
+    "vuesax": "^4.0.1-alpha.25"
   }
 }

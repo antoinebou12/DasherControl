@@ -1,142 +1,122 @@
 <template>
-<div class="editor-container">
+  <div class="editor-container">
     <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
       <div class="menubar">
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.bold() }"
-          @click="commands.bold"
-        >
-          <icon name="bold" />
-        </button>
+          :active="isActive.bold()"
+          @click="commands.bold">
+          B
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.italic() }"
-          @click="commands.italic"
-        >
-          <icon name="italic" />
-        </button>
+          :active="isActive.italic()"
+          @click="commands.italic">
+          /
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.strike() }"
-          @click="commands.strike"
-        >
-          <icon name="strike" />
-        </button>
+          :active="isActive.strike()"
+          @click="commands.strike">
+          -
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.underline() }"
-          @click="commands.underline"
-        >
-          <icon name="underline" />
-        </button>
+          :active="isActive.underline()"
+          @click="commands.underline">
+          _
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.code() }"
-          @click="commands.code"
-        >
-          <icon name="code" />
-        </button>
+          :active="isActive.code()"
+          @click="commands.code">
+          pre
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.paragraph() }"
-          @click="commands.paragraph"
-        >
-          <icon name="paragraph" />
-        </button>
+          :active="isActive.paragraph()"
+          @click="commands.paragraph">
+          p
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+          :active="isActive.heading({ level: 1 })"
           @click="commands.heading({ level: 1 })"
         >
           H1
-        </button>
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+          :active="isActive.heading({ level: 2 })"
           @click="commands.heading({ level: 2 })"
         >
           H2
-        </button>
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-          @click="commands.heading({ level: 3 })"
-        >
+          :active="isActive.heading({ level: 3 })"
+          @click="commands.heading({ level: 3 })">
           H3
-        </button>
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.bullet_list() }"
-          @click="commands.bullet_list"
-        >
-          <icon name="ul" />
-        </button>
+          :active="isActive.bullet_list()"
+          @click="commands.bullet_list">
+          ul
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.ordered_list() }"
-          @click="commands.ordered_list"
-        >
-          <icon name="ol" />
-        </button>
+          :active="isActive.ordered_list()"
+          @click="commands.ordered_list">
+          ol
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.blockquote() }"
+          :active="isActive.blockquote()"
           @click="commands.blockquote"
         >
-          <icon name="quote" />
-        </button>
+          >
+        </vs-button>
 
-        <button
+        <vs-button
           class="menubar__button"
-          :class="{ 'is-active': isActive.code_block() }"
+          :active="isActive.code_block()"
           @click="commands.code_block"
         >
-          <icon name="code" />
-        </button>
+          code
+        </vs-button>
 
-        <button
-          class="menubar__button"
-          @click="commands.horizontal_rule"
-        >
-          <icon name="hr" />
-        </button>
+        <vs-button class="menubar__button" @click="commands.horizontal_rule">
+          hr
+        </vs-button>
 
-        <button
-          class="menubar__button"
-          @click="commands.undo"
-        >
-          <icon name="undo" />
-        </button>
+        <vs-button class="menubar__button" @click="commands.undo">
+          undo
+        </vs-button>
 
-        <button
-          class="menubar__button"
-          @click="commands.redo"
-        >
-          <icon name="redo" />
-        </button>
-
+        <vs-button class="menubar__button" @click="commands.redo">
+          redo
+        </vs-button>
       </div>
     </editor-menu-bar>
 
-    <editor-content class="editor__content" :editor="editor" />
+    <editor-content class="editor-content" :editor="editor" />
   </div>
 </template>
 
 <script>
-import Icon from './Icon.vue'
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
+import { Editor, EditorContent, EditorMenuBar } from "tiptap";
 import {
   Blockquote,
   CodeBlock,
@@ -155,21 +135,19 @@ import {
   Strike,
   Underline,
   History,
-} from 'tiptap-extensions'
-
-let id = 0;
+  Image
+} from "tiptap-extensions";
 
 export default {
-  name: 'Editor',
+  name: "Editor",
   components: {
     EditorContent,
-    EditorMenuBar,
-    Icon,
+    EditorMenuBar
   },
   props: {
-      name: String 
+    name: String
   },
-data() {
+  data() {
     return {
       editor: new Editor({
         extensions: [
@@ -190,6 +168,7 @@ data() {
           new Strike(),
           new Underline(),
           new History(),
+          new Image()
         ],
         content: `
           <h2>
@@ -212,67 +191,28 @@ data() {
             <br />
             – mom
           </blockquote>
-        `,
-      }),
-    }
+        `
+      })
+    };
   },
   beforeDestroy() {
-    this.editor.destroy()
-  },
-}
+    this.editor.destroy();
+  }
+};
 </script>
 
 <style lanf="scss" scoped>
-.editor-container {
-    box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
-    border: 1px solid black;
-    border-radius: .5rem;
-    padding: 20px;
-}
 .menubar {
-
-  margin-bottom: 1rem;
-  transition: visibility 0.2s 0.4s, opacity 0.2s 0.4s;
-
-  &.is-hidden {
-    visibility: hidden;
-    opacity: 0;
-  }
-
-  &.is-focused {
-    visibility: visible;
-    opacity: 1;
-    transition: visibility 0.2s, opacity 0.2s;
-  }
-
-  &__button {
-    font-weight: bold;
-    display: inline-flex;
-    background: transparent;
-    border: 0;
-    color: $color-black;
-    padding: 0.2rem 0.5rem;
-    margin-right: 0.2rem;
-    border-radius: 3px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: rgba($color-black, 0.05);
-    }
-
-    &.is-active {
-      background-color: rgba($color-black, 0.1);
-    }
-  }
+  display: flex;
 }
+.editor-container {
+  box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px,
+    rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  padding: 20px;
 
-.editor {
-  position: relative;
-  max-width: 30rem;
-  margin: 0 auto 5rem auto;
-
-  &__content {
-
+  .editor-content {
     overflow-wrap: break-word;
     word-wrap: break-word;
     word-break: break-word;
@@ -341,7 +281,8 @@ data() {
       margin: 0;
       overflow: hidden;
 
-      td, th {
+      td,
+      th {
         min-width: 1em;
         border: 2px solid $color-grey;
         padding: 3px 5px;
@@ -362,14 +303,19 @@ data() {
         z-index: 2;
         position: absolute;
         content: "";
-        left: 0; right: 0; top: 0; bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
         background: rgba(200, 200, 255, 0.4);
         pointer-events: none;
       }
 
       .column-resize-handle {
         position: absolute;
-        right: -2px; top: 0; bottom: 0;
+        right: -2px;
+        top: 0;
+        bottom: 0;
         width: 4px;
         z-index: 20;
         background-color: #adf;
@@ -386,7 +332,6 @@ data() {
       cursor: ew-resize;
       cursor: col-resize;
     }
-
   }
 }
 </style>

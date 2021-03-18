@@ -2,8 +2,7 @@
 <template>
   <div class="main">
    <Navbar />
-   <GridLayout />
-
+   <GridLayout id="GridLayout"/>
   </div>
 </template>
 
@@ -14,7 +13,7 @@ import Navbar from '../components/Navbar.vue'
 export default {
   components: {
     GridLayout,
-    Navbar
+    Navbar,
   },
   props: {
       msg: String,
@@ -23,4 +22,7 @@ export default {
 </script>
 
 <style>
+#GridLayout {
+  margin-top: 64px;
+}
 </style>

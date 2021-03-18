@@ -6,6 +6,8 @@ const { VueLoaderPlugin } = require('vue-loader')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+
 const NODE_ENV = process.env.NODE_ENV;
 const IS_PRODUCTION = NODE_ENV === "production";
 
@@ -15,26 +17,46 @@ module.exports = (env, argv) => ({
   node: false,
   output: {
     path: path.resolve(__dirname, 'dist/public'),
-    filename: '[name]-[fullhash].js'
+    filename: '[name]-[fullhash].js',
+    publicPath: '/public'
   },
   module: {
     rules: [
       { test: /\.js$/, exclude: /node_modules/,  loader: 'babel-loader', options: { cacheDirectory: true } },
       { test: /\.vue$/, use: ['vue-loader'] },
       { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
-      { test: /\.scss$/, use: ['vue-style-loader', 'css-loader', 'sass-loader'] }
+      { test: /\.scss$/, use: ['vue-style-loader', 'css-loader', 'sass-loader'] },
+      {
+        test: /\.(png|jpe?g|gif|svg|ico)(\?.*)?$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: `public/imgs/[name].[ext]`,
+          },
+        },
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: `public/fonts/[name].[ext]`,
+          },
+        },
+      },
     ]
   },
   resolve: {
-    extensions: [
-      '.js',
-      '.vue',
-      '.json'
-    ],
+    extensions: ['.js', '.scss', '.vue'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': path.resolve(__dirname, './')
-    }
+      '@': path.resolve(__dirname, './'),
+      modules: path.resolve(__dirname, 'node_modules'),
+    },
+    modules: [
+      path.resolve(__dirname, './'),
+      path.resolve(__dirname, 'node_modules'),
+    ],
   },
   devServer: {
       host: '0.0.0.0',
@@ -46,7 +68,7 @@ module.exports = (env, argv) => ({
       https: true,
   },
   
-  devtool: (argv && argv.mode || 'development') === 'production' ? 'source-map' : 'eval',
+  devtool: (argv && argv.mode || 'development') === 'production' ? 'source-map' : 'eval-cheap-source-map',
   plugins: [
     new CleanWebpackPlugin({
         cleanAfterEveryBuildPatterns: ['dist']
@@ -75,12 +97,32 @@ module.exports = (env, argv) => ({
       inject: true
     }),
     new VueLoaderPlugin(),
+    new ImageMinimizerPlugin({
+      minimizerOptions: {
+        // Lossless optimization with custom option
+        // Feel free to experiment with options for better result for you
+        plugins: [
+          ['gifsicle', { interlaced: true }],
+          ['jpegtran', { progressive: true }],
+          ['optipng', { optimizationLevel: 5 }],
+          [
+            'svgo',
+            {
+              prefix: 'icon--',
+              plugins: [
+                // { cleanupIDs: false },
+                // { collapseGroups: false },
+                // { removeTitle: true },
+              ],
+            },
+          ],
+        ],
+      },
+    }),
   ],
-  optimization: {
-    runtimeChunk: false,
+   // splitting out the vendor
+   optimization: {
     splitChunks: {
-      cacheGroups: {
-    }
+    },
   }
-}
 });
