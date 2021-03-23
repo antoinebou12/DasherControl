@@ -19,3 +19,4 @@ postgres = { version = "0.15", features = ["with-chrono"] }
 r2d2-diesel = "1.0.0"
 r2d2 = "0.8.9"
 dotenv = "0.15.0"
+rust-crypto = "^0.2"

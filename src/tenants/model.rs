@@ -14,7 +14,6 @@ pub struct Tenant {
 
 
 #[derive(Insertable)]
-#[table_name = "tenants"]
 pub struct CreateTenant {
     pub email: String,
     pub name: String,
@@ -23,16 +22,21 @@ pub struct CreateTenant {
     pub role: String,
 }
 
-#[derive(Insertable)]
-pub struct AuthInfo {
-    pub tenant_id: i32,
-    pub password_hash: String,
-}
-
 #[derive(Deserialize)]
 struct LoginInfo {
     username: String,
     password: String,
+}
+
+#[derive(Debug)]
+enum LoginError {
+    InvalidData,
+    UsernameDoesNotExist,
+    WrongPassword
+}
+
+struct AuthenticatedUser {
+    user_id: i32
 }
 
 

@@ -18,6 +18,6 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
-    auth_infos,
+    auth_info,
     tenants,
 )

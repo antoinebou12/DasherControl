@@ -40,7 +40,7 @@ fn create_rocket() -> rocket::Rocket {
     // Start Rocket app
     return rocket::ignite()
      // .attach(db::DbConnRocket::fairing())
-        .manage(db::init_pool())
+        .manage(db::create_connection())
         .attach(fairing::CORS())
         .mount("/", routes)
         .mount("/tenant", tenants_routes)
