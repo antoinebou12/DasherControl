@@ -2,8 +2,6 @@
   <div class="center navbar">
     <vs-navbar
       center
-      target-scroll="#GridLayout"
-      hide-scroll
       v-model="active"
       color="dark">
       <template #left>

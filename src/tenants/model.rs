@@ -16,7 +16,6 @@ pub struct Tenant {
 #[derive(Insertable)]
 #[table_name = "tenants"]
 pub struct CreateTenant {
-    pub id: i32,
     pub email: String,
     pub name: String,
     pub username: String,
@@ -24,15 +23,16 @@ pub struct CreateTenant {
     pub role: String,
 }
 
-impl CreateTenant {
-    pub fn from_tenant(tenant: Tenant) -> CreateTenant {
-        CreateTenant {
-            id: tenant.id,
-            email: tenant.email,
-            name: tenant.name,
-            username: tenant.username,
-            password: tenant.password,
-            role: tenant.role,
-        }
-    }
+#[derive(Insertable)]
+pub struct AuthInfo {
+    pub tenant_id: i32,
+    pub password_hash: String,
 }
+
+#[derive(Deserialize)]
+struct LoginInfo {
+    username: String,
+    password: String,
+}
+
+

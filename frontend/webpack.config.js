@@ -123,6 +123,7 @@ module.exports = (env, argv) => ({
    // splitting out the vendor
    optimization: {
     splitChunks: {
+      chunks: 'all',
     },
-  }
+  },
 });

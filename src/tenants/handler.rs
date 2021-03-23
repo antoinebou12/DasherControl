@@ -11,62 +11,23 @@ use rocket_contrib::json::Json;
 
 use std::env;
 
-pub fn host() -> String {
-    env::var("ROCKET_ADDRESS").expect("ROCKET_ADDRESS must be set")
+fn hash_password(password: &String) -> String {
+    let mut hasher = Sha3::sha3_256();
+    hasher.input_str(password);
+    hasher.result_str()
 }
 
-pub fn port() -> String {
-    env::var("ROCKET_PORT").expect("ROCKET_PORT must be set")
-}
+#[post("/tenants/create", format="json", data="<create_info>")]
+fn create(conn:, create_info: Json<CreateInfo>) -> Json<i32> {
+    let user: User = User {name: create_info.name.clone(), email: create_info.email.clone(), age: create_info.age};
+    let user_entity: UserEntity = diesel::insert_into(users::table)
+        .values(user)
+        .get_result(&connection).expect("Error saving user");
 
-
-#[get("/")]
-pub fn all(connection: DbConn) -> Result<Json<Vec<Tenant>>, Status> {
-    tenants::helpers::all(&connection)
-        .map(|tenants| Json(tenants))
-        .map_err(|error| error_status(error))
-}
-
-fn error_status(error: Error) -> Status {
-    match error {
-        Error::NotFound => Status::NotFound,
-        _ => Status::InternalServerError
-    }
-}
-
-#[get("/<id>")]
-pub fn get(id: i32, connection: DbConn) -> Result<Json<Tenant>, Status> {
-    tenants::helpers::get(id, &connection)
-        .map(|tenant| Json(tenant))
-        .map_err(|error| error_status(error))
-}
-
-#[post("/", format = "application/json", data = "<tenant>")]
-pub fn post(tenant: Json<Tenant>, connection: DbConn) -> Result<status::Created<Json<Tenant>>, Status> {
-    tenants::helpers::insert(tenant.into_inner(), &connection)
-        .map(|tenant| tenant_created(tenant))
-        .map_err(|error| error_status(error))
-}
-
-fn tenant_created(tenant: Tenant) -> status::Created<Json<Tenant>> {
-    status::Created(
-        format!("{host}:{port}/tenant/{id}", host = host(), port = port(), id = tenant.id).to_string(),
-        Some(Json(tenant)))
-}
-
-#[put("/<id>", format = "application/json", data = "<tenant>")]
-pub fn put(id: i32, tenant: Json<Tenant>, connection: DbConn) -> Result<Json<Tenant>, Status> {
-    tenants::helpers::update(id, tenant.into_inner(), &connection)
-        .map(|tenant| Json(tenant))
-        .map_err(|error| error_status(error))
-}
-
-#[delete("/<id>")]
-pub fn delete(id: i32, connection: DbConn) -> Result<Status, Status> {
-    match tenants::helpers::get(id, &connection) {
-        Ok(_) => tenants::helpers::delete(id, &connection)
-            .map(|_| Status::NoContent)
-            .map_err(|error| error_status(error)),
-        Err(error) => Err(error_status(error))
-    }
+    let password_hash = hash_password(&create_info.password);
+    let auth_info: AuthInfo = AuthInfo {user_id: user_entity.id, password_hash: password_hash};
+    let auth_info_entity: AuthInfoEntity = diesel::insert_into(auth_infos::table)
+        .values(auth_info)
+        .get_result(&connection).expect("Error saving auth info");
+    Json(user_entity.id)
 }

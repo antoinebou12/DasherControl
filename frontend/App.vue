@@ -1,7 +1,7 @@
 
 <template>
   <div id="app">
-    <Main msg="" />
+    <Main msg=""/>
   </div>
 </template>
 

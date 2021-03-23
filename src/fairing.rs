@@ -20,7 +20,7 @@ impl Fairing for CORS {
             response.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type"));
             response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
             response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-            // response.set_header(Header::new("X-Frame-Options", "ALLOW-FROM https://www.w3schools.com/"));
+            response.set_header(Header::new("X-Frame-Options", "DENY"));
         }
 
         if request.method() == Method::Options {
@@ -31,11 +31,8 @@ impl Fairing for CORS {
 }
 
 
-// #[warn(dead_code)]
 // fn create_cors_rocket() -> rocket_cors::Cors {
-//     let urls = &["http://0.0.0.0:8000", "http://0.0.0.0:8081"];
-//     let (allowed_origins, failed_origins) = AllowedOrigins::some(urls);
-//     assert!(failed_origins.is_empty());
+//     allowed_origins = AllowedOrigins::all();
 
 //     let options = rocket_cors::Cors {
 //         allowed_origins: allowed_origins,

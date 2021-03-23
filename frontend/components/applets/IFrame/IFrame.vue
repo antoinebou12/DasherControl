@@ -4,10 +4,12 @@
       :src="src"
       :width="width"
       :height="height"
+      loading="lazy"
       :scrolling="scrolling"
       frameborder="0"
       marginheight="0"
       marginwidth="0"
+      sandbox="allow-forms allow-same-origin"
     />
   </div>
 </template>
@@ -16,18 +18,21 @@ export default {
   name: "IFrame",
   components: {},
   props: {
-    name: String
+    name: String,
+    src: String,
+    width: Number,
+    height: Number,
   },
   data() {
     return {
-      src:
-        "https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png",
-      width: 400,
-      height: 400,
+      width: 800,
+      height: 800,
       scrolling: "no"
     };
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>

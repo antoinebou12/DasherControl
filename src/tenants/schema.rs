@@ -8,3 +8,16 @@ table! {
         password -> Varchar,
     }
 }
+
+table! {
+    auth_infos (id) {
+        id -> Int4,
+        user_id -> Int4,
+        password_hash -> Text,
+    }
+}
+
+allow_tables_to_appear_in_same_query!(
+    auth_infos,
+    tenants,
+)
