@@ -5,5 +5,5 @@ CREATE TABLE tenants (
   username VARCHAR NOT NULL,
   password VARCHAR NOT NULL,
   role VARCHAR NOT NULL,
-  created_at TIMESTAMP NOT NULL
+  created_at TIMESTAMP NOT NULL default now()
 )

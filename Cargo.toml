@@ -8,16 +8,16 @@ edition = "2018"
 [dependencies]
 rocket = { version = "0.4.7", features = ["tls"] }
 rocket_contrib = {version="0.4.5", features=["json", "tera_templates", "diesel_postgres_pool"]}
-rocket-multipart-form-data = "0.9.5"
 rocket_codegen = "0.4.7"
 rocket_cors = "0.4.0"
 serde = "1.0.99"
 serde_derive = "1.0.99"
 serde_json = "1.0.40"
 diesel = { version = "1.4.5", features = ["postgres", "r2d2", "chrono"] }
+diesel_codegen = { version = "0.16.1", features = ["postgres"] }
 chrono = { version = "0.4.10", features = ["serde"] }
 r2d2-diesel = "1.0.0"
 r2d2 = "0.8.9"
 dotenv = "0.15.0"
-jwt = "0.4.0"
-rust-crypto = "^0.2"
+jsonwebtoken = "5"
+bcrypt = "0.4.0"
