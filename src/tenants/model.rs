@@ -1,52 +1,23 @@
 use crate::tenants::schema::*;
 
-
-#[derive(Insertable, Deserialize, Serialize, FromForm)]
+#[derive(Queryable, AsChangeset, Serialize, Deserialize)]
 #[table_name = "tenants"]
 pub struct Tenant {
-    pub email: String,
-    pub name: String,
-    pub username: String,
-    pub password: String,
-    pub tenant_role: String,
-}
-
-#[derive(Queryable, Serialize)]
-pub struct TenantInstance {
     pub id: i32,
     pub email: String,
     pub name: String,
     pub username: String,
     pub password: String,
-    pub tenant_roles: Vec<String>,
+    pub role: String,
+    pub created_at: chrono::NaiveDateTime,
 }
 
-#[derive(Insertable)]
-pub struct AuthInfo {
-    pub tenant_id: i32,
-    pub password_hash: String,
-}
-
-#[derive(Queryable)]
-pub struct AuthInfoEntity {
-    pub id: i32,
-    pub tenant_id: i32,
-    pub password_hash: String,
-}
-
-#[derive(FromForm)]
-pub struct Login {
-    pub username: String,
-    pub password: String,
-}
-
-#[derive(Debug)]
-enum LoginError {
-    InvalidData,
-    UsernameDoesNotExist,
-    WrongPassword
-}
-
-struct AuthenticatedUser {
-    user_id: i32
-}
+// #[derive(Insertable, Debug)]
+// pub struct TenantInstance<'a> {
+//     pub email: &'a str,
+//     pub name: &'a str,
+//     pub username: &'a str,
+//     pub password: &'a str,
+//     pub role: &'a str,
+//     pub created_at: chrono::NaiveDateTime,
+// }

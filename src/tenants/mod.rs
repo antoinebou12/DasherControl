@@ -3,5 +3,5 @@
 pub mod schema;
 pub mod model;
 pub mod handler;
-pub mod helper;
 pub mod router;
+pub mod helper;

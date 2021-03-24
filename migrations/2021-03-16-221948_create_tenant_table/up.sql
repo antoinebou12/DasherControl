@@ -4,5 +4,6 @@ CREATE TABLE tenants (
   name VARCHAR NOT NULL,
   username VARCHAR NOT NULL,
   password VARCHAR NOT NULL,
-  tenant_role VARCHAR NOT NULL
+  role VARCHAR NOT NULL,
+  created_at TIMESTAMP NOT NULL
 )

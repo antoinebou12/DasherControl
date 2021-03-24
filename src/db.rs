@@ -22,7 +22,7 @@ fn database_url() -> String {
 
 pub fn init_pool() -> Pool {
     let manager = ConnectionManager::<PgConnection>::new(database_url());
-    Pool::new(manager).expect("db pool")
+    return Pool::new(manager).expect("db pool");
 }
 
 pub struct DbConn(pub r2d2::PooledConnection<ConnectionManager<PgConnection>>);

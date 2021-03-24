@@ -5,6 +5,7 @@ table! {
         name -> Varchar,
         username -> Varchar,
         password -> Varchar,
-        tenant_role -> Varchar,
+        role -> Varchar,
+        created_at -> Timestamp,
     }
 }
