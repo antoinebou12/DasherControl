@@ -1,12 +1,7 @@
-use crate::tenants;
-use rocket;
+use crate::tenants::handler::*;
 
 pub fn create_tenants_routes() -> Vec<rocket::Route> {
     return routes![
-            tenants::handler::all,
-            tenants::handler::get,
-            tenants::handler::post,
-            tenants::handler::put,
-            tenants::handler::delete
-            ]
+            create_tenant
+        ];
 }

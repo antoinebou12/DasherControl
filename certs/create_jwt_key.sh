@@ -1,0 +1,1 @@
+head -c16 /dev/urandom > secret.key

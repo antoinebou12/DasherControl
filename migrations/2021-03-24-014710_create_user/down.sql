@@ -1,3 +1,5 @@
+DROP TABLE tenants;
+
 CREATE TABLE tenants (
   id SERIAL PRIMARY KEY,
   email VARCHAR NOT NULL,
