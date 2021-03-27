@@ -1,10 +1,10 @@
 <template>
   <div class="grid-layout-container">
     <div style="display: inline-flex;">
-      <vs-button @click="addItem">Add</vs-button>
-      <vs-button @click="removeItem">Remove</vs-button>
-      <vs-button @click="lockGridLayout">Lock</vs-button>
-      <vs-button @click="unlockGridLayout">Unlock</vs-button>
+      <vs-button @click="addItem"><i class="bx bx-add-to-queue"/></vs-button>
+      <vs-button @click="removeItem"><i class="bx bx-x"/></vs-button>
+      <vs-button @click="lockGridLayout"><i class="bx bx-lock-alt"/></vs-button>
+      <vs-button @click="unlockGridLayout"><i class="bx bx-lock-open-alt"/></vs-button>
     </div>
     <grid-layout
       :layout.sync="layout"

@@ -9,10 +9,10 @@
       </template>
       <template #right>
       <vs-navbar-item class="vs-navbar-item" :active="active=='home'" id="home" index="0">
-        Home
+        <i class="bx bx-home"></i>
       </vs-navbar-item>
       <vs-navbar-item  class="vs-navbar-item" :active="active=='settings'" id="settings" index="1">
-        <vs-icon icon="settings"></vs-icon>
+        <i class="bx bx-cog"></i>
       </vs-navbar-item>
         <vs-button flat>Login</vs-button>
         <vs-button>Sign Up</vs-button>
