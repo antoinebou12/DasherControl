@@ -1,13 +1,11 @@
+use bcrypt::{hash, verify, DEFAULT_COST};
+use chrono::{Local, NaiveDateTime};
+
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl};
+
 use crate::tenants::schema::*;
-use bcrypt::{hash, DEFAULT_COST};
-use diesel::PgConnection;
-use chrono::Local;
 use crate::tenants::error::MyStoreError;
-use chrono::NaiveDateTime; 
-use bcrypt::verify;
-use diesel::QueryDsl;
-use diesel::RunQueryDsl;
-use diesel::ExpressionMethods;
+use crate::tenants::schema::tenants::dsl::email;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "tenants"]
@@ -21,6 +19,27 @@ pub struct Tenant {
     pub password: String,
     pub role: String,
     pub created_at: NaiveDateTime
+}
+
+impl Tenant {
+    pub fn create(register_tenant: RegisterTenant, connection: &PgConnection) ->
+     Result<Tenant, MyStoreError> {
+
+        return Ok(diesel::insert_into(tenants::table)
+            .values(NewTenant {
+                email: register_tenant.email,
+                name: register_tenant.name,
+                username: register_tenant.username,
+                role: register_tenant.role,
+                password: Self::hash_password(register_tenant.password)?,
+                created_at: Local::now().naive_local()
+            })
+            .get_result(connection)?);
+    }
+ 
+    pub fn hash_password(plain: String) -> Result<String, MyStoreError> {
+        return Ok(hash(plain, DEFAULT_COST)?);
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Insertable)]
@@ -47,86 +66,45 @@ pub struct RegisterTenant {
 impl RegisterTenant {
     pub fn validates(self) ->
      Result<RegisterTenant, MyStoreError> {
-         if self.password == self.password_confirmation {
-             Ok(self)
-         } else {
-             Err(
-                 MyStoreError::PasswordNotMatch(
-                     "Password and Password Confirmation does not match".to_string()
-                 )
-             )
-         }
+        let password_are_equal = self.password == self.password_confirmation;
+        let password_not_empty = self.password.len() > 0;
+        if password_are_equal && password_not_empty {
+            Ok(self)
+        } else if !password_are_equal {
+            Err(MyStoreError::PasswordNotMatch(
+                "Password and Password Confirmation does not match".to_string(),
+            ))
+        } else {
+            Err(MyStoreError::WrongPassword(
+                "Wrong Password, check it is not empty".to_string(),
+            ))
+        }
     }
 }
 
 
-impl Tenant {
-    pub fn create(register_tenant: RegisterTenant, connection: &PgConnection) ->
+#[derive(Deserialize)]
+pub struct AuthTenant {
+    pub email: String,
+    pub password: String
+}
+
+impl AuthTenant {
+    pub fn login(&self, conn: &PgConnection) ->
      Result<Tenant, MyStoreError> {
-        use diesel::RunQueryDsl;
+        let mut records = tenants::table
+            .filter(email.eq(&self.email))
+            .load::<Tenant>(conn)?;
 
-        return Ok(diesel::insert_into(tenants::table)
-            .values(NewTenant {
-                email: register_tenant.email,
-                name: register_tenant.name,
-                username: register_tenant.username,
-                role: register_tenant.role,
-                password: Self::hash_password(register_tenant.password)?,
-                created_at: Local::now().naive_local()
-            })
-            .get_result(connection)?);
-    }
-
-    // This might look kind of weird, 
-    // but if something fails it would chain 
-    // to our MyStoreError Error, 
-    // otherwise it will gives us the hash, 
-    // we still need to return a result 
-    // so we wrap it in an Ok variant from the Result type. 
-    pub fn hash_password(plain: String) -> Result<String, MyStoreError> {
-        return Ok(hash(plain, DEFAULT_COST)?);
+        let tenant = records
+            .pop()
+            .ok_or(MyStoreError::DBError(diesel::result::Error::NotFound))?;
+        if verify(&self.password, &tenant.password)? {
+            Ok(tenant)
+        } else {
+            Err(MyStoreError::WrongPassword(
+                "Wrong password, check again please".to_string(),
+            ))
+        }
     }
 }
-
-// #[derive(Deserialize)]
-// pub struct AuthUser {
-//     pub email: String,
-//     pub password: String
-// }
-
-// impl AuthUser {
-
-//     // The good thing about ? syntax and have a custom error is 
-//     // that the code would look very straightforward, I mean, 
-//     // the other way would imply a lot of pattern matching 
-//     // making it look ugly. 
-//     pub fn login(&self, conn: &PgConnection) ->
-//      Result<User, MyStoreError> {
-//         let mut records =
-//             users::table
-//                 .filter(email.eq(&self.email))
-//                 .load::<User>(conn)?;
-
-//         let user =
-//             records
-//                 .pop()
-//                 .ok_or(MyStoreError::DBError(diesel::result::Error::NotFound))?;
-
-//         let verify_password =
-//             verify(&self.password, &user.password)
-//                 .map_err( |_error| {
-//                     MyStoreError::WrongPassword(
-//                         "Wrong password, check again please".to_string()
-//                     )
-//                 })?;
-
-//         if verify_password {
-//             Ok(user)
-//         } else {
-//             Err(MyStoreError::WrongPassword(
-//                 "Wrong password, check again please".to_string()
-//             ))
-//         }
-
-//     }
-// }

@@ -1,17 +1,24 @@
+use std::fmt;
+
 use diesel::prelude::*;
 use diesel::result::Error;
 
 use rocket::http::Status;
 use rocket::response::status;
+use rocket::http::hyper::header::Encoding;
+use rocket::request::{self, Request, FromRequest};
+use rocket::outcome::Outcome::*;
 
 use rocket_contrib::json::Json;
 
 use crate::db::DbConn;
 use crate::tenants::model::Tenant;
 use crate::tenants::model::RegisterTenant;
+use crate::tenants::model::AuthTenant;
 use crate::tenants::schema::tenants;
 use crate::tenants::helper::all;
-
+use crate::tenants::error::MyStoreError;
+use crate::tenants::jwt::*;
 
 #[get("/")]
 pub fn all_tenants(conn: DbConn) -> Result<Json<Vec<Tenant>>, Status> {
@@ -35,40 +42,32 @@ pub fn create_tenant(conn: DbConn, tenant: Json<RegisterTenant>) -> () {
 }
 
 
-// #[post("/json/login", format="application/json", data = "<tenant>")]
-// pub fn login(
-//     conn: DbConn,
-//     tenant: Json<AuthUser>, 
-//     id: Identity, 
-//     generator: Json<CsrfTokenGenerator>) -> () {
+#[post("/json/login", format="application/json", data = "<tenant_login>")]
+pub fn login(conn: DbConn, tenant_login: Json<AuthTenant>) -> status::Accepted<String> {
 
-//     let user = auth_user
-//         .login(&conn)
-//         .map_err(|e| {
-//             match e {
-//                 MyStoreError::DBError(diesel::result::Error::NotFound) =>
-//                     printfn(e.to_string()),
-//                 _ =>
-//                     printfn(e.to_string())
-//             }
-//         })?;
+    let tenant = tenant_login
+        .login(&conn)
+        .map_err(|e| {
+            match e {
+                MyStoreError::DBError(diesel::result::Error::NotFound) =>
+                    status::Accepted(Some(e.to_string())),
+                _ =>
+                    status::Accepted(Some(e.to_string()))
+            }
+        })?;
 
-//     // This is the jwt token we will send in a cookie.
-//     let token = create_token(&user.email, &user.name)?;
+    // This is the jwt token we will send in a cookie.
+    let token = create_token(tenant.id, &tenant.email, &tenant.name);
 
-//     id.remember(token);
+    status::Accepted(Some(token.to_string()))
 
-//     // Finally our response will have a csrf token for security. 
-//     let response =
-//         HttpResponse::Ok()
-//         .header("X-CSRF-TOKEN", hex::encode(generator.generate()))
-//         .json(user);
-//     Ok(response);
-// }
+    // Finally our response will have a csrf token for security. 
+    // hex::encode(generator.generate())
+}
 
 
 // #[post("/json/logout")]
-// pub fn logout(id: Identity) -> () {
-//     id.forget();
+// pub fn logout() -> () {
+    
 // }
 

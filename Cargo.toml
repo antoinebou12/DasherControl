@@ -2,6 +2,9 @@
 name = "rocketrustvuejs"
 version = "0.1.1"
 authors = ["Antoine Boucher <antoine.bou13@gmail.com>"]
+keywords = ["rocket", "tilling", "vue", "web-server"]
+license = "MIT"
+categories = ["tilling-web"]
 edition = "2018"
 
 
@@ -19,5 +22,5 @@ chrono = { version = "0.4.10", features = ["serde"] }
 r2d2-diesel = "1.0.0"
 r2d2 = "0.8.9"
 dotenv = "0.15.0"
-jsonwebtoken = "5"
+jsonwebtoken = "5.0.1"
 bcrypt = "0.4.0"

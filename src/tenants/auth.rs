@@ -2,11 +2,10 @@ use rocket::Outcome;
 use rocket::request::{self, Request, FromRequest};
 
 pub extern crate crypto;
-pub extern crate jwt;
 pub extern crate rustc_serialize;
 
 use user::auth::crypto::sha2::Sha256;
-use self::jwt::{
+use jsonwebtoken::{
     Header,
     Registered,
     Token,
