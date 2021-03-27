@@ -1,8 +1,11 @@
 <template>
   <div class="grid-layout-container">
-    <vs-button @click="addItem">Add</vs-button>
-    <vs-button @click="removeItem">Remove</vs-button>
-    <vs-button @click="lockGridLayout">Lock</vs-button>
+    <div style="display: inline-flex;">
+      <vs-button @click="addItem">Add</vs-button>
+      <vs-button @click="removeItem">Remove</vs-button>
+      <vs-button @click="lockGridLayout">Lock</vs-button>
+      <vs-button @click="unlockGridLayout">Unlock</vs-button>
+    </div>
     <grid-layout
       :layout.sync="layout"
       :col-num="12"
@@ -26,12 +29,12 @@
         drag-allow-from=".vue-draggable-handle"
         drag-ignore-from=".no-drag">
         <div class="grid-item-content">
-          <span class="text">{{ itemTitle(item) }}</span>
+          <span v-if="gridlock" class="text">{{ itemTitle(item) }}</span>
           <div class="vue-draggable-handle"></div>
           <div class="grid-item-main no-drag">
-            <Editor v-if="item.i==0" style="overflow: auto;" class="editor_applet" />
-            <IFrame style="width:100%; height:100%; " src="http://10.0.0.150:8888" v-if="item.i==1" class="iframe_applet" />
-            <IFrame style="width:100%; height:100%;" src="http://10.0.0.6:8096/web/index.html#!/tv.html?topParentId=767bffe4f11c93ef34b805451a696a4e" v-if="item.i==2" class="iframe_applet" />
+            <Editor v-if="item.i==0" class="editor_applet" />
+            <IFrame style="width:100%; height:100%; " src="https://codepen.io/antoinebou13/full/xMXNyy" v-if="item.i==1" class="iframe_applet" />
+            <IFrame style="width:100%; height:100%;" src="https://money.usnews.com/investing/stocks" v-if="item.i==2" class="iframe_applet" />
             <IFrame style="width:100%; height:100%;" src="https://www.youtube.com/embed/5qap5aO4i9A" v-if="item.i==3" class="iframe_applet" />
           </div>
         </div>
@@ -65,7 +68,8 @@ export default {
       responsive: true,
       // colNum: 12,
       // rowHeight: 24,
-      index: 0
+      index: 0,
+      gridlock: false
     };
   },
   mounted() {
@@ -98,10 +102,19 @@ export default {
       this.layout.splice(index, 1);
     },
     lockGridLayout: function() {
+        this.gridlock = true
         this.draggable = false
         this.resizable = false
         for (const item in this.layout) {
             this.layout[item].static = true;
+        }
+    },
+    unlockGridLayout: function() {
+        this.gridlock = false
+        this.draggable = true
+        this.resizable = true
+        for (const item in this.layout) {
+            this.layout[item].static = false;
         }
     }
   }
@@ -136,7 +149,7 @@ export default {
     font-size: 24px;
     text-align: center;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: auto;
     margin: auto;
     height: 100%;
     width: 100%;
@@ -175,10 +188,15 @@ export default {
   cursor: pointer;
 }
 
+.grid-item-main {
+  overflow: hidden;
+}
+
 .editor_applet {
   background: rgba(0, 128, 255, 0.1);
   margin: 24px 16px 16px 16px;
   text-align: left;
+
 }
 
 /* Turn on custom 8px wide scrollbar */

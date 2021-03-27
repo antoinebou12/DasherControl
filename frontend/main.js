@@ -5,7 +5,7 @@ import App from './App.vue';
 Vue.config.productionTip = false
 
 import 'vuesax/dist/vuesax.css' //Vuesax styles
-Vue.use(Vuesax, {
+Vue.use({
   // options here
 })
 

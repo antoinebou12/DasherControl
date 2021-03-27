@@ -12,7 +12,7 @@
         Home
       </vs-navbar-item>
       <vs-navbar-item  class="vs-navbar-item" :active="active=='settings'" id="settings" index="1">
-        Settings
+        <vs-icon icon="settings"></vs-icon>
       </vs-navbar-item>
         <vs-button flat>Login</vs-button>
         <vs-button>Sign Up</vs-button>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+
 export default {
   name: "Navbar",
   data: () => ({

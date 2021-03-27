@@ -4,6 +4,10 @@ use diesel::PgConnection;
 use chrono::Local;
 use crate::tenants::error::MyStoreError;
 use chrono::NaiveDateTime; 
+use bcrypt::verify;
+use diesel::QueryDsl;
+use diesel::RunQueryDsl;
+use diesel::ExpressionMethods;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "tenants"]
@@ -83,3 +87,46 @@ impl Tenant {
         return Ok(hash(plain, DEFAULT_COST)?);
     }
 }
+
+// #[derive(Deserialize)]
+// pub struct AuthUser {
+//     pub email: String,
+//     pub password: String
+// }
+
+// impl AuthUser {
+
+//     // The good thing about ? syntax and have a custom error is 
+//     // that the code would look very straightforward, I mean, 
+//     // the other way would imply a lot of pattern matching 
+//     // making it look ugly. 
+//     pub fn login(&self, conn: &PgConnection) ->
+//      Result<User, MyStoreError> {
+//         let mut records =
+//             users::table
+//                 .filter(email.eq(&self.email))
+//                 .load::<User>(conn)?;
+
+//         let user =
+//             records
+//                 .pop()
+//                 .ok_or(MyStoreError::DBError(diesel::result::Error::NotFound))?;
+
+//         let verify_password =
+//             verify(&self.password, &user.password)
+//                 .map_err( |_error| {
+//                     MyStoreError::WrongPassword(
+//                         "Wrong password, check again please".to_string()
+//                     )
+//                 })?;
+
+//         if verify_password {
+//             Ok(user)
+//         } else {
+//             Err(MyStoreError::WrongPassword(
+//                 "Wrong password, check again please".to_string()
+//             ))
+//         }
+
+//     }
+// }
