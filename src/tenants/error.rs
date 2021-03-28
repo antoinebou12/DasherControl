@@ -2,35 +2,35 @@ use std::fmt;
 use bcrypt::BcryptError;
 use diesel::result;
 
-pub enum MyStoreError {
+pub enum MyError {
     HashError(BcryptError),
     DBError(result::Error),
     PasswordNotMatch(String),
     WrongPassword(String)
 }
 
-// We need this to performs a conversion from BcryptError to MyStoreError
-impl From<BcryptError> for MyStoreError {
+// We need this to performs a conversion from BcryptError to MyError
+impl From<BcryptError> for MyError {
     fn from(error: BcryptError) -> Self {
-        MyStoreError::HashError(error)
+        MyError::HashError(error)
     }
 }
 
-// We need this to performs a conversion from diesel::result::Error to MyStoreError
-impl From<result::Error> for MyStoreError {
+// We need this to performs a conversion from diesel::result::Error to MyError
+impl From<result::Error> for MyError {
     fn from(error: result::Error) -> Self {
-        MyStoreError::DBError(error)
+        MyError::DBError(error)
     }
 }
 
-// We need this so we can use the method to_string over MyStoreError 
-impl fmt::Display for MyStoreError {
+// We need this so we can use the method to_string over MyError 
+impl fmt::Display for MyError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            MyStoreError::HashError(error) => write!(f, "{}", error),
-            MyStoreError::DBError(error) => write!(f, "{}", error),
-            MyStoreError::PasswordNotMatch(error) => write!(f, "{}", error),
-            MyStoreError::WrongPassword(error) => write!(f, "{}", error)
+            MyError::HashError(error) => write!(f, "{}", error),
+            MyError::DBError(error) => write!(f, "{}", error),
+            MyError::PasswordNotMatch(error) => write!(f, "{}", error),
+            MyError::WrongPassword(error) => write!(f, "{}", error)
         }
     }
 }

@@ -40,25 +40,27 @@ impl Claims {
     }
 }
 
-pub fn create_token(id: i32, email: &str, name: &str) -> String {
+pub fn create_token(id: i32, email: &str, name: &str) -> jsonwebtoken::errors::Result<String> {
     let claims = Claims::with_email(id, email, name);
-        return match encode(
+        return encode(
             &Header::default(),
             &claims,
-            get_secret().as_ref(),
-        ) {
-        Ok(v) => println!("{}", v)
-    }
+            "test".as_ref(),
+        );
 }
 
 pub fn decode_token(token: &str) -> TinyTenant {
-    decode::<Claims>(
+    let data = match decode::<Claims>(
         token,
-        get_secret().as_ref(),
+        "test".as_ref(),
         &Validation::default(),
-    )
-    .map(|data| data.claims.into())
-    .map_err(|e| println!("{}", e.to_string()))
+    ){
+        Ok(data) => data,
+        Err(_) => panic!(),
+    };
+
+    return data.claims.into();
+
 }
 
 fn get_secret() -> String {

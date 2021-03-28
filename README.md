@@ -13,9 +13,9 @@ Preview Look (NOT FINISH)
 ## Install
 
 ```sh
+cargo install diesel_cli --no-default-features --features postgres
 
-cargo run &
-cd frontend && npm install && npm run build
+cargo run
 ```
 
 ## Run tests

@@ -17,7 +17,7 @@ use crate::tenants::model::RegisterTenant;
 use crate::tenants::model::AuthTenant;
 use crate::tenants::schema::tenants;
 use crate::tenants::helper::all;
-use crate::tenants::error::MyStoreError;
+use crate::tenants::error::MyError;
 use crate::tenants::jwt::*;
 
 #[get("/")]
@@ -42,28 +42,19 @@ pub fn create_tenant(conn: DbConn, tenant: Json<RegisterTenant>) -> () {
 }
 
 
-#[post("/json/login", format="application/json", data = "<tenant_login>")]
-pub fn login(conn: DbConn, tenant_login: Json<AuthTenant>) -> status::Accepted<String> {
-
-    let tenant = tenant_login
-        .login(&conn)
-        .map_err(|e| {
-            match e {
-                MyStoreError::DBError(diesel::result::Error::NotFound) =>
-                    status::Accepted(Some(e.to_string())),
-                _ =>
-                    status::Accepted(Some(e.to_string()))
-            }
-        })?;
+#[post("/json/login", format="application/json", data = "<auth_tenant>")]
+pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>) -> &'static str {
+    // let tenant =auth_tenant.login(&conn);
 
     // This is the jwt token we will send in a cookie.
-    let token = create_token(tenant.id, &tenant.email, &tenant.name);
+    // let token = create_token(tenant.id, &tenant.email, &tenant.name).unwrap();
 
-    status::Accepted(Some(token.to_string()))
+    return "yo";
 
     // Finally our response will have a csrf token for security. 
     // hex::encode(generator.generate())
 }
+
 
 
 // #[post("/json/logout")]

@@ -1,7 +1,9 @@
 curl https://sh.rustup.rs -sSf | sh
 source $HOME/.cargo/env
 export PATH="$HOME/.cargo/bin:$PATH"
-rustup default nightly
 rustup update
-# install cmake make g++ build-essential libpq-dev
-cargo install
+rustup default nightly
+# Install install cmake make g++ build-essential libpq-dev
+cargo install diesel_cli --no-default-features --features postgres
+source .env
+diesel migration run
