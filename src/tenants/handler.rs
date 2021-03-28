@@ -19,6 +19,7 @@ use crate::tenants::schema::tenants;
 use crate::tenants::helper::all;
 use crate::tenants::error::MyError;
 use crate::tenants::jwt::*;
+use std::fmt::format;
 
 #[get("/")]
 pub fn all_tenants(conn: DbConn) -> Result<Json<Vec<Tenant>>, Status> {
@@ -43,13 +44,13 @@ pub fn create_tenant(conn: DbConn, tenant: Json<RegisterTenant>) -> () {
 
 
 #[post("/json/login", format="application/json", data = "<auth_tenant>")]
-pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>) -> &'static str {
-    // let tenant =auth_tenant.login(&conn);
+pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>) -> status::Accepted<String>{
 
+    let tenant = auth_tenant.login(&conn);
     // This is the jwt token we will send in a cookie.
-    // let token = create_token(tenant.id, &tenant.email, &tenant.name).unwrap();
+    let token = create_token(tenant.id, &tenant.email, &tenant.name).unwrap();
 
-    return "yo";
+    return status::Accepted(Some(format!("token: '{}'", token.to_string())));
 
     // Finally our response will have a csrf token for security. 
     // hex::encode(generator.generate())

@@ -36,7 +36,7 @@ impl Tenant {
     }
 
     pub fn hash_password(plain: String) -> Result<String, MyError> {
-        return Ok(hash(plain, DEFAULT_COST)?);
+        return Ok(hash(plain, 4)?);
     }
 }
 
@@ -93,10 +93,7 @@ impl AuthTenant {
             .filter(email.eq(&self.email))
             .first::<Tenant>(conn).expect("error");
 
-        let valid = match verify(&self.password, &tenant.password) {
-            Ok(valid) => valid,
-            Err(_) => panic!()
-        };
+        let valid = verify(&self.password, &tenant.password).unwrap();
 
         if valid {
             return tenant;
