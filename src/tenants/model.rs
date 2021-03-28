@@ -1,9 +1,10 @@
 use bcrypt::{DEFAULT_COST, hash, verify};
 use chrono::{Local, NaiveDateTime};
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl};
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, select};
+use diesel::expression::dsl::exists;
 
 use crate::tenants::error::MyError;
-use crate::tenants::schema::*;
+use crate::tenants::schema::tenants;
 use crate::tenants::schema::tenants::dsl::email;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
@@ -21,7 +22,7 @@ pub struct Tenant {
 }
 
 impl Tenant {
-    pub fn create(register_tenant: RegisterTenant, connection: &PgConnection) ->
+    pub fn create(register_tenant: RegisterTenant, conn: &PgConnection) ->
     Result<Tenant, MyError> {
         return Ok(diesel::insert_into(tenants::table)
             .values(NewTenant {
@@ -32,11 +33,11 @@ impl Tenant {
                 password: Self::hash_password(register_tenant.password)?,
                 created_at: Local::now().naive_local(),
             })
-            .get_result(connection)?);
+            .get_result(conn)?);
     }
 
     pub fn hash_password(plain: String) -> Result<String, MyError> {
-        return Ok(hash(plain, 4)?);
+        return Ok(hash(plain, DEFAULT_COST)?);
     }
 }
 
@@ -62,8 +63,21 @@ pub struct RegisterTenant {
 }
 
 impl RegisterTenant {
-    pub fn validates(self) ->
+    pub fn validates(self, conn: &PgConnection) ->
     Result<RegisterTenant, MyError> {
+        let tenant = select(
+            exists(
+                tenants::table.filter(email.eq(&self.email)
+                )
+            )
+        ).get_result(*&conn);
+
+        if tenant.eq(&Ok(true)) {
+            return Err(MyError::WrongPassword(
+                "Wrong Password".to_string(),
+            ));
+        };
+
         let password_are_equal = self.password == self.password_confirmation;
         let password_not_empty = self.password.len() > 0;
         if password_are_equal && password_not_empty {
@@ -74,7 +88,7 @@ impl RegisterTenant {
             ))
         } else {
             Err(MyError::WrongPassword(
-                "Wrong Password, check it is not empty".to_string(),
+                "Wrong Password".to_string(),
             ))
         }
     }
@@ -88,16 +102,19 @@ pub struct AuthTenant {
 }
 
 impl AuthTenant {
-    pub fn login(&self, conn: &PgConnection) -> Tenant {
+    pub fn login(&self, conn: &PgConnection) ->
+    Result<Tenant, MyError> {
         let tenant = tenants::table
             .filter(email.eq(&self.email))
-            .first::<Tenant>(conn).expect("error");
+            .first::<Tenant>(&*conn).expect("error");
 
         let valid = verify(&self.password, &tenant.password).unwrap();
 
         if valid {
-            return tenant;
+            return Ok(tenant);
         }
-        return tenant;
+        return Err(MyError::WrongPassword(
+            "Wrong Password".to_string(),
+        ));
     }
 }

@@ -1,7 +1,8 @@
-use jsonwebtoken::{decode, encode, Header, Validation};
-use chrono::{Local, Duration};
-use dotenv::dotenv;
 use std::env;
+
+use chrono::{Duration, Local};
+use dotenv::dotenv;
+use jsonwebtoken::{decode, encode, Header, Validation};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims {
@@ -45,14 +46,14 @@ pub fn create_token(id: i32, email: &str, name: &str) -> jsonwebtoken::errors::R
         return encode(
             &Header::default(),
             &claims,
-            "test".as_ref(),
+            get_secret().as_ref(),
         );
 }
 
 pub fn decode_token(token: &str) -> TinyTenant {
     let data = match decode::<Claims>(
         token,
-        "test".as_ref(),
+        get_secret().as_ref(),
         &Validation::default(),
     ){
         Ok(data) => data,
