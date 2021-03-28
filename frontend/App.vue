@@ -1,6 +1,6 @@
 
 <template>
-  <div id="app">
+  <div id="app" vs-theme="dark">
     <Main msg=""/>
   </div>
 </template>
@@ -22,6 +22,8 @@ export default {
   --darcula-bg-rgb: 40, 42, 54;
   --darcula-fg: #f8f8f2;
   --darcula-fg-rgb: 248, 248, 242;
+  --darcula-comment: #6272a4;
+  --darcula-cl: #44475a;
 }
 html {
   background: var(--darcula-bg);
