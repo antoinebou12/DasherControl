@@ -17,7 +17,12 @@ export default {
 </script>
 
 <style lang="scss">
-
+@font-face {
+  font-family: 'Poppins';
+  src: url('public/fonts/Poppins-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
 :root {
   --darcula-bg: #282a36;
   --darcula-bg-rgb: 40, 42, 54;
@@ -28,6 +33,7 @@ export default {
 }
 html {
   background: var(--darcula-bg);
+  font-family: 'Poppins';
 }
 #app {
   width: 100%;

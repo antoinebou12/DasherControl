@@ -79,6 +79,7 @@ export default {
     justify-content: space-between;
 
     a {
+      color: var(--darcula-cl);
       font-size: 0.8rem;
       opacity: 0.7;
 
@@ -116,6 +117,7 @@ export default {
     font-size: 0.7rem;
 
     a {
+      color: var(--darcula-cl);
       margin-left: 6px;
       &:hover {
         text-decoration: underline;

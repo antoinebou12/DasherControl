@@ -18,7 +18,8 @@ module.exports = (env, argv) => ({
   output: {
     path: path.resolve(__dirname, 'dist/public'),
     filename: '[name]-[fullhash].js',
-    publicPath: '/public'
+    publicPath: '/public',
+    clean: true,
   },
   module: {
     rules: [
@@ -32,6 +33,7 @@ module.exports = (env, argv) => ({
           loader: 'file-loader',
           options: {
             name: `public/imgs/[name].[ext]`,
+            cacheDirectory: true
           },
         },
       },
@@ -40,7 +42,8 @@ module.exports = (env, argv) => ({
         use: {
           loader: 'file-loader',
           options: {
-            name: `public/fonts/[name].[ext]`,
+            name: `/fonts/[name].[ext]`,
+            cacheDirectory: true
           },
         },
       },
@@ -68,7 +71,7 @@ module.exports = (env, argv) => ({
       https: true,
   },
   
-  devtool: (argv && argv.mode || 'development') === 'production' ? 'source-map' : 'eval-cheap-source-map',
+  devtool: (argv && argv.mode || 'development') === 'production' ? 'eval-cheap-source-map' : 'source-map',
   plugins: [
     new CleanWebpackPlugin({
         cleanAfterEveryBuildPatterns: ['dist']
