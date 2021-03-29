@@ -1,16 +1,23 @@
 <template>
-  <div class="login">
+  <div class="signup">
     <div class="center">
-      <vs-dialog v-model="show" class="dialog-login dark">
+      <vs-dialog v-model="show" class="dialog-login">
         <template #header>
           <h4 class="not-margin">
-            <b>Login</b>
+            <b>SignUp</b>
           </h4>
         </template>
-        <div class="login-form">
+        <div class="signup-form">
+          <vs-input type="name" v-model="name" placeholder="Name">
+          </vs-input>
           <vs-input v-model="email" placeholder="Email">
             <template #icon>
               @
+            </template>
+          </vs-input>
+          <vs-input type="username" v-model="username" placeholder="Username">
+            <template #icon>
+              <i class='bx bxs-user'></i>
             </template>
           </vs-input>
           <vs-input type="password" v-model="password" placeholder="Password">
@@ -18,21 +25,12 @@
               <i class='bx bxs-lock'></i>
             </template>
           </vs-input>
-          <div class="flex">
-            <vs-checkbox v-model="remember">Remember me</vs-checkbox>
-            <a href="#">Forgot Password?</a>
-          </div>
         </div>
-
         <template #footer>
           <div class="footer-dialog">
             <vs-button block>
-              Sign In
+              Sign Up
             </vs-button>
-
-            <div class="new">
-              New Here? <a href="#">Create New Account</a>
-            </div>
           </div>
         </template>
       </vs-dialog>
@@ -45,9 +43,11 @@
 
 
 export default {
-  name: "Login",
+  name: "SignUp",
   data: () => ({
     show: false,
+    name: '',
+    username: '',
     email: '',
     password: '',
     remember: false
@@ -70,7 +70,7 @@ export default {
   padding: 10px;
 }
 
-.login-form {
+.signup-form {
   width: 100%;
 
   .flex {

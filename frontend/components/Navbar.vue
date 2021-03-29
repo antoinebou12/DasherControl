@@ -8,14 +8,11 @@
         <img src="/public/imgs/favicon/favicon-32x32.png" alt="" />
       </template>
       <template #right>
-      <vs-navbar-item class="vs-navbar-item" :active="active=='home'" id="home" index="0">
-        <i class="bx bx-home"></i>
-      </vs-navbar-item>
-      <vs-navbar-item  class="vs-navbar-item" :active="active=='settings'" id="settings" index="1">
+      <vs-navbar-item class="vs-navbar-item" @click="set_active('Settings')" id="settings" index="0">
         <i class="bx bx-cog"></i>
       </vs-navbar-item>
-        <vs-button flat>Login</vs-button>
-        <vs-button>Sign Up</vs-button>
+        <vs-button flat @click="set_active('Login')">Login</vs-button>
+        <vs-button @click="set_active('SignUp')">Sign Up</vs-button>
       </template>
     </vs-navbar>
   </div>
@@ -26,13 +23,16 @@
 export default {
   name: "Navbar",
   data: () => ({
-    active: "home"
-  })
+    active: "Home",
+  }),
+  methods: {
+      set_active(active){
+        this.active = active
+        this.$emit("changeActive", active)
+      },
+    }
 };
 </script>
 
 <style lang="scss">
-.vs-navbar-item{
-  color: rgba(255,255,255,.6) !important;
-}
 </style>

@@ -17,6 +17,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 :root {
   --darcula-bg: #282a36;
   --darcula-bg-rgb: 40, 42, 54;
