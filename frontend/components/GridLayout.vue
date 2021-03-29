@@ -1,6 +1,6 @@
 <template>
   <div class="grid-layout-container">
-    <div style="display: inline-flex;">
+    <div style="display: inline-flex; margin-top: 36px; margin-bottom: 24px;">
       <vs-button @click="addItem"><i class="bx bx-add-to-queue"/></vs-button>
       <vs-button @click="removeItem"><i class="bx bx-x"/></vs-button>
       <vs-button @click="lockGridLayout"><i class="bx bx-lock-alt"/></vs-button>
@@ -121,7 +121,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .grid-layout-container {
   background: var(--darcula-bg);
 }
@@ -131,8 +131,8 @@ export default {
 .vue-grid-item:not(.vue-grid-placeholder) {
     justify-content: center;
     display: flex;
-    box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px,
-    rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+    box-shadow: rgba(0, 0, 0 ,0.1) 0px 10px 15px -3px,
+    rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
     border: 1px solid black;
     border-radius: 0.5rem;
 }
@@ -178,11 +178,8 @@ export default {
   height: 20px;
   top: 0;
   left: 0;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><circle cx='5' cy='5' r='5' fill='#999999'/></svg>")
-    no-repeat;
-  background-position: bottom right;
   padding: 0 8px 8px 0;
-  background-repeat: no-repeat;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><circle cx='5' cy='5' r='5' fill='#999999'/></svg>") no-repeat bottom right;
   background-origin: content-box;
   box-sizing: border-box;
   cursor: pointer;

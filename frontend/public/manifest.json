@@ -3,14 +3,14 @@
     "name": "First Vue PWA App",
     "icons": [
       {
-        "src": "public/imgs/favicon/android-icon-192x192.png",
+        "src": "/public/imgs/favicon/android-icon-192x192.png",
         "type": "image/png",
         "sizes": "192x192"
       }
     ],
-    "start_url": "/?utm_source=a2hs",
-    "background_color": "#FFFFFF",
+    "start_url": "/",
+    "background_color": "#282a36",
     "display": "standalone",
     "scope": "/",
-    "theme_color": "#FFFFFF"
+    "theme_color": "#195bff"
   }
