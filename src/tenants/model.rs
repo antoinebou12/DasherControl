@@ -6,6 +6,7 @@ use diesel::expression::dsl::exists;
 use crate::tenants::error::MyError;
 use crate::tenants::schema::tenants;
 use crate::tenants::schema::tenants::dsl::email;
+use crate::tenants::schema::tenants::dsl::username;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "tenants"]
@@ -98,6 +99,7 @@ impl RegisterTenant {
 #[derive(Deserialize)]
 pub struct AuthTenant {
     pub email: String,
+    pub username: String,
     pub password: String,
 }
 
@@ -106,6 +108,7 @@ impl AuthTenant {
     Result<Tenant, MyError> {
         let tenant = tenants::table
             .filter(email.eq(&self.email))
+            .or_filter(username.eq(&self.username))
             .first::<Tenant>(&*conn).expect("error");
 
         let valid = verify(&self.password, &tenant.password).unwrap();

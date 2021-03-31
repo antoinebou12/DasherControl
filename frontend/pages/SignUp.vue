@@ -25,10 +25,15 @@
               <i class='bx bxs-lock'></i>
             </template>
           </vs-input>
+          <vs-input type="password" v-model="password_confirmation" placeholder="Confirm Password">
+            <template #icon>
+              <i class='bx bxs-lock'></i>
+            </template>
+          </vs-input>
         </div>
         <template #footer>
           <div class="footer-dialog">
-            <vs-button block>
+            <vs-button block @click="submitSignUp()">
               Sign Up
             </vs-button>
           </div>
@@ -40,7 +45,7 @@
 
 
 <script>
-
+import axios from "axios";
 
 export default {
   name: "SignUp",
@@ -50,14 +55,28 @@ export default {
     username: '',
     email: '',
     password: '',
-    remember: false
+    password_confirmation: '',
   }),
   methods: {
-    showDialog(){
+    showDialog() {
       this.show = true;
     },
-    hideDialog(){
-      this.show = false;
+    submitSignUp() {
+      axios({
+        method: 'post',
+        url: '/tenants/api/create',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: {
+          name: this.name,
+          email: this.email,
+          username: this.username,
+          password: this.password,
+          password_confirmation: this.password_confirmation,
+          role: "tenant",
+        }
+      });
     }
   }
 };
@@ -98,7 +117,8 @@ export default {
 
     .vs-input {
       width: 100%;
-      color: var(--darcula-cl);
+      background: var(--darcula-bg);
+      color: var(--darcula-fg);
     }
   }
 }
@@ -117,6 +137,7 @@ export default {
 
     a {
       margin-left: 6px;
+
       &:hover {
         text-decoration: underline;
       }

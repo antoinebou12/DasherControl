@@ -8,12 +8,12 @@
           </h4>
         </template>
         <div class="login-form">
-          <vs-input v-model="email" placeholder="Email">
+          <vs-input v-model="username" placeholder="Email/Username" autocomplete="on">
             <template #icon>
-              @
+              <i class='bx bxs-user'></i>
             </template>
           </vs-input>
-          <vs-input type="password" v-model="password" placeholder="Password">
+          <vs-input type="password" v-model="password" placeholder="Password" autocomplete="on">
             <template #icon>
               <i class='bx bxs-lock'></i>
             </template>
@@ -26,10 +26,9 @@
 
         <template #footer>
           <div class="footer-dialog">
-            <vs-button block>
+            <vs-button @click="submitLogIn()" block>
               Sign In
             </vs-button>
-
             <div class="new">
               New Here? <a href="#">Create New Account</a>
             </div>
@@ -42,13 +41,13 @@
 
 
 <script>
-
+import axios from "axios";
 
 export default {
   name: "Login",
   data: () => ({
     show: false,
-    email: '',
+    username: '',
     password: '',
     remember: false
   }),
@@ -58,7 +57,22 @@ export default {
     },
     hideDialog(){
       this.show = false;
+    },
+    submitLogIn(){
+      axios({
+          method: 'post',
+          url: '/tenants/api/login',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: {
+            email: this.username,
+            username: this.username,
+            password: this.password
+          }
+      });
     }
+
   }
 };
 </script>
@@ -99,7 +113,8 @@ export default {
 
     .vs-input {
       width: 100%;
-      color: var(--darcula-cl);
+      background: var(--darcula-bg);
+      color: var(--darcula-fg);
     }
   }
 }

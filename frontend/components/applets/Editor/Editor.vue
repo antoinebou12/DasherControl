@@ -147,8 +147,7 @@ export default {
   props: {
     name: String
   },
-  data() {
-    return {
+  data: () => ({
       editor: new Editor({
         extensions: [
           new Blockquote(),
@@ -171,13 +170,6 @@ export default {
           new Image()
         ],
         content: `
-          <h2>
-            Hi there,
-          </h2>
-          <p>
-            this is a very <em>basic</em> example of tiptap.
-          </p>
-          <pre><code>body { display: none; }</code></pre>
           <ul>
             <li>
               A regular list
@@ -185,16 +177,9 @@ export default {
             <li>
               With regular items
             </li>
-          </ul>
-          <blockquote>
-            It's amazing 👏
-            <br />
-            – mom
-          </blockquote>
-        `
+          </ul>`
       })
-    };
-  },
+  }),
   beforeDestroy() {
     this.editor.destroy();
   }
@@ -211,6 +196,9 @@ export default {
   border: 1px solid black;
   border-radius: 0.5rem;
   padding: 20px;
+  height: 100%;
+  overflow-y:auto;
+
 
   .editor-content {
     overflow-wrap: break-word;

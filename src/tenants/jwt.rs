@@ -8,7 +8,7 @@ use jsonwebtoken::{decode, encode, Header, Validation};
 struct Claims {
     sub: i32,
     email: String,
-    name: String,
+    username: String,
     exp: usize
 }
 
@@ -17,7 +17,7 @@ struct Claims {
 pub struct TinyTenant {
     pub id: i32,
     pub email: String,
-    pub name: String
+    pub username: String
 }
 
 impl From<Claims> for TinyTenant {
@@ -25,24 +25,24 @@ impl From<Claims> for TinyTenant {
         TinyTenant {
             id: claims.sub,
             email: claims.email,
-            name: claims.name
+            username: claims.username
         }
     }
 }
 
 impl Claims {
-    fn with_email(id: i32, email: &str, name: &str) -> Self {
+    fn with_email(id: i32, email: &str, username: &str) -> Self {
         Claims {
             sub: id.into(),
             email: email.into(),
-            name: name.into(),
+            username: username.into(),
             exp: (Local::now() + Duration::hours(24)).timestamp() as usize
         }
     }
 }
 
-pub fn create_token(id: i32, email: &str, name: &str) -> jsonwebtoken::errors::Result<String> {
-    let claims = Claims::with_email(id, email, name);
+pub fn create_token(id: i32, email: &str, username: &str) -> jsonwebtoken::errors::Result<String> {
+    let claims = Claims::with_email(id, email, username);
         return encode(
             &Header::default(),
             &claims,

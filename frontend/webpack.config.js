@@ -63,7 +63,7 @@ module.exports = (env, argv) => ({
   },
   devServer: {
       host: '0.0.0.0',
-      port: '8080',
+      port: '9999',
       open: true,
       hot: true,
       compress: true,
@@ -71,7 +71,7 @@ module.exports = (env, argv) => ({
       https: true,
   },
   
-  devtool: (argv && argv.mode || 'development') === 'production' ? 'eval-cheap-source-map' : 'source-map',
+  devtool: (argv && argv.mode || 'development') === 'production' ? 'source-map' : 'source-map',
   plugins: [
     new CleanWebpackPlugin({
         cleanAfterEveryBuildPatterns: ['dist']
@@ -100,33 +100,14 @@ module.exports = (env, argv) => ({
       inject: true
     }),
     new VueLoaderPlugin(),
-    new ImageMinimizerPlugin({
-      minimizerOptions: {
-        // Lossless optimization with custom option
-        // Feel free to experiment with options for better result for you
-        plugins: [
-          ['gifsicle', { interlaced: true }],
-          ['jpegtran', { progressive: true }],
-          ['optipng', { optimizationLevel: 5 }],
-          [
-            'svgo',
-            {
-              prefix: 'icon--',
-              plugins: [
-                // { cleanupIDs: false },
-                // { collapseGroups: false },
-                // { removeTitle: true },
-              ],
-            },
-          ],
-        ],
-      },
-    }),
   ],
    // splitting out the vendor
    optimization: {
-    splitChunks: {
-      chunks: 'all',
-    },
+    runtimeChunk: true,
+    splitChunks: false
+  },
+  cache: {
+    type: 'filesystem',
+    store: 'pack'
   },
 });

@@ -10,7 +10,7 @@ use crate::tenants::model::AuthTenant;
 use crate::tenants::model::RegisterTenant;
 use crate::tenants::model::Tenant;
 
-#[get("/list")]
+#[get("/api/list")]
 pub fn all_tenants(conn: DbConn) -> Result<Json<Vec<Tenant>>, Status> {
     return all(&conn)
     .map_err(|error| error_status(error))
@@ -25,21 +25,21 @@ fn error_status(error: Error) -> Status {
 }
 
 
-#[post("/json/create", format="application/json", data = "<tenant>")]
+#[post("/api/create", format="application/json", data = "<tenant>")]
 pub fn create_tenant(conn: DbConn, tenant: Json<RegisterTenant>) -> Result<status::Accepted<String>, Status> {
     let register_tenant = match tenant.into_inner().validates(&conn) {
         Ok(register_tenant) => register_tenant,
         Err(_) => return Err(Status::Conflict),
     };
     let tenant_create = match Tenant::create(register_tenant, &conn) {
-        Ok(tenant) => return Ok(status::Accepted(Some("yee".to_string()))),
+        Ok(tenant) => return Ok(status::Accepted(Some("tenant created".to_string()))),
         Err(_) => return Err(Status::Conflict),
     };
 
 }
 
 
-#[post("/json/login", format="application/json", data = "<auth_tenant>")]
+#[post("/api/login", format="application/json", data = "<auth_tenant>")]
 pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>) -> Result<status::Accepted<String>, Status> {
 
     let tenant = match auth_tenant.login(&conn) {
@@ -57,7 +57,7 @@ pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>) -> Result<status::Acce
 
 
 
-// #[post("/json/logout")]
+// #[post("/api/logout")]
 // pub fn logout() -> () {
     
 // }
