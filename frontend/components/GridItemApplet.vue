@@ -34,8 +34,10 @@ export default {
   data() {
     return {
       title: this.extra.title || "Title",
-      showTitle: false
+      showTitle: false,
     }
+  },
+  computed: {
   },
   methods: {
     getTitle(){
@@ -78,7 +80,7 @@ export default {
 .vue-grid-item .grid-item-content {
   font-size: 24px;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
   margin: auto;
   height: 100%;
   width: 100%;
@@ -94,7 +96,6 @@ export default {
 .vue-grid-item .no-drag {
   height: 100%;
   width: 100%;
-  margin-top: 20px;
 }
 
 .vue-grid-item .minMax {
@@ -106,20 +107,21 @@ export default {
 }
 
 .grid-item-main {
-  overflow: hidden;
   height: 100%;
   width: 100%;
 }
 
 .vue-draggable-handle {
-  position: absolute;
   width: 100%;
-  height: 25px;
-  top: 0;
-  left: 0;
+  height: 24px;
   background: var(--darcula-bg);
   box-sizing: border-box;
   cursor: grab;
+  position: sticky;
+}
+
+.overflow-content {
+  overflow-y: auto;
 }
 
 /* Turn on custom 8px wide scrollbar */
