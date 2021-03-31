@@ -77,7 +77,6 @@ export default {
 
 .vue-grid-item .grid-item-content {
   font-size: 24px;
-  text-align: center;
   box-sizing: border-box;
   overflow: auto;
   margin: auto;
@@ -95,6 +94,7 @@ export default {
 .vue-grid-item .no-drag {
   height: 100%;
   width: 100%;
+  margin-top: 20px;
 }
 
 .vue-grid-item .minMax {
@@ -113,15 +113,13 @@ export default {
 
 .vue-draggable-handle {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  height: 25px;
   top: 0;
   left: 0;
-  padding: 0 8px 8px 0;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><circle cx='5' cy='5' r='5' fill='#999999'/></svg>") no-repeat bottom right;
-  background-origin: content-box;
+  background: var(--darcula-bg);
   box-sizing: border-box;
-  cursor: pointer;
+  cursor: grab;
 }
 
 /* Turn on custom 8px wide scrollbar */

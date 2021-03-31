@@ -6,6 +6,7 @@
 import CreateNew from "./CreateNew/CreateNew.vue";
 import Editor from "./Editor/Editor.vue";
 import BorderlessIFrame from "./IFrame/BorderlessIFrame.vue";
+import Shortcut from "./Shortcut/Shortcut.vue";
 
 export default {
   inheritAttrs: false,
@@ -20,6 +21,7 @@ export default {
   },
   data() {
     return {
+      currentAppletName: this.appletName,
       applet: CreateNew,
     }
   },
@@ -27,14 +29,13 @@ export default {
     this.changeApplet(this.appletName)
   },
   watch: {
-    appletName: function (newVal, oldVal){
+    currentAppletName: function (newVal, oldVal){
       this.changeApplet(newVal)
       this.$forceUpdate()
     },
   },
   methods: {
     changeApplet(appletName) {
-      console.log(appletName)
       switch (appletName) {
         case "Choose Applets":
           this.applet = CreateNew
@@ -47,6 +48,9 @@ export default {
           break;
         case "IFrame":
           this.applet = BorderlessIFrame
+          break;
+        case "Shortcut":
+          this.applet = Shortcut
           break;
       }
     }
