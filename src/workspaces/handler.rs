@@ -6,7 +6,7 @@ use crate::db::DbConn;
 use crate::workspaces::model::{NewWorkspace, Workspace, NewApplet, Applet, NewWorkspaceWithApplets};
 use diesel::result::Error;
 
-#[get("/api/applets/<workspace_id>")]
+#[get("/api/<workspace_id>")]
 pub fn get_applets_in_workspace(conn: DbConn, workspace_id: i32) -> Result<Json<Vec<Applet>>, Status> {
     return Applet::all_applets_by_workspace(&conn, workspace_id)
         .map_err(|error| error_status(error))
@@ -47,5 +47,4 @@ pub fn create_workspace_with_applets(conn: DbConn, workspace: Json<NewWorkspaceW
         Ok(workspace) => return Ok(status::Accepted(Some("workspace with applets created".to_string()))),
         Err(_) => return Err(Status::Conflict)
     };
-
 }
