@@ -1,10 +1,11 @@
+use diesel::{PgConnection, QueryResult, RunQueryDsl};
 use diesel::result::Error;
 use rocket::http::Status;
 use rocket::response::status;
 use rocket_contrib::json::Json;
 
 use crate::db::DbConn;
-use crate::tenants::helper::all;
+use crate::schema::tenants;
 use crate::tenants::jwt::*;
 use crate::tenants::model::AuthTenant;
 use crate::tenants::model::RegisterTenant;
@@ -12,7 +13,7 @@ use crate::tenants::model::Tenant;
 
 #[get("/api/list")]
 pub fn all_tenants(conn: DbConn) -> Result<Json<Vec<Tenant>>, Status> {
-    return all(&conn)
+    return Tenant::all(&conn)
     .map_err(|error| error_status(error))
     .map(|tenants| Json(tenants));
 }
@@ -49,10 +50,12 @@ pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>) -> Result<status::Acce
     // This is the jwt token we will send in a cookie.
     let token = create_token(tenant.id, &tenant.email, &tenant.name).unwrap();
 
+    // Finally our response will have a csrf token for security.
+    let csrf = generate_csrf();
+
     return Ok(status::Accepted(Some(format!("token: '{}'", token.to_string()))));
 
-    // Finally our response will have a csrf token for security. 
-    // hex::encode(generator.generate())
+
 }
 
 

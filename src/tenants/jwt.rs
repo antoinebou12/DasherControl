@@ -1,6 +1,10 @@
+extern crate csrf;
+
+use std::convert::TryFrom;
 use std::env;
 
 use chrono::{Duration, Local};
+use csrf::{AesGcmCsrfProtection, CsrfProtection, CsrfToken};
 use dotenv::dotenv;
 use jsonwebtoken::{decode, encode, Header, Validation};
 
@@ -46,14 +50,14 @@ pub fn create_token(id: i32, email: &str, username: &str) -> jsonwebtoken::error
         return encode(
             &Header::default(),
             &claims,
-            get_secret().as_ref(),
+            get_secret("JWT_TOKEN").as_ref(),
         );
 }
 
 pub fn decode_token(token: &str) -> TinyTenant {
     let data = match decode::<Claims>(
         token,
-        get_secret().as_ref(),
+        get_secret("JWT_TOKEN").as_ref(),
         &Validation::default(),
     ){
         Ok(data) => data,
@@ -64,8 +68,21 @@ pub fn decode_token(token: &str) -> TinyTenant {
 
 }
 
-fn get_secret() -> String {
+fn get_secret(secret: &str) -> String {
     dotenv().ok();
-    return env::var("JWT_TOKEN").expect("JWT_TOKEN must be set");
-    
+    return env::var(secret).expect(&*format!("{} must be set", secret));
 }
+
+pub(crate) fn generate_csrf() -> CsrfToken {
+    let csrf_token = get_secret("CSRF_TOKEN");
+    let protect =
+        AesGcmCsrfProtection::from_key(*b"01234567012345670123456701234567");
+
+    let (token, cookie) =
+        protect.generate_token_pair(None, 3600)
+        .expect("couldn't generate token/cookie pair");
+
+    return token;
+}
+
+

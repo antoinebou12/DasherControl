@@ -1,4 +1,5 @@
 use std::fmt;
+
 use bcrypt::BcryptError;
 use diesel::result;
 

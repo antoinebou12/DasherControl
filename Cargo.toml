@@ -13,7 +13,7 @@ rocket = { version = "0.4.7", features = ["tls"] }
 rocket_contrib = {version="0.4.5", features=["json", "tera_templates", "diesel_postgres_pool"]}
 rocket_codegen = "0.4.7"
 rocket_cors = "0.4.0"
-serde = "1.0.99"
+serde = { version = "1.0.104", features = ["derive"] }
 serde_derive = "1.0.99"
 serde_json = "1.0.40"
 diesel = { version = "1.4.5", features = ["postgres", "r2d2", "chrono"] }
@@ -24,3 +24,4 @@ r2d2 = "0.8.9"
 dotenv = "0.15.0"
 jsonwebtoken = "5.0.1"
 bcrypt = "0.8.0"
+csrf = "0.4.0"

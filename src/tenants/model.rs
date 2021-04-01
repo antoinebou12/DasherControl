@@ -1,12 +1,12 @@
 use bcrypt::{DEFAULT_COST, hash, verify};
 use chrono::{Local, NaiveDateTime};
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, select};
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, select};
 use diesel::expression::dsl::exists;
 
+use crate::schema::tenants;
+use crate::schema::tenants::dsl::email;
+use crate::schema::tenants::dsl::username;
 use crate::tenants::error::MyError;
-use crate::tenants::schema::tenants;
-use crate::tenants::schema::tenants::dsl::email;
-use crate::tenants::schema::tenants::dsl::username;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "tenants"]
@@ -39,6 +39,10 @@ impl Tenant {
 
     pub fn hash_password(plain: String) -> Result<String, MyError> {
         return Ok(hash(plain, DEFAULT_COST)?);
+    }
+
+    pub fn all(conn: &PgConnection) -> QueryResult<Vec<Tenant>> {
+        return tenants::table.load::<Tenant>(&*conn);
     }
 }
 

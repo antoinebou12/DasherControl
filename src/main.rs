@@ -1,23 +1,25 @@
 #![feature(proc_macro_hygiene, decl_macro, plugin)]
 
-#[macro_use] extern crate rocket;
 #[macro_use] extern crate diesel;
+#[macro_use] extern crate rocket;
+extern crate serde;
 #[macro_use] extern crate serde_derive;
+extern crate serde_json;
 
 
 use std::collections::HashMap;
 use std::sync::atomic::AtomicUsize;
 
-extern crate serde;
-extern crate serde_json;
-
 use rocket::Request;
 use rocket_contrib::templates::Template;
 
+
 mod tenants;
+mod workspaces;
 mod router;
 mod fairing;
 mod db;
+pub mod schema;
 
 #[catch(404)]
 fn not_found(req: &Request<'_>) -> Template {
@@ -33,6 +35,8 @@ fn create_rocket() -> rocket::Rocket {
     let routes = router::get_routes();
     //route tenants
     let tenants_routes = tenants::router::create_tenants_routes();
+    // routes workspace
+    let workspaces_routes = workspaces::router::create_workspaces_routes();
 
     // CORS
     // let cors = create_cors_rocket();
@@ -44,6 +48,7 @@ fn create_rocket() -> rocket::Rocket {
         .attach(fairing::CORS())
         .mount("/", routes)
         .mount("/tenants", tenants_routes)
+        .mount("/workspaces", workspaces_routes)
         .manage(router::HitCount(AtomicUsize::new(0)))
         .attach(Template::fairing())
         .register(catchers![not_found]);
