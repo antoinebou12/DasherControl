@@ -48,6 +48,9 @@ export default {
 </script>
 
 <style lang="scss">
+.navbar {
+  margin-bottom: 48px;
+}
 .content-tooltip {
   .body {
     display: flex;

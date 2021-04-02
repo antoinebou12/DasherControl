@@ -1,12 +1,13 @@
 <template>
-  <div class="grid-edit-menu" style="">
-    <vs-button @click="gridLayout.addItem()"><i class="bx bx-add-to-queue"/></vs-button>
-    <vs-button @click="gridLayout.removeItem()"><i class="bx bx-x"/></vs-button>
-    <vs-button @click="gridLayout.lockGridLayout()"><i class="bx bx-lock-alt"/></vs-button>
-    <vs-button @click="gridLayout.unlockGridLayout()"><i class="bx bx-lock-open-alt"/></vs-button>
-    <vs-button @click="gridLayout.saveWorkspaceLayout()"><i class="bx bx-save"/></vs-button>
-    <vs-button @click="gridLayout.setWorkspaceLayout(6)"><i class="bx bx-download"/></vs-button>
-<!--    <vs-button @click="gridLayout.saveGridlayout()"><i class="bx bx-save"/></vs-button>-->
+  <div class="grid-edit-menu-container">
+    <WorkspaceSelector ref="workspaceSelector" />
+    <div class="grid-edit-menu">
+      <vs-button @click="gridLayout.addNewItem()"><i class="bx bx-add-to-queue"/></vs-button>
+      <vs-button @click="gridLayout.removeItem()"><i class="bx bx-x"/></vs-button>
+      <vs-button @click="gridLayout.lockGridLayout()"><i class="bx bx-lock-alt"/></vs-button>
+      <vs-button @click="gridLayout.unlockGridLayout()"><i class="bx bx-lock-open-alt"/></vs-button>
+      <vs-button @click="saveWorkspace()"><i class="bx bx-save"/></vs-button>
+      <vs-button @click="workspaceSelector()"><i class="bx bx-download"/></vs-button>
 <!--    <vs-sidebar absolute hover-expend reduce v-model="sidebarActive">-->
 <!--      <vs-sidebar-this.gridLayout.layout[i] @click="gridLayout.addthis.gridLayout.layout[i]()">-->
 <!--        <template #icon>-->
@@ -33,13 +34,18 @@
 <!--        Unlock Grid-->
 <!--      </vs-sidebar-this.gridLayout.layout[i]>-->
 <!--    </vs-sidebar>-->
+    </div>
   </div>
 </template>
 
 <script>
+import WorkspaceSelector from "./WorkspaceSelector.vue"
 
 export default {
   name: "GridEditMenu",
+  components: {
+    WorkspaceSelector
+  },
   props: {
     gridLayout: Object
   },
@@ -47,7 +53,14 @@ export default {
     sidebarActive: ''
   }),
   methods: {
-
+    workspaceSelector() {
+      this.gridLayout.setWorkspaceLayout(this.$refs.workspaceSelector.selected.id)
+      this.gridLayout.workspace_id = this.$refs.workspaceSelector.selected.id;
+    },
+    saveWorkspace(){
+      this.gridLayout.saveWorkspaceLayout()
+      this.$refs.workspaceSelector.get_workspaces()
+    }
   }
 }
 </script>

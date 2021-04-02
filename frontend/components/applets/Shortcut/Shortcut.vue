@@ -46,6 +46,7 @@ export default {
       img {
         --webkit-transform: unset !important;
         transform: unset !important;
+        border-radius: 0px;
       }
     }
 

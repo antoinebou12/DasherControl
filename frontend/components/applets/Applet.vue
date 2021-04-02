@@ -28,8 +28,17 @@ export default {
   created() {
     this.changeApplet(this.appletName)
   },
+  updated() {
+    this.changeApplet(this.currentAppletName)
+  },
   watch: {
-    currentAppletName: function (newVal, oldVal){
+    appleName: function(newVal){
+      this.currentAppletName = newVal
+      this.changeApplet(newVal)
+      this.$forceUpdate()
+    },
+    currentAppletName: function (newVal){
+      this.appleName = newVal
       this.changeApplet(newVal)
       this.$forceUpdate()
     },

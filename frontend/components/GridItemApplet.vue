@@ -8,7 +8,7 @@
         <span v-if="showTitle" class="title">{{ getTitle() }}</span>
         <div class="vue-draggable-handle"></div>
         <div class="grid-item-main no-drag">
-          <Applet :appletName="appletData.appletName || 'CreateNew' " v-bind="appletData"></Applet>
+          <Applet :appletName="appletName" v-bind="currentAppletData"></Applet>
         </div>
       </div>
     </div>
@@ -28,16 +28,22 @@ export default {
     appletData: {type: Object, required: false, default: {}},
     extra: {type: Object, required: false, default: {}},
   },
-  watch: {
-
-  },
   data() {
     return {
+      currentAppletData: this.appletData,
+      appletName: this.appletData.appletName || 'CreateNew',
       title: this.extra.title || "Title",
       showTitle: false,
     }
   },
-  computed: {
+  created() {
+    this.appletName = this.appletData.appletName || 'CreateNew'
+  },
+  watch : {
+    appletData: function(newVal) {
+      this.currentAppletData = newVal
+      this.appletName = newVal.appletName
+    },
   },
   methods: {
     getTitle(){
@@ -56,6 +62,7 @@ export default {
 }
 </script>
 <style lang="scss">
+
 .vue-grid-item:not(.vue-grid-placeholder) {
   justify-content: center;
   display: flex;
@@ -80,11 +87,11 @@ export default {
 .vue-grid-item .grid-item-content {
   font-size: 24px;
   box-sizing: border-box;
-  overflow: hidden;
   margin: auto;
   height: 100%;
   width: 100%;
   background: var(--darcula-fg);
+  overflow: hidden;
 }
 
 .vue-grid-item .cssTransforms {
@@ -96,6 +103,7 @@ export default {
 .vue-grid-item .no-drag {
   height: 100%;
   width: 100%;
+  overflow: auto;
 }
 
 .vue-grid-item .minMax {
@@ -114,14 +122,10 @@ export default {
 .vue-draggable-handle {
   width: 100%;
   height: 24px;
-  background: var(--darcula-bg);
+  background: var(--darcula-cl);
   box-sizing: border-box;
   cursor: grab;
-  position: sticky;
-}
-
-.overflow-content {
-  overflow-y: auto;
+  position: relative;
 }
 
 /* Turn on custom 8px wide scrollbar */

@@ -74,7 +74,6 @@ impl Applet {
 #[derive(Debug, Serialize, Deserialize, Identifiable, Clone, Queryable)]
 #[table_name = "workspaces"]
 pub struct Workspace {
-    #[serde(skip)]
     pub id: i32,
     #[serde(skip)]
     pub display_order: i32,

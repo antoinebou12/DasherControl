@@ -1,6 +1,6 @@
 <template>
   <div class="grid-layout-container">
-    <GridEditMenu :gridLayout="this"/>
+    <GridEditMenu :gridLayout="this" />
     <grid-layout
         ref="gridLayout"
         :layout.sync="layout"
@@ -12,15 +12,16 @@
         :vertical-compact="verticalCompact"
         :use-css-transforms="useCssTransforms"
         :margin="[1, 1]">
-      <GridItemApplet v-for="item in layout" :key="item.i"
-                :static="item.static"
-                :x="item.x"
-                :y="item.y"
-                :w="item.w"
-                :h="item.h"
-                :i="item.i"
-                :appletData="item.appletData"
-                :extra="item.extra">
+      <GridItemApplet
+          v-for="item in layout" :key="item.i"
+          :static="item.static"
+          :x="item.x"
+          :y="item.y"
+          :w="item.w"
+          :h="item.h"
+          :i="item.i"
+          :appletData="item.appletData"
+          :extra="item.extra">
       </GridItemApplet>
     </grid-layout>
   </div>
@@ -56,13 +57,16 @@ export default {
     // colNum: 12,
     // rowHeight: 24,
     index: 0,
-    gridlock: false
+    gridlock: false,
+    workspace_id: 0,
   }),
+  watch: {
+  },
   mounted() {
     this.index = this.layout.length;
   },
   methods: {
-    addItem: function () {
+    addNewItem: function () {
       // Add a new item. It must have a unique key!
       this.layout.push({
         x: (this.layout.length * 2) % (this.colNum || 12),
@@ -71,7 +75,6 @@ export default {
         h: 6,
         i: this.index,
         static: false,
-        title: this.index,
         draggable: true,
         resizable: true,
         appletData: { appletName: 'CreateNew'}, extra: {title: this.index}
@@ -79,9 +82,27 @@ export default {
       // Increment the counter to ensure key is always unique.
       this.index++;
     },
+    addItemCustom: function (x, y, w, h, isStatic, draggable, resizable, appletData, extra) {
+      // Add a new item. It must have a unique key!
+      this.layout.push({
+        x: x,
+        y: y,
+        w: w,
+        h: h,
+        i: this.index,
+        static: isStatic,
+        draggable: draggable,
+        resizable: resizable,
+        appletData: appletData,
+        extra: extra
+      });
+      // Increment the counter to ensure key is always unique.
+      this.index++;
+    },
     removeItem: function (val) {
       const index = this.layout.map(item => item.i).indexOf(val);
       this.layout.splice(index, 1);
+      this.index--;
     },
     lockGridLayout: function () {
       this.gridlock = true
@@ -101,9 +122,9 @@ export default {
     },
     saveWorkspaceLayout(){
       let applets_layout = []
-      for (let i=0;i < this.layout.length;i++){
+      for (let i=0;i < this.layout.length;i++) {
         let applet = {}
-        applet.name = this.layout[i].i
+        applet.name = this.layout[i].i.toString()
         applet.position_x = this.layout[i].x
         applet.position_y = this.layout[i].y
         applet.width = this.layout[i].w
@@ -128,24 +149,28 @@ export default {
       });
     },
     setWorkspaceLayout(id) {
+      let self = this;
       axios({
         method: 'get',
         url: '/workspaces/api/' + id,
-        responseType: 'application/json'
       }).then((response) => {
-        this.layout = []
-        for (let i=0;i < response.data.length;i++){
-          this.addItem()
-          this.layout[i].i = response.data[i].name
-          this.layout[i].x = response.data[i].position_x
-          this.layout[i].y = response.data[i].position_y
-          this.layout[i].w = response.data[i].width
-          this.layout[i].h = response.data[i].height
-          this.layout[i].static = response.data[i].editable
-          this.layout[i].appletData = JSON.parse(response.data[i].applet_data)
+        self.layout = []
+        self.index = 0
+        for (let i=0;i < response.data.length;i++) {
+          self.addItemCustom(
+              response.data[i].position_x,
+              response.data[i].position_y,
+              response.data[i].width,
+              response.data[i].height,
+              response.data[i].editable,
+              response.data[i].editable,
+              response.data[i].editable,
+              JSON.parse(response.data[i].applet_data),
+              {}
+          )
         }
       });
-    }
+    },
   }
 };
 </script>

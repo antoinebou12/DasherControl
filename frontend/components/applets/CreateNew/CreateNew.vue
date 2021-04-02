@@ -2,26 +2,48 @@
   <div class="create-applet-container grid">
     <div class="select-applet-form">
       <vs-row align="center" justify="center">
-        <vs-select ref="selectApplet" placeholder="Choose Applets" v-model="appletName">
+        <vs-select placeholder="Choose Applets" v-model="appletName">
           <vs-option label="IFrame" value="IFrame">IFrame</vs-option>
           <vs-option label="Editor" value="Editor">Editor</vs-option>
           <vs-option label="Shortcut" value="Shortcut">Shortcut</vs-option>
         </vs-select>
-        <vs-button @click="newApplet()"> +</vs-button>
+        <vs-button @click="newApplet()">+</vs-button>
+      </vs-row>
+      <vs-row align="center" justify="center">
+        <component ref="settingForm" :is="settingForm"></component>
       </vs-row>
     </div>
   </div>
 </template>
 
 <script>
+import IFrameSetting from '../IFrame/IFrameSetting.vue'
+
 export default {
   name: "CreateNew",
-  data: () => ({
-    appletName: ''
-  }),
+  data () {
+    return {
+      appletName: '',
+      settingForm: null
+    }
+  },
+  watch: {
+    appletName : function(newVal) {
+      switch (newVal) {
+        case "IFrame":
+          this.settingForm = IFrameSetting
+          break;
+  }
+},
+  },
   methods: {
     newApplet() {
-      this.$parent.currentAppletName = this.$refs.selectApplet.value;
+      this.$parent.currentAppletName = this.appletName;
+      switch (this.appletName) {
+        case "IFrame":
+          this.$parent.$attrs.src = this.$refs.settingForm.$refs.src.value
+          break;
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
   <div class="iframe-container">
     <iframe
         class="borderless-iframe"
-        :src="src"
+        :src="link"
         loading="lazy"
         :scrolling="scrolling"
         frameborder="0"
@@ -19,9 +19,12 @@ export default {
   props: {
     src: String,
   },
-  data: () => ({
-    scrolling: "yes"
-  }),
+  data() {
+    return {
+      scrolling: "yes",
+      link: this.src
+    }
+  }
 };
 </script>
 

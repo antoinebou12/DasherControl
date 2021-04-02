@@ -13,6 +13,12 @@ pub fn get_applets_in_workspace(conn: DbConn, workspace_id: i32) -> Result<Json<
         .map(|applets| Json(applets));
 }
 
+#[get("/api/list")]
+pub fn get_workspaces(conn: DbConn) -> Result<Json<Vec<Workspace>>, Status> {
+    return Workspace::all(&conn)
+        .map_err(|error| error_status(error))
+        .map(|workspace| Json(workspace));
+}
 
 fn error_status(error: Error) -> Status {
     match error {
