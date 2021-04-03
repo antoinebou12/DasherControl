@@ -149,12 +149,12 @@ export default {
       });
     },
     setWorkspaceLayout(id) {
+      this.layout = []
+      this.index = 0
       axios({
         method: 'get',
         url: '/workspaces/api/' + id,
       }).then((response) => {
-        this.layout = []
-        this.index = 0
         for (let i=0;i < response.data.length;i++) {
           this.addItemCustom(
               response.data[i].position_x,
