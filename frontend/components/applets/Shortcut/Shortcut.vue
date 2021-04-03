@@ -42,7 +42,9 @@ export default {
       --webkit-transform: unset !important;
       transform: unset !important;
       height: 600px;
-
+      .vs-card__img {
+        border-radius: 0px;
+      }
       img {
         --webkit-transform: unset !important;
         transform: unset !important;

@@ -28,9 +28,6 @@ export default {
   created() {
     this.changeApplet(this.appletName)
   },
-  updated() {
-    this.changeApplet(this.currentAppletName)
-  },
   watch: {
     appleName: function(newVal){
       this.currentAppletName = newVal
@@ -40,6 +37,7 @@ export default {
     currentAppletName: function (newVal){
       this.appleName = newVal
       this.changeApplet(newVal)
+      this.$emit("changeApplet")
       this.$forceUpdate()
     },
   },

@@ -71,5 +71,9 @@ export default {
   display: inline-flex;
   margin-top: 36px;
   margin-bottom: 24px;
+
+  button {
+    border-radius: 0px;
+  }
 }
 </style>

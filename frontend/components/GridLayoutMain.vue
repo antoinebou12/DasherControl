@@ -149,15 +149,14 @@ export default {
       });
     },
     setWorkspaceLayout(id) {
-      let self = this;
       axios({
         method: 'get',
         url: '/workspaces/api/' + id,
       }).then((response) => {
-        self.layout = []
-        self.index = 0
+        this.layout = []
+        this.index = 0
         for (let i=0;i < response.data.length;i++) {
-          self.addItemCustom(
+          this.addItemCustom(
               response.data[i].position_x,
               response.data[i].position_y,
               response.data[i].width,
@@ -169,6 +168,7 @@ export default {
               {}
           )
         }
+        this.$emit("setWorkspace")
       });
     },
   }

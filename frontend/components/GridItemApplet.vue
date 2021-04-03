@@ -8,7 +8,7 @@
         <span v-if="showTitle" class="title">{{ getTitle() }}</span>
         <div class="vue-draggable-handle"></div>
         <div class="grid-item-main no-drag">
-          <Applet :appletName="appletName" v-bind="currentAppletData"></Applet>
+          <Applet ref="applet" @changeApplet="changeApplet" :appletName="appletName" v-bind="currentAppletData"></Applet>
         </div>
       </div>
     </div>
@@ -36,14 +36,12 @@ export default {
       showTitle: false,
     }
   },
-  created() {
-    this.appletName = this.appletData.appletName || 'CreateNew'
-  },
   watch : {
     appletData: function(newVal) {
       this.currentAppletData = newVal
       this.appletName = newVal.appletName
-    },
+      this.appletName = this.currentAppletData.appletName || 'CreateNew';
+    }
   },
   methods: {
     getTitle(){
@@ -57,6 +55,13 @@ export default {
     },
     containerResizedEvent: function (i, newH, newW, newHPx, newWPx) {
     },
+    changeApplet() {
+      this.appletData.appletName = this.$refs.applet.currentAppletName
+      this.currentAppletData.appletName = this.$refs.applet.currentAppletName
+      for(let key in this.$refs.applet.$attrs){
+        this.currentAppletData[key] = this.$refs.applet.$attrs[key]
+      }
+    }
 
   }
 }

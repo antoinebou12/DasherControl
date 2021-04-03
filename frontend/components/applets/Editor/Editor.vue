@@ -195,6 +195,10 @@ export default {
     rgb(0 0 0 / 5%) 0px 4px 6px -2px;
   border: 1px solid black;
 
+  button {
+    border-radius: 0px;
+  }
+
   .editor-content {
     overflow-wrap: break-word;
     word-wrap: break-word;

@@ -50,6 +50,10 @@ export default {
 <style lang="scss">
 .navbar {
   margin-bottom: 48px;
+
+  button {
+    border-radius: 0px;
+  }
 }
 .content-tooltip {
   .body {
