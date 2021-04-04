@@ -13,7 +13,8 @@
         :use-css-transforms="useCssTransforms"
         :margin="[1, 1]">
       <GridItemApplet
-          v-for="item in layout" :key="item.i"
+          v-for="item in layout"
+          :key="item.i"
           :static="item.static"
           :x="item.x"
           :y="item.y"
@@ -21,7 +22,9 @@
           :h="item.h"
           :i="item.i"
           :appletData="item.appletData"
-          :extra="item.extra">
+          :extra="item.extra"
+          :id="item.i"
+          @removeItem="removeItem">
       </GridItemApplet>
     </grid-layout>
   </div>
@@ -100,9 +103,11 @@ export default {
       this.index++;
     },
     removeItem: function (val) {
-      const index = this.layout.map(item => item.i).indexOf(val);
-      this.layout.splice(index, 1);
-      this.index--;
+      if (this.layout.length != 0) {
+        const index = this.layout.map(item => item.i).indexOf(val);
+        this.layout.splice(index, 1);
+        this.index--;
+      }
     },
     lockGridLayout: function () {
       this.gridlock = true

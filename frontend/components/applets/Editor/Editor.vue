@@ -138,6 +138,17 @@ import {
   Image
 } from "tiptap-extensions";
 
+const default_content =  `
+          <ul>
+            <li>
+              A regular list
+            </li>
+            <li>
+              With regular items
+            </li>
+          </ul>`
+
+
 export default {
   name: "Editor",
   components: {
@@ -145,16 +156,18 @@ export default {
     EditorMenuBar
   },
   props: {
-    name: String
+    name: String,
+    content: String
   },
-  data: () => ({
+  data() {
+    return {
       editor: new Editor({
         extensions: [
           new Blockquote(),
           new BulletList(),
           new CodeBlock(),
           new HardBreak(),
-          new Heading({ levels: [1, 2, 3] }),
+          new Heading({levels: [1, 2, 3]}),
           new HorizontalRule(),
           new ListItem(),
           new OrderedList(),
@@ -169,17 +182,10 @@ export default {
           new History(),
           new Image()
         ],
-        content: `
-          <ul>
-            <li>
-              A regular list
-            </li>
-            <li>
-              With regular items
-            </li>
-          </ul>`
+        content: this.content || default_content
       })
-  }),
+    }
+  },
   beforeDestroy() {
     this.editor.destroy();
   }

@@ -13,6 +13,14 @@ table! {
 }
 
 table! {
+    containers (id) {
+        id -> Int4,
+        name -> Varchar,
+        tenant_id -> Int4,
+    }
+}
+
+table! {
     tenants (id) {
         id -> Int4,
         email -> Varchar,
@@ -34,10 +42,12 @@ table! {
 }
 
 joinable!(applets -> workspaces (workspace_id));
+joinable!(containers -> tenants (tenant_id));
 joinable!(workspaces -> tenants (tenant_id));
 
 allow_tables_to_appear_in_same_query!(
     applets,
+    containers,
     tenants,
     workspaces,
 );

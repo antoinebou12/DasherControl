@@ -6,7 +6,10 @@
     <div class="grid-item-content">
       <div class="grid-item-main">
         <span v-if="showTitle" class="title">{{ getTitle() }}</span>
-        <div class="vue-draggable-handle"></div>
+        <div class="vue-draggable-handle">
+          <span class="remove-item" @click="removeItem()"><i class="bx bx-x"/></span>
+          <span v-if="appletName == 'IFrame'" class="open-new-tab-item" @click="openNewTab"><i class="bx bx-export"/></span>
+        </div>
         <div class="grid-item-main no-drag">
           <Applet ref="applet" @changeApplet="changeApplet" :appletName="appletName" v-bind="currentAppletData"></Applet>
         </div>
@@ -25,6 +28,7 @@ export default {
     Applet
   },
   props: {
+    id: Number,
     appletData: {type: Object, required: false, default: {}},
     extra: {type: Object, required: false, default: {}},
   },
@@ -61,6 +65,12 @@ export default {
       for(let key in this.$refs.applet.$attrs){
         this.currentAppletData[key] = this.$refs.applet.$attrs[key]
       }
+    },
+    removeItem() {
+      this.$emit('removeItem', this.id);
+    },
+    openNewTab() {
+      window.open(this.appletData.src, '_blank').focus()
     }
 
   }
@@ -80,6 +90,7 @@ export default {
 .vue-grid-item {
   background: var(--darcula-fg);
 }
+
 
 .vue-grid-item .resizing {
   opacity: 0.9;
@@ -130,7 +141,22 @@ export default {
   background: var(--darcula-cl);
   box-sizing: border-box;
   cursor: grab;
-  position: relative;
+  .remove-item{
+    position: absolute;
+    right: 8px;
+    top: 0px;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--darcula-fg)
+  }
+  .open-new-tab-item {
+    position: absolute;
+    right: 32px;
+    top: 2px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--darcula-fg)
+  }
 }
 
 /* Turn on custom 8px wide scrollbar */

@@ -8,6 +8,7 @@
         frameborder="0"
         marginheight="0"
         marginwidth="0"
+        allowtransparency="true"
         sandbox="allow-forms allow-same-origin allow-scripts"
         allow="picture-in-picture; allowfullscreen; encrypted-media; autoplay"
     />
@@ -23,6 +24,11 @@ export default {
     return {
       scrolling: "yes",
       link: this.src
+    }
+  },
+  methods:{
+    openNewTab() {
+      window.open(this.link, '_blank').focus()
     }
   }
 };

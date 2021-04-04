@@ -4,14 +4,7 @@
 
 <script>
 export default {
-  name: "canvas",
-  data: {
-    message: '',
-
-  },
-  methods: {
-
-  }
+  name: "Container"
 }
 </script>
 

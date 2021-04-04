@@ -20,6 +20,7 @@ mod router;
 mod fairing;
 mod db;
 pub mod schema;
+pub mod containers;
 
 #[catch(404)]
 fn not_found(req: &Request<'_>) -> Template {
@@ -35,8 +36,11 @@ fn create_rocket() -> rocket::Rocket {
     let routes = router::get_routes();
     //route tenants
     let tenants_routes = tenants::router::create_tenants_routes();
-    // routes workspace
+    // routes workspaces
     let workspaces_routes = workspaces::router::create_workspaces_routes();
+
+    // routes containers
+    let containers_routes = containers::router::create_containers_routes();
 
     // CORS
     // let cors = create_cors_rocket();
@@ -49,6 +53,7 @@ fn create_rocket() -> rocket::Rocket {
         .mount("/", routes)
         .mount("/tenants", tenants_routes)
         .mount("/workspaces", workspaces_routes)
+        .mount("/containers", containers_routes)
         .manage(router::HitCount(AtomicUsize::new(0)))
         .attach(Template::fairing())
         .register(catchers![not_found]);

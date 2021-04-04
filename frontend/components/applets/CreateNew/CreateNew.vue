@@ -18,6 +18,7 @@
 
 <script>
 import IFrameSetting from '../IFrame/IFrameSetting.vue'
+import ShortcutSetting from '../Shortcut/ShortcutSetting.vue'
 
 export default {
   name: "CreateNew",
@@ -33,6 +34,9 @@ export default {
         case "IFrame":
           this.settingForm = IFrameSetting
           break;
+        case "Shortcut":
+          this.settingForm = ShortcutSetting
+          break;
   }
 },
   },
@@ -41,7 +45,13 @@ export default {
       this.$parent.currentAppletName = this.appletName;
       switch (this.appletName) {
         case "IFrame":
-          this.$parent.$attrs.src = this.$refs.settingForm.$refs.src.value
+          this.$parent.$attrs.src = this.$refs.settingForm.get_src()
+          break;
+        case "Shortcut":
+          this.$parent.$attrs.src = this.$refs.settingForm.get_src()
+          this.$parent.$attrs.img_link = this.$refs.settingForm.get_img_link()
+          this.$parent.$attrs.title = this.$refs.settingForm.get_title()
+          this.$parent.$attrs.description = this.$refs.settingForm.get_description()
           break;
       }
     }

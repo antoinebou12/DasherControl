@@ -1,3 +1,2 @@
-
-cd views && npm run build
+cd frontend && npm run build && cd ..
 cargo run

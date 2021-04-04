@@ -1,17 +1,9 @@
 <template>
-
 </template>
 
 <script>
 export default {
-  name: "canvas",
-  data: {
-    message: '',
-
-  },
-  methods: {
-
-  }
+  name: "EditorSetting"
 }
 </script>
 
