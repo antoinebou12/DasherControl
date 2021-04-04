@@ -14,13 +14,14 @@ use rocket::Request;
 use rocket_contrib::templates::Template;
 
 
-mod tenants;
-mod workspaces;
-mod router;
-mod fairing;
-mod db;
+pub mod tenants;
+pub mod workspaces;
+pub mod router;
+pub mod fairing;
+pub mod db;
 pub mod schema;
 pub mod containers;
+pub mod terminal;
 
 #[catch(404)]
 fn not_found(req: &Request<'_>) -> Template {
@@ -31,7 +32,7 @@ fn not_found(req: &Request<'_>) -> Template {
 }
 
 
-fn create_rocket() -> rocket::Rocket {
+pub fn create_rocket() -> rocket::Rocket {
     // routes
     let routes = router::get_routes();
     //route tenants
@@ -59,7 +60,7 @@ fn create_rocket() -> rocket::Rocket {
         .register(catchers![not_found]);
 }
 
-fn main() {
+pub fn main() {
     // Start rocket with CORS
     create_rocket().launch();
 }
