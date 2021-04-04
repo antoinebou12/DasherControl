@@ -21,17 +21,16 @@ Preview Look
 
 ## TODO
 
-[x] Applets with IFrame
-[x] Save Workspace and switch between workspace
-[X] Applets Management 
-[] User Auth (Half done missing csrf token)
-[] Install App with Docker/Docker-Compose
-[] Customise Theme and Change Background
-[] Simple Start and Manage Docker Containers
-[] Save docker-compose/container info in the database
-[] Kubernetes Controller
-[] Nginx Config Generator for reverse Proxy and SSL
-
+- [x] Applets with IFrame
+- [x] Save Workspace and switch between workspace
+- [X] Applets Management 
+- [ ] User Auth (Half done missing csrf token)
+- [ ] Install App with Docker/Docker-Compose
+- [ ] Customise Theme and Change Background
+- [ ] Simple Start and Manage Docker Containers
+- [ ] Save docker-compose/container info in the database
+- [ ] Kubernetes Controller
+- [ ] Nginx Config Generator for reverse Proxy and SSL
 
 
 
