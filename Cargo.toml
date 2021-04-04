@@ -1,10 +1,10 @@
 [package]
-name = "rocketrustvuejs"
-version = "0.1.1"
+name = "DasherControl"
+version = "0.1.2"
 authors = ["Antoine Boucher <antoine.bou13@gmail.com>"]
-keywords = ["rocket", "tilling", "vue", "web-server"]
+keywords = ["rocket", "tilling", "vue", "web-server", "dashercontrol", "dashboard"]
 license = "MIT"
-categories = ["tilling-web"]
+categories = ["dashboard", "server", "web"]
 edition = "2018"
 
 

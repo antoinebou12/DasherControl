@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import CreateNewSetting import 'CreateNewSetting.vue'
 import IFrameSetting from '../IFrame/IFrameSetting.vue'
 import ShortcutSetting from '../Shortcut/ShortcutSetting.vue'
 
@@ -37,6 +38,8 @@ export default {
         case "Shortcut":
           this.settingForm = ShortcutSetting
           break;
+        default:
+          this.settingForm = CreateNewSetting
   }
 },
   },

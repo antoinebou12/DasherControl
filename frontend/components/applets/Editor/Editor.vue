@@ -108,6 +108,11 @@
         <vs-button class="menubar__button" @click="commands.redo">
           redo
         </vs-button>
+
+        <vs-button class="menubar__button" @click="save">
+        save
+        </vs-button>
+
       </div>
     </editor-menu-bar>
 
@@ -182,12 +187,24 @@ export default {
           new History(),
           new Image()
         ],
-        content: this.content || default_content
+        content: this.content || default_content,
+        data:  this.content
       })
     }
   },
   beforeDestroy() {
     this.editor.destroy();
+  },
+  methods: {
+    save(){
+      this.editor.save().then( (data)=> {
+        this.content = data.blocks
+        console.log(data.blocks)
+      })
+    },
+    load() {
+
+    }
   }
 };
 </script>
