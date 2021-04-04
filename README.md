@@ -1,4 +1,4 @@
-<h1 align="center">TillingWebAppManager</h1>
+<h1 align="center">DasherControl</h1>
 <p>
   <a href="#" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
@@ -6,7 +6,7 @@
 </p>
 
 Preview Look (NOT FINISH)
-![preview look](https://raw.githubusercontent.com/antoinebou13/TillingWebAppManager/main/images/TillingWebAppManager.png)
+![preview look](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/TillingWebAppManager.png)
 
 
 
