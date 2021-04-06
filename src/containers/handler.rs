@@ -5,7 +5,7 @@ use rocket::http::Status;
 
 use diesel::result::Error;
 use rocket::response::status;
-use crate::containers::docker::{containers_list, images_list};
+use crate::containers::docker::{DockerInterface, get_docker_interface};
 
 #[get("/api/list")]
 pub fn get_containers(conn: DbConn) -> Result<Json<Vec<Container>>, Status> {
@@ -16,8 +16,19 @@ pub fn get_containers(conn: DbConn) -> Result<Json<Vec<Container>>, Status> {
 
 #[get("/api/real_list")]
 pub fn get_real_containers(conn: DbConn) -> () {
-    containers_list();
-    images_list();
+}
+
+#[get("/api/create_container")]
+pub fn create_real_containers(conn: DbConn) -> Result<status::Accepted<String>, Status> {
+    let docker = get_docker_interface().lock().unwrap();
+    if !docker.check_image_exist("hello-world") {
+        docker.pull_image("hello-world");
+    }
+    let id = match docker.create_docker_container("hello-world"){
+        Ok(id) => id,
+        Err(e) => return Err(Status::Conflict)
+    };
+    return Ok(status::Accepted(Some(id.to_string())));
 }
 
 fn error_status(error: Error) -> Status {

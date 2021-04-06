@@ -7,3 +7,6 @@ nvm install 14
 cd frontend
 npm install
 npm run build
+
+npm install composerize -g
+which composerize

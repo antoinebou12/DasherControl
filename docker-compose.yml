@@ -1,38 +1,29 @@
   
 version: '3.8'
 services:
-    api:
-        build: ./src
-        container_name: rust-rocket
-        ports:
-            - 8001:8001
-        volumes:
-            - ./src:/usr/src/app
-        # links:
-            # - database
-    frontend:
-        build: ./views
-        container_name: vue_frontend
-        hostname: vue_frontend
+    dashercontrol:
+        build: .
+        container_name: v
         ports:
             - 8080:8080
-        command: "npm run "
-        links:
-            - api
-    # database:
-    #     image: postgres:11
-    #     container_name: rocket_db
-    #     hostname: rocket_db
-    #     expose: 
-    #         - 5432
-    #     volumes:
-    #         - pgdata:/var/lib/postgresql/data/pgdata
-    #     environment:
-    #         POSTGRES_PASSWORD: agoodpassword    # put your superuser database password this here
-    #         POSTGRES_USER: userdb
-    #         POSTGRES_DB: rocketdb
-    #         PGDATA: /var/lib/postgresql/data/pgdata
+        volumes:
+            - ./src:/usr/src/app
+         links:
+             - database
+     database:
+         image: postgres
+         container_name: dashercontrol_db
+         hostname: dashercontrol_db
+         expose:
+             - 5432
+         volumes:
+             - pgdata:/var/lib/postgresql/data/pgdata
+         environment:
+             POSTGRES_PASSWORD: root   # put your superuser database password this here
+             POSTGRES_USER: postgres
+             POSTGRES_DB: diesel
+             PGDATA: /var/lib/postgresql/data/pgdata
 
-# cargo will try to redownload packages @ docker-compose up so store them here.
+
 volumes:
     pgdata: {}
