@@ -1,5 +1,8 @@
 <template>
   <div class="center workspace-selector-container">
+    <span class="toggle-hide" >
+      <i class="bx bx-down-arrow" @click="isVisible = !isVisible"/>
+    </span>
     <vs-table class="workspace-selector" v-model="selected">
       <template #thead>
         <vs-tr>
@@ -8,7 +11,7 @@
           </vs-th>
         </vs-tr>
       </template>
-      <template #tbody>
+      <template #tbody v-if="isVisible">
         <vs-tr
             :key="i"
             v-for="(workspace, i) in workspaces"
@@ -16,6 +19,9 @@
             :is-selected="selected == workspace">
           <vs-td>{{ workspace.name }}</vs-td>
         </vs-tr>
+      </template>
+      <template #notFound>
+        <span></span>
       </template>
     </vs-table>
   </div>
@@ -28,7 +34,8 @@ export default {
   data() {
     return {
       selected: null,
-      workspaces: []
+      workspaces: [],
+      isVisible: true
     }
   },
   beforeMount() {
@@ -46,7 +53,7 @@ export default {
       }).then(function(response){
         self.workspaces = response.data
       });
-    }
+    },
   }
 }
 </script>
@@ -58,6 +65,14 @@ export default {
     .tr-selected {
       background: rgba(var(--vs-color),0.1);
       color: rgba(var(-vs-color), 0.1)
+    }
+    .hidden {
+      display: none;
+    }
+    .toggle-hide {
+      position:absolute;
+      top: 56px;
+      right: 24px;
     }
   }
 </style>

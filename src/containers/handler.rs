@@ -1,11 +1,14 @@
-use crate::db::DbConn;
-use rocket_contrib::json::Json;
-use crate::containers::model::{Container, NewContainer};
+use futures::executor;
+
 use rocket::http::Status;
+use rocket::response::status;
+use rocket_contrib::json::Json;
 
 use diesel::result::Error;
-use rocket::response::status;
 use crate::containers::docker::{DockerInterface, get_docker_interface};
+use crate::containers::model::{Container, NewContainer};
+use crate::db::DbConn;
+
 
 #[get("/api/list")]
 pub fn get_containers(conn: DbConn) -> Result<Json<Vec<Container>>, Status> {
@@ -14,8 +17,11 @@ pub fn get_containers(conn: DbConn) -> Result<Json<Vec<Container>>, Status> {
         .map(|container| Json(container));
 }
 
-#[get("/api/real_list")]
-pub fn get_real_containers(conn: DbConn) -> () {
+#[get("/api/running_list")]
+pub fn get_real_containers(conn: DbConn) -> Json<Vec<shiplift::rep::Container>> {
+    let docker = get_docker_interface().lock().unwrap();
+    let containers = docker.get_containers();
+    return Json(containers);
 }
 
 #[get("/api/create_container")]

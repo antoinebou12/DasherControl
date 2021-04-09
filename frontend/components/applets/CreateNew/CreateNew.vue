@@ -6,6 +6,7 @@
           <vs-option label="IFrame" value="IFrame">IFrame</vs-option>
           <vs-option label="Editor" value="Editor">Editor</vs-option>
           <vs-option label="Shortcut" value="Shortcut">Shortcut</vs-option>
+          <vs-option label="DockerManager" value="DockerManager">DockerManager</vs-option>
         </vs-select>
         <vs-button @click="newApplet()">+</vs-button>
       </vs-row>
@@ -17,9 +18,10 @@
 </template>
 
 <script>
-import CreateNewSetting import 'CreateNewSetting.vue'
+import CreateNewSetting from './CreateNewSetting.vue'
 import IFrameSetting from '../IFrame/IFrameSetting.vue'
 import ShortcutSetting from '../Shortcut/ShortcutSetting.vue'
+import DockerManagerSetting from '../DockerManager/DockerManagerSetting.vue'
 
 export default {
   name: "CreateNew",
@@ -38,6 +40,9 @@ export default {
         case "Shortcut":
           this.settingForm = ShortcutSetting
           break;
+        case "DockerManager":
+          this.settingForm = DockerManagerSetting
+          break;
         default:
           this.settingForm = CreateNewSetting
   }
@@ -48,13 +53,15 @@ export default {
       this.$parent.currentAppletName = this.appletName;
       switch (this.appletName) {
         case "IFrame":
-          this.$parent.$attrs.src = this.$refs.settingForm.get_src()
+          this.$parent.$attrs.src = this.$refs.settingForm.src
           break;
         case "Shortcut":
-          this.$parent.$attrs.src = this.$refs.settingForm.get_src()
-          this.$parent.$attrs.img_link = this.$refs.settingForm.get_img_link()
-          this.$parent.$attrs.title = this.$refs.settingForm.get_title()
-          this.$parent.$attrs.description = this.$refs.settingForm.get_description()
+          this.$parent.$attrs.src = this.$refs.settingForm.src
+          this.$parent.$attrs.img_link = this.$refs.settingForm.img_link
+          this.$parent.$attrs.title = this.$refs.settingForm.title
+          this.$parent.$attrs.description = this.$refs.settingForm.description
+          break;
+        case "DockerManager":
           break;
       }
     }

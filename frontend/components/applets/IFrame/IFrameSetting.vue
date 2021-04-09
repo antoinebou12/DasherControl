@@ -13,9 +13,6 @@ export default {
     }
   },
   methods: {
-    get_src(){
-      return this.$refs.src.value;
-    }
   }
 
 }

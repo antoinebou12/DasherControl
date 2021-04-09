@@ -20,18 +20,6 @@ export default {
     }
   },
   methods: {
-    get_src(){
-      return this.$refs.link.value;
-    },
-    get_img_link(){
-      return this.$refs.img_link.value;
-    },
-    get_title(){
-      return this.$refs.title.value;
-    },
-    get_description(){
-      return this.$refs.description.value;
-    }
   }
 }
 </script>

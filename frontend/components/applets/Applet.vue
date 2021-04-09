@@ -7,6 +7,7 @@ import CreateNew from "./CreateNew/CreateNew.vue";
 import Editor from "./Editor/Editor.vue";
 import BorderlessIFrame from "./IFrame/BorderlessIFrame.vue";
 import Shortcut from "./Shortcut/Shortcut.vue";
+import DockerManager from "./DockerManager/DockerManager.vue";
 
 export default {
   inheritAttrs: false,
@@ -58,6 +59,12 @@ export default {
           break;
         case "Shortcut":
           this.applet = Shortcut
+          break;
+        case "Shortcut":
+          this.applet = Shortcut
+          break;
+        case "DockerManager":
+          this.applet = DockerManager
           break;
       }
     }

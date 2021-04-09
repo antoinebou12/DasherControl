@@ -43,15 +43,22 @@ impl DockerInterface {
         self.containers = self.get_containers() ;
         self.images = self.get_images();
     }
+
     #[tokio::main]
     pub async fn get_containers(&self) -> Vec<shiplift::rep::Container> {
+        let mut containers_vec = vec![];
         match self.docker.containers().list(&Default::default()).await {
-            Ok(containers) => return containers,
+            Ok(containers) => {
+                for c in containers {
+                    containers_vec.push(c)
+                }
+            },
             Err(e) => {
                 eprintln!("{}", e);
                 return vec![];
             },
         }
+        return containers_vec;
     }
 
     #[tokio::main]

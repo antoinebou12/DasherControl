@@ -8,31 +8,43 @@
       <vs-button @click="gridLayout.unlockGridLayout()"><i class="bx bx-lock-open-alt"/></vs-button>
       <vs-button @click="saveWorkspace()"><i class="bx bx-save"/></vs-button>
       <vs-button @click="workspaceSelector()"><i class="bx bx-download"/></vs-button>
-<!--    <vs-sidebar absolute hover-expend reduce v-model="sidebarActive">-->
-<!--      <vs-sidebar-this.gridLayout.layout[i] @click="gridLayout.addthis.gridLayout.layout[i]()">-->
+<!--    <vs-sidebar v-model="sidebarActive">-->
+<!--      <vs-sidebar-item @click="gridLayout.addNewItem()">-->
 <!--        <template #icon>-->
 <!--          <i class="bx bx-add-to-queue"/>-->
 <!--        </template>-->
-<!--        Add Bloc-->
-<!--      </vs-sidebar-this.gridLayout.layout[i]>-->
-<!--      <vs-sidebar-this.gridLayout.layout[i] @click="gridLayout.removethis.gridLayout.layout[i]()">-->
+<!--        Add-->
+<!--      </vs-sidebar-item>-->
+<!--      <vs-sidebar-item @click="gridLayout.removeItem()">-->
 <!--        <template #icon>-->
 <!--          <i class="bx bx-x"/>-->
 <!--        </template>-->
-<!--        Remove Bloc-->
-<!--      </vs-sidebar-this.gridLayout.layout[i]>-->
-<!--      <vs-sidebar-this.gridLayout.layout[i] @click="gridLayout.lockGridLayout()">-->
+<!--        Remove-->
+<!--      </vs-sidebar-item>-->
+<!--      <vs-sidebar-item @click="gridLayout.lockGridLayout()">-->
 <!--        <template #icon>-->
 <!--          <i class="bx bx-lock-alt"/>-->
 <!--        </template>-->
-<!--        Lock Grid-->
-<!--      </vs-sidebar-this.gridLayout.layout[i]>-->
-<!--      <vs-sidebar-this.gridLayout.layout[i] @click="gridLayout.unlockGridLayout()">-->
+<!--        Lock-->
+<!--      </vs-sidebar-item>-->
+<!--      <vs-sidebar-item @click="gridLayout.unlockGridLayout()">-->
 <!--        <template #icon>-->
 <!--          <i class="bx bx-lock-open-alt"/>-->
 <!--        </template>-->
-<!--        Unlock Grid-->
-<!--      </vs-sidebar-this.gridLayout.layout[i]>-->
+<!--        Unlock-->
+<!--      </vs-sidebar-item>-->
+<!--      <vs-sidebar-item @click="workspaceSelector()">-->
+<!--        <template #icon>-->
+<!--          <i class="bx bx-save"/>-->
+<!--        </template>-->
+<!--        Load-->
+<!--      </vs-sidebar-item>-->
+<!--      <vs-sidebar-item @click="saveWorkspace()">-->
+<!--        <template #icon>-->
+<!--          <i class="bx bx-download"/>-->
+<!--        </template>-->
+<!--        Save-->
+<!--      </vs-sidebar-item>-->
 <!--    </vs-sidebar>-->
     </div>
   </div>
@@ -50,7 +62,7 @@ export default {
     gridLayout: Object
   },
   data: () => ({
-    sidebarActive: ''
+    sidebarActive: true
   }),
   methods: {
     workspaceSelector() {
