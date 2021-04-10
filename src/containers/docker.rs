@@ -1,10 +1,10 @@
-use shiplift::
-{Docker, LogsOptions, ContainerOptions, PullOptions, Error, Container, Image};
+use shiplift::{Docker, LogsOptions, ContainerOptions, PullOptions, Error, Container, Image, ContainerListOptions};
 use futures::StreamExt;
 use tokio;
 use futures::executor::block_on;
 use std::sync::{Once, Mutex};
 use std::mem::MaybeUninit;
+
 
 
 pub fn get_docker_interface() ->  &'static Mutex<DockerInterface> {
@@ -47,7 +47,8 @@ impl DockerInterface {
     #[tokio::main]
     pub async fn get_containers(&self) -> Vec<shiplift::rep::Container> {
         let mut containers_vec = vec![];
-        match self.docker.containers().list(&Default::default()).await {
+        let mut params = ContainerListOptions::builder();
+        match self.docker.containers().list(&params.all().build()).await {
             Ok(containers) => {
                 for c in containers {
                     containers_vec.push(c)
@@ -147,7 +148,7 @@ impl DockerInterface {
             .restart(None)
             .await
         {
-            Ok(info) => return Ok("container restart".to_string()),
+            Ok(info) => return Ok(id.parse().unwrap()),
             Err(e) => return Err(e)
         }
     }
@@ -160,7 +161,7 @@ impl DockerInterface {
             .stop(None)
             .await
         {
-            Ok(info) => return Ok("container restart".to_string()),
+            Ok(info) => return Ok(id.parse().unwrap()),
             Err(e) => return Err(e)
         }
     }

@@ -38,6 +38,14 @@
             <i class="bx bxs-server"></i>
             <i :class="get_status_theme(tr.status)" class="bx bxs-circle"></i>
           </div>
+          <div class="quick-control">
+            <vs-button @click="stop_container(tr.id)" v-if="get_status(tr.status)">
+              <i class="bx bx-stop"></i>
+            </vs-button>
+            <vs-button @click="restart_container(tr.id)" v-if="!get_status(tr.status)">
+              <i class="bx bx-play"></i>
+            </vs-button>
+          </div>
         </vs-td>
         <vs-td>
           {{ tr.id }}
@@ -62,6 +70,9 @@
         </vs-td>
       </vs-tr>
     </template>
+    <template #notFound>
+      <span></span>
+    </template>
   </vs-table>
   </div>
 </template>
@@ -81,6 +92,7 @@ export default {
   },
   methods: {
     get_container() {
+      this.containers = []
       axios({
         method: 'get',
         url: '/containers/api/running_list',
@@ -88,8 +100,9 @@ export default {
           'Content-Type': 'application/json'
         },
       }).then((response) => {
-        if (response.data.length != 0){
-          for (let i=0;i<response.data.length;i++) {
+
+        if (response.data.length != 0) {
+          for (let i = 0; i < response.data.length; i++) {
             this.containers.push({
               id: response.data[i].Id.slice(0, 11),
               name: response.data[i].Names[0].replace("/", ""),
@@ -103,13 +116,39 @@ export default {
         }
       });
     },
-    get_status_theme(status){
+    get_status(status) {
       if (status.includes("Up")) {
+        return true
+      } else {
+        return false
+      }
+    },
+    get_status_theme(status) {
+      if (this.get_status(status)) {
         return "up-docker"
       } else {
         return "down-docker"
       }
+    },
+    stop_container(id) {
+      this.get_container()
+      axios({
+        method: 'post',
+        url: '/containers/api/stop/' + id,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then((response) => {
+      });
+    },
+    restart_container(id) {
+      this.get_container()
+      axios({
+        method: 'post',
+        url: '/containers/api/restart/' + id,
+      }).then((response) => {
 
+      });
     }
   }
 }

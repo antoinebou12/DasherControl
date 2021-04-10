@@ -44,12 +44,31 @@ fn error_status(error: Error) -> Status {
     }
 }
 
-#[post("/api/new", format="application/json", data = "<container>")]
+#[put("/api/new", format="application/json", data = "<container>")]
 pub fn create_container(conn: DbConn, container: Json<NewContainer>) -> Result<status::Accepted<String>, Status> {
     let new_container = container.into_inner();
     let container_create = match Container::create( &conn, new_container) {
         Ok(container) => return Ok(status::Accepted(Some("container created".to_string()))),
         Err(_) => return Err(Status::Conflict)
     };
+}
 
+#[post("/api/restart/<container_id>")]
+pub fn restart_container(conn: DbConn, container_id: String) -> Result<status::Accepted<String>, Status> {
+    let docker = get_docker_interface().lock().unwrap();
+    let container_restart = return match docker.restart_container(&*container_id) {
+        Ok(container) => Ok(
+            status::Accepted(Some(format!("container {} restarted", container)))),
+        Err(_) => Err(Status::Conflict)
+    };
+}
+
+#[post("/api/stop/<container_id>")]
+pub fn stop_container(conn: DbConn, container_id: String) -> Result<status::Accepted<String>, Status> {
+    let docker = get_docker_interface().lock().unwrap();
+    let container_restart = return match docker.stop_container(&*container_id) {
+        Ok(container) => Ok(
+            status::Accepted(Some(format!("container {} stop", container)))),
+        Err(_) => Err(Status::Conflict)
+    };
 }
