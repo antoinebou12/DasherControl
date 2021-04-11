@@ -70,7 +70,11 @@ jobs:
         uses: actions-rs/cargo@v1
         continue-on-error: false
         with:
-          command: build --release
+          command: build
+          args: --release
+          
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v1.2.0
       
       # setup nodejs 
       - name: Setup Node.js environment
