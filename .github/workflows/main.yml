@@ -70,7 +70,7 @@ jobs:
         uses: actions-rs/cargo@v1
         continue-on-error: false
         with:
-          command: build
+          command: build --release
       
       # setup nodejs 
       - name: Setup Node.js environment
