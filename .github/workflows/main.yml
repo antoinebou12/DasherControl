@@ -25,10 +25,10 @@ jobs:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres
+        image: postgres:latest
         # Provide the password for postgres
         env:
-          POSTGRES_DATABASE: diesel
+          POSTGRES_DB: diesel
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
         # Set health checks to wait until postgres has started
@@ -37,6 +37,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
