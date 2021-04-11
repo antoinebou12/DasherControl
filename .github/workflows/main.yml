@@ -1,0 +1,85 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_DATABASE: diesel
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout branch
+        uses: actions/checkout@v2
+        
+      - name: Install ubuntu Dependencies
+        run: apt-get install cmake make g++ build-essential libpq-dev libssl-dev
+    
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          
+      - name: Build diesel_cli
+        run: cargo install diesel_cli --no-default-features --features postgres
+        
+      - name: use default .env file
+        run: source .env
+          
+      - name: run migration
+        run: diesel migration run
+        
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        continue-on-error: false
+        with:
+          command: build
+      
+      # setup nodejs 
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: '14.x'
+          
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Build frontend
+        run: npm run build
+      
+      - name: Cache
+      - uses: actions/cache@v2.1.4
