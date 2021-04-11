@@ -5,7 +5,7 @@ authors = ["Antoine Boucher <antoine.bou13@gmail.com>"]
 keywords = ["rocket", "tilling", "vue", "web-server", "dashercontrol", "dashboard"]
 license = "MIT"
 categories = ["dashboard", "server", "web"]
-edition = "2018"
+edition = "2017"
 
 
 [dependencies]
