@@ -34,6 +34,9 @@ Preview Look
 - [ ] Tests
 
 
+# Issues
+I use Iframe to display the other website some the login of the website will not work because of the csrf token or other restriction of iframe.
+
 ## Install
 
 ```sh
