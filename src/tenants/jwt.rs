@@ -1,6 +1,5 @@
 extern crate csrf;
 
-use std::convert::TryFrom;
 use std::env;
 
 use chrono::{Duration, Local};
@@ -74,11 +73,11 @@ fn get_secret(secret: &str) -> String {
 }
 
 pub(crate) fn generate_csrf() -> CsrfToken {
-    let csrf_token = get_secret("CSRF_TOKEN");
+    let _csrf_token = get_secret("CSRF_TOKEN");
     let protect =
         AesGcmCsrfProtection::from_key(*b"01234567012345670123456701234567");
 
-    let (token, cookie) =
+    let (token, _cookie) =
         protect.generate_token_pair(None, 3600)
         .expect("couldn't generate token/cookie pair");
 

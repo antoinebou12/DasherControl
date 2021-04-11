@@ -1,7 +1,6 @@
-use shiplift::{Docker, LogsOptions, ContainerOptions, PullOptions, Error, Container, Image, ContainerListOptions};
+use shiplift::{Docker, LogsOptions, ContainerOptions, PullOptions, Error, ContainerListOptions};
 use futures::StreamExt;
 use tokio;
-use futures::executor::block_on;
 use std::sync::{Once, Mutex};
 use std::mem::MaybeUninit;
 
@@ -84,7 +83,7 @@ impl DockerInterface {
 
     #[tokio::main]
     pub async fn log_container(&self, id: String) {
-        let mut logs_stream = self.docker
+        let _logs_stream = self.docker
             .containers()
             .get(&id)
             .logs(&LogsOptions::builder().stdout(true).stderr(true).build());
@@ -148,7 +147,7 @@ impl DockerInterface {
             .restart(None)
             .await
         {
-            Ok(info) => return Ok(id.parse().unwrap()),
+            Ok(_info) => return Ok(id.parse().unwrap()),
             Err(e) => return Err(e)
         }
     }
@@ -161,7 +160,7 @@ impl DockerInterface {
             .stop(None)
             .await
         {
-            Ok(info) => return Ok(id.parse().unwrap()),
+            Ok(_info) => return Ok(id.parse().unwrap()),
             Err(e) => return Err(e)
         }
     }

@@ -1,4 +1,4 @@
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, select};
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl};
 
 use crate::schema::applets;
 use crate::schema::workspaces;
@@ -132,7 +132,7 @@ impl Workspace {
                 applet_data: new_applet.applet_data,
                 workspace_id: workspace.id
             };
-            let applets = Applet::create(&*conn, new_applet_worksapce_id);
+            let _applets = Applet::create(&*conn, new_applet_worksapce_id);
         }
         return Ok(workspace)
     }

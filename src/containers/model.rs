@@ -1,4 +1,4 @@
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, select};
+use diesel::{PgConnection, QueryResult, RunQueryDsl, select};
 
 use crate::schema::containers;
 use crate::tenants::error::MyError;

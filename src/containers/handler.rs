@@ -1,11 +1,9 @@
-use futures::executor;
-
 use rocket::http::Status;
 use rocket::response::status;
 use rocket_contrib::json::Json;
 
 use diesel::result::Error;
-use crate::containers::docker::{DockerInterface, get_docker_interface};
+use crate::containers::docker::{get_docker_interface};
 use crate::containers::model::{Container, NewContainer};
 use crate::db::DbConn;
 
