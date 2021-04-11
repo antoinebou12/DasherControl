@@ -31,7 +31,7 @@ Preview Look
 - [ ] Save docker-compose/container info in the database
 - [ ] Kubernetes Controller
 - [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
-
+- [ ] Tests
 
 
 ## Install
@@ -56,7 +56,7 @@ docker-compose up -d
 ```
 
 ## Run tests
-
+# not implemented yet
 ```sh
 cargo test
 cd frontend && npm test
