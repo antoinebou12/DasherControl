@@ -1,3 +1,9 @@
+<p>
+  <a href="#" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+</p>
+
 <h1 align="center">DasherControl</h1>
 <p>Another Interactive Configurable Dashboard with Customisable GridItem with IFrame and Bookmark and other cool feature with basic Container Controller for Docker
   made with Vuejs and Rust (rocket)
@@ -10,12 +16,6 @@
   Also i want to make a simple dashboard with widget (vuejs compoment) like windows vista, but on the web and save in db.
 </p>
 
-<p>
-  <a href="#" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  </a>
-</p>
-
 Preview Look
 ![preview look](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/DasherControl.png)
 
@@ -24,15 +24,18 @@ Preview Look
 - [x] Applets with IFrame
 - [x] Save Workspace and switch between workspace
 - [X] Applets Management 
-- [ ] User Auth (Half done missing csrf token)
+- [X] Simple Start and Manage Docker Containers
+- [ ] User Auth (Half done W.I.P)
 - [ ] Install App with Docker/Docker-Compose
 - [ ] Customise Theme and Change Background
-- [ ] Simple Start and Manage Docker Containers
 - [ ] Save docker-compose/container info in the database
 - [ ] Kubernetes Controller
-- [ ] Nginx Config Generator for reverse Proxy and SSL
+- [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
+- [ ] Tests
 
 
+# Issues
+I use Iframe to display the other website some the login of the website will not work because of the csrf token or other restriction of iframe.
 
 ## Install
 
@@ -56,7 +59,7 @@ docker-compose up -d
 ```
 
 ## Run tests
-
+# not implemented yet
 ```sh
 cargo test
 cd frontend && npm test
