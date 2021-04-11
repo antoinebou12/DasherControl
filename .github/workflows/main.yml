@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Install ubuntu Dependencies
-        run: apt-get install cmake make g++ build-essential libpq-dev libssl-dev
+        run: sudo apt-get install cmake make g++ build-essential libpq-dev libssl-dev
     
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
