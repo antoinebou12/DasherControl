@@ -80,6 +80,3 @@ jobs:
         
       - name: Build frontend
         run: npm run build
-      
-      - name: Cache
-      - uses: actions/cache@v2.1.4
