@@ -67,10 +67,11 @@ jobs:
         run: diesel migration run
         
       - name: Run cargo build
-        uses: actions-rs/cargo@v1
         continue-on-error: false
-        with:
-          command: build
+        run: cargo build --release --all-features
+          
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v1.2.0
       
       # setup nodejs 
       - name: Setup Node.js environment
