@@ -6,7 +6,5 @@ source ~/.bashrc
 nvm install 14
 cd frontend
 npm install
+npm ci
 npm run build
-
-npm install composerize -g
-which composerize
