@@ -19,17 +19,26 @@
 Preview Look
 ![preview look](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/DasherControl.png)
 
-## TODO
+## Finish
 
 - [x] Applets with IFrame
 - [x] Save Workspace and switch between workspace
 - [X] Applets Management 
 - [X] Simple Start and Manage Docker Containers
+
+# In Progress
+
 - [ ] User Auth (Half done W.I.P)
+- [ ] Terminal ssh web
 - [ ] Install App with Docker/Docker-Compose
+- [ ] CI/CD
+- [ ] Canvas applets
+
+## TODO
+- [ ] Documentation
+- [ ] RTMP Client
 - [ ] Customise Theme and Change Background
 - [ ] Save docker-compose/container info in the database
-- [ ] Kubernetes Controller
 - [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
 - [ ] Tests
 
