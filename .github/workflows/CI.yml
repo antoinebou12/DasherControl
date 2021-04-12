@@ -69,12 +69,9 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v1.2.0
       
-      # setup nodejs 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: '14.x'
-          
+      - name: Install JS
+        run: bash scripts/js-dev-setup.sh
+      
       - name: Install Dependencies
         run: npm install
         
