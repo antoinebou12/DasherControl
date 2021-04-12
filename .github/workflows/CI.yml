@@ -51,7 +51,7 @@ jobs:
         run: sudo apt-get install cmake make g++ build-essential libpq-dev libssl-dev
     
       - name: Install rust
-        run: bash rust-setup-dev.sh
+        run: bash scripts/rust-setup-dev.sh
           
       - name: Build diesel_cli
         run: cargo install diesel_cli --no-default-features --features postgres
