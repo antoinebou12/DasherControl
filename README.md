@@ -1,12 +1,14 @@
-<p>
-  <a href="#" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  </a>
-</p>
-
 <h1 align="center">DasherControl</h1>
 <p>Another Interactive Configurable Dashboard with Customisable GridItem with IFrame and Bookmark and other cool feature with basic Container Controller for Docker
   made with Vuejs and Rust (rocket)
+</p>
+
+<p>
+  <a href="#" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/antoinebou13/DasherControl/CI">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/antoinebou13/DasherControl">
+  </a>
 </p>
 
 <h2>Why ...</h2>
