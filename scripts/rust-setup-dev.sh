@@ -1,4 +1,6 @@
-curl https://sh.rustup.rs -sSf | sh
+curl https://sh.rustup.rs -sSf > rustup.sh
+bash rustup.sh -y
+rm -rf rustup.sh
 source $HOME/.cargo/env
 export PATH="$HOME/.cargo/bin:$PATH"
 rustup update
