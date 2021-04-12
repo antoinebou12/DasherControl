@@ -52,23 +52,14 @@ jobs:
     
       - name: Install rust
         run: bash scripts/rust-setup-dev.sh
-          
-      - name: Build diesel_cli
-        run: cargo install diesel_cli --no-default-features --features postgres
-        
+      
       - name: use default .env file
         run: source .env
           
-      - name: run migration
-        run: diesel migration run
-        
       - name: Run cargo build
         continue-on-error: true
-        run: cargo build --release --all-features
+        run: export RUSTC_WRAPPER=sccache cargo build --release --all-features
           
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v1.2.0
-      
       - name: Install JS
         run: bash scripts/js-dev-setup.sh
       
