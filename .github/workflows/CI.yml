@@ -58,7 +58,7 @@ jobs:
           
       - name: Run cargo build
         continue-on-error: true
-        run: export RUSTC_WRAPPER=sccache cargo build --release --all-features
+        run: RUSTC_WRAPPER=sccache cargo build --release --all-features
           
       - name: Install JS
         run: bash scripts/js-dev-setup.sh
