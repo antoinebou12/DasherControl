@@ -28,6 +28,9 @@
     "url": "https://github.com/antoinebou13/bruhland/issues"
   },
   "homepage": "https://github.com/antoinebou13/bruhland#readme",
+  "optionalDependencies": {
+    "fsevents": "^2.0.7"
+  },
   "devDependencies": {
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
