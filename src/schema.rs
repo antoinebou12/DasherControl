@@ -21,6 +21,14 @@ table! {
 }
 
 table! {
+    login_history (id) {
+        id -> Int4,
+        tenant_id -> Int4,
+        login_timestamp -> Timestamp,
+    }
+}
+
+table! {
     tenants (id) {
         id -> Int4,
         email -> Varchar,
@@ -29,6 +37,7 @@ table! {
         password -> Varchar,
         role -> Varchar,
         created_at -> Timestamp,
+        login_session -> Varchar,
     }
 }
 
@@ -43,11 +52,13 @@ table! {
 
 joinable!(applets -> workspaces (workspace_id));
 joinable!(containers -> tenants (tenant_id));
+joinable!(login_history -> tenants (tenant_id));
 joinable!(workspaces -> tenants (tenant_id));
 
 allow_tables_to_appear_in_same_query!(
     applets,
     containers,
+    login_history,
     tenants,
     workspaces,
 );

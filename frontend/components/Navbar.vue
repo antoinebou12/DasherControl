@@ -39,6 +39,9 @@ export default {
     activeSettings: false
   }),
   methods: {
+    check_user(){
+
+    },
     set_active(active) {
       this.active = active
       this.$emit("changeActive", active)

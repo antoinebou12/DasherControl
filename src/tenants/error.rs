@@ -8,7 +8,10 @@ pub enum MyError {
     DBError(result::Error),
     PasswordNotMatch(String),
     WrongPassword(String),
-    EmailExist(String)
+    EmailExist(String),
+    NotFoundTenant(String),
+    BadToken(String),
+    LoginHistoryError(String)
 }
 
 // We need this to performs a conversion from BcryptError to MyError
@@ -33,7 +36,10 @@ impl fmt::Display for MyError {
             MyError::DBError(error) => write!(f, "{}", error),
             MyError::PasswordNotMatch(error) => write!(f, "{}", error),
             MyError::WrongPassword(error) => write!(f, "{}", error),
-            MyError::EmailExist(error) => write!(f, "{}", error)
+            MyError::EmailExist(error) => write!(f, "{}", error),
+            MyError::NotFoundTenant(error) => write!(f, "{}", error),
+            MyError::BadToken(error) => write!(f, "{}", error),
+            MyError::LoginHistoryError(error) => write!(f, "{}", error)
         }
     }
 }

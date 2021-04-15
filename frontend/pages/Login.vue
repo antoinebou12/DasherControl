@@ -42,6 +42,7 @@
 
 <script>
 import axios from "axios";
+import {emitter} from "../main";
 
 export default {
   name: "Login",
@@ -49,7 +50,8 @@ export default {
     show: false,
     username: '',
     password: '',
-    remember: false
+    remember: false,
+    token: '',
   }),
   methods: {
     showDialog(){
@@ -70,9 +72,21 @@ export default {
             username: this.username,
             password: this.password
           }
+      }).then((response) => {
+        this.token = this.get_token()
+        emitter.emit('login',
+            {'email': this.email, 'username':this.username, 'password': this.password, 'token': this.token}
+        )
       });
-    }
-
+    },
+    get_token(){
+      axios({
+        method: 'get',
+        url: '/tenants/api/token',
+      }).then((response) => {
+        return response.data
+      })
+    },
   }
 };
 </script>

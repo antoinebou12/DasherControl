@@ -21,6 +21,10 @@
 Preview Look
 ![preview look](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/DasherControl.png)
 
+
+# Roadmap
+![DasherControlv1](https://github.com/antoinebou13/DasherControl/projects/1)
+
 ## Finish
 
 - [x] Applets with IFrame
@@ -38,19 +42,25 @@ Preview Look
 
 ## TODO
 - [ ] Documentation
-- [ ] RTMP Client
+- [ ] RTMP IP Camera Client
 - [ ] Customise Theme and Change Background
 - [ ] Save docker-compose/container info in the database
 - [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
+- [ ] Export and import of containers and workspaces
 - [ ] Tests
 
 
 # Issues
 I use Iframe to display the other website some the login of the website will not work because of the csrf token or other restriction of iframe.
 
-## Install
+## Install (Tested on Ubuntu)
 
 ```sh
+// bash scripts/rust-setup-dev.sh
+// bash scripts/js-dev-setup.sh
+
+cd frontend && npm install && npm run build && cd ..
+
 cargo install diesel_cli --no-default-features --features postgres
 // go in Rocket.toml and .env and change DATABASE_URL to your postgresql server
 diesel migration run

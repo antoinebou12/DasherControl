@@ -31,7 +31,7 @@ fn error_status(error: Error) -> Status {
 pub fn create_workspace(conn: DbConn, workspace: Json<NewWorkspace>) -> Result<status::Accepted<String>, Status> {
     let new_workspace = workspace.into_inner();
     let _workspace_create = match Workspace::create( &conn, new_workspace,) {
-        Ok(workspace) => return Ok(status::Accepted(Some("workspace created".to_string()))),
+        Ok(_workspace) => return Ok(status::Accepted(Some("workspace created".to_string()))),
         Err(_) => return Err(Status::Conflict)
     };
 

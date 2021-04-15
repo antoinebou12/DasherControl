@@ -24,6 +24,7 @@ pub mod schema;
 pub mod containers;
 pub mod terminal;
 
+
 #[catch(404)]
 fn not_found(req: &Request<'_>) -> Template {
     // 404

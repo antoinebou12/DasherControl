@@ -80,22 +80,27 @@
 <script>
 import axios from "axios";
 
+
 export default {
   name: "DockerManager",
   data() {
     return {
       containers: [],
+      token: '',
     }
   },
   created() {
     this.get_container();
+    this.get_token();
   },
   methods: {
+
     get_container() {
       this.containers = []
+
       axios({
         method: 'get',
-        url: '/containers/api/running_list',
+        url: '/containers/api/docker_list',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -130,25 +135,38 @@ export default {
         return "down-docker"
       }
     },
+    get_token(){
+      if (this.token == '') {
+        axios({
+          method: 'get',
+          url: '/tenants/api/token',
+        }).then((response) => {
+          this.token = response.data
+          return this.token
+        })
+      } else {
+        return this.token
+      }
+    },
     stop_container(id) {
       this.get_container()
       axios({
         method: 'post',
-        url: '/containers/api/stop/' + id,
         headers: {
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${this.get_token()}`
         },
-      }).then((response) => {
-      });
+        url: '/containers/api/stop/' + id,
+      })
     },
     restart_container(id) {
       this.get_container()
       axios({
         method: 'post',
+        headers: {
+          Authorization: `Bearer ${this.get_token()}`
+        },
         url: '/containers/api/restart/' + id,
-      }).then((response) => {
-
-      });
+      })
     }
   }
 }
