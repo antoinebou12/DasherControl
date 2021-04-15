@@ -1,6 +1,6 @@
 {
-  "name": "rustrocketvuejs3",
-  "version": "1.0.0",
+  "name": "DasherControl",
+  "version": "0.1.3",
   "description": "backend in rust rocket + vuejs 3 + webpack",
   "keywords": [
     "pwa",

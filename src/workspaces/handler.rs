@@ -5,6 +5,7 @@ use rocket_contrib::json::Json;
 use crate::db::DbConn;
 use crate::workspaces::model::{NewWorkspace, Workspace, NewApplet, Applet, NewWorkspaceWithApplets};
 use diesel::result::Error;
+use crate::tenants::token::Claims;
 
 #[get("/api/<workspace_id>")]
 pub fn get_applets_in_workspace(conn: DbConn, workspace_id: i32) -> Result<Json<Vec<Applet>>, Status> {
@@ -14,8 +15,12 @@ pub fn get_applets_in_workspace(conn: DbConn, workspace_id: i32) -> Result<Json<
 }
 
 #[get("/api/list")]
-pub fn get_workspaces(conn: DbConn) -> Result<Json<Vec<Workspace>>, Status> {
-    return Workspace::all(&conn)
+pub fn get_workspaces(conn: DbConn, token: Result<Claims, Status>) -> Result<Json<Vec<Workspace>>, Status> {
+    let token = match token {
+        Ok(token) => token,
+        Err(e) => return Err(e)
+    };
+    return Workspace::all_for_tenant(&conn, &token.sub)
         .map_err(|error| error_status(error))
         .map(|workspace| Json(workspace));
 }

@@ -19,8 +19,9 @@
             <Settings/>
           </template>
         </vs-tooltip>
-        <vs-button flat @click="set_active('Login')">Login</vs-button>
-        <vs-button @click="set_active('SignUp')">Sign Up</vs-button>
+        <vs-button v-if="!is_login" flat @click="set_active('Login')">Login</vs-button>
+<!--        <vs-button v-if="!is_login" @click="set_active('SignUp')">Sign Up</vs-button>-->
+        <vs-button v-if="is_login" flat @click="logout()">Logout</vs-button>
       </template>
     </vs-navbar>
   </div>
@@ -28,24 +29,51 @@
 
 <script>
 import Settings from '../pages/Settings.vue'
+import axios from "axios";
+import {emitter} from "../main";
 
 export default {
   name: "Navbar",
   components: {
     Settings
   },
-  data: () => ({
-    active: "Home",
-    activeSettings: false
-  }),
+  data() {
+    return {
+      active: "Home",
+      activeSettings: false,
+      is_login: false
+    }
+  },
+  created() {
+    this.is_login = this.check_login()
+  },
+  mounted(){
+    emitter.on('login', (e) => this.is_login=true)
+    emitter.on('logout', (e) => this.is_login=false)
+  },
   methods: {
-    check_user(){
-
+    check_login(){
+      if (window.user_auth !== undefined || window.user_auth === {}){
+        return true
+      } else {
+        return false
+      }
     },
     set_active(active) {
       this.active = active
+      this.is_login =this.check_login()
       this.$emit("changeActive", active)
     },
+    logout() {
+      axios({
+        method: 'post',
+        url: '/tenants/api/logout',
+      }).then((response) => {
+        emitter.emit('logout')
+        this.is_login=false
+        window.user_auth = {}
+      })
+    }
   }
 };
 </script>

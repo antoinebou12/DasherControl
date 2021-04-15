@@ -1,7 +1,10 @@
 <template>
   <div class="login">
     <div class="center">
-      <vs-dialog v-model="show" class="dialog-login dark">
+      <vs-dialog ref="login_dialog" v-model="show" class="dialog-login dark">
+        <div v-if="loading" class="vs-dialog__loading">
+          <div class="vs-dialog__loading__load"></div>
+        </div>
         <template #header>
           <h4 class="not-margin">
             <b>Login</b>
@@ -52,6 +55,7 @@ export default {
     password: '',
     remember: false,
     token: '',
+    loading: false,
   }),
   methods: {
     showDialog(){
@@ -60,7 +64,17 @@ export default {
     hideDialog(){
       this.show = false;
     },
+    loadingDialog(state){
+      if (state === true){
+        this.$refs.login_dialog.$el.classList.add("vs-dialog--loading");
+        this.loading = true;
+      } else {
+        this.$refs.login_dialog.$el.classList.remove("vs-dialog--loading");
+        this.loading = false;
+      }
+    },
     submitLogIn(){
+      this.loadingDialog(true)
       axios({
           method: 'post',
           url: '/tenants/api/login',
@@ -75,11 +89,14 @@ export default {
       }).then((response) => {
         this.token = this.get_token()
         emitter.emit('login',
-            {'email': this.email, 'username':this.username, 'password': this.password, 'token': this.token}
-        )
+            {'email': this.email, 'username': this.username, 'password': this.password, 'token': this.token});
+        window.user_auth = {'email': this.email, 'username': this.username, 'password': this.password, 'token': this.token};
+        this.loadingDialog(false)
+        this.hideDialog();
       });
+
     },
-    get_token(){
+    get_token() {
       axios({
         method: 'get',
         url: '/tenants/api/token',
@@ -107,7 +124,7 @@ export default {
     justify-content: space-between;
 
     a {
-      color: var(--darcula-cl);
+      color: #b3b8d5;
       font-size: 0.8rem;
       opacity: 0.7;
 

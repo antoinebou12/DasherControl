@@ -57,7 +57,6 @@ joinable!(workspaces -> tenants (tenant_id));
 
 allow_tables_to_appear_in_same_query!(
     applets,
-    containers,
     login_history,
     tenants,
     workspaces,

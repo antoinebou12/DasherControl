@@ -10,7 +10,7 @@
         marginwidth="0"
         allowtransparency="true"
         sandbox="allow-forms allow-same-origin allow-scripts"
-        allow="picture-in-picture; allowfullscreen; encrypted-media; autoplay"
+        allow="picture-in-picture; fullscreen; encrypted-media; autoplay"
     />
   </div>
 </template>

@@ -1,17 +1,13 @@
 extern crate csrf;
 
-use std::env;
 use serde_json::Value;
 
 use chrono::{Duration, Local};
 use csrf::{AesGcmCsrfProtection, CsrfProtection, CsrfToken};
-use dotenv::dotenv;
 use jsonwebtoken::{decode, encode, Header, Validation, Algorithm};
 use rocket::request::FromRequest;
-use rocket::response::status;
 use rocket::http::Status;
 use rocket::{Outcome, Request, request};
-use rocket_contrib::json::Json;
 use crate::db::DbConn;
 use crate::tenants::error::MyError;
 use crate::tenants::model::Tenant;
@@ -106,12 +102,6 @@ pub fn decode_token(token: &str) -> Result<Claims, MyError> {
     return Ok(data.claims.into());
 
 }
-
-fn get_secret(secret: &str) -> String {
-    dotenv().ok();
-    return env::var(secret).expect(&*format!("{} must be set", secret));
-}
-
 
 
 #[derive(Debug, Serialize, Deserialize)]

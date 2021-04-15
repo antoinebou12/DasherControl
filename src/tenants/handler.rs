@@ -1,8 +1,6 @@
 use diesel::result::Error;
 use rocket::http::{Status, Cookies, Cookie};
 use rocket_contrib::json::Json;
-use rocket::response::status;
-
 
 use crate::db::DbConn;
 use crate::tenants::token::*;
@@ -11,11 +9,11 @@ use crate::tenants::model::RegisterTenant;
 use crate::tenants::model::Tenant;
 
 #[get("/api/token")]
-pub fn get_token(mut cookies: Cookies) -> Result<Json<String>, Status> {
+pub fn get_token(mut cookies: Cookies) -> Result<Json<String>, Json<String>> {
     let token_cookies = cookies.get_private("session-token");
     return match token_cookies {
         Some(c) => Ok(Json(c.value().to_string())),
-        None => Err(Status::Unauthorized)
+        None => Err(Json("".to_string()))
     }
 }
 

@@ -4,7 +4,7 @@ use crate::schema::applets;
 use crate::schema::workspaces;
 use crate::tenants::error::MyError;
 use crate::schema::applets::workspace_id;
-
+use crate::schema::workspaces::dsl::tenant_id;
 
 
 #[derive(Debug, Serialize, Deserialize, Identifiable, Clone, Queryable)]
@@ -63,11 +63,11 @@ impl Applet {
     }
 
     pub fn all(conn: &PgConnection) -> QueryResult<Vec<Applet>> {
-        return applets::table.load::<Applet>(&*conn);
+        return applets::table.load::<Applet>(conn);
     }
 
     pub fn all_applets_by_workspace(conn: &PgConnection, id: i32) -> QueryResult<Vec<Applet>> {
-        return applets::table.filter(workspace_id.eq(&id)).load::<Applet>(&*conn);
+        return applets::table.filter(workspace_id.eq(&id)).load::<Applet>(conn);
     }
 }
 
@@ -102,15 +102,21 @@ impl Workspace {
     pub fn create(conn: &PgConnection, new_workspace: NewWorkspace) -> Result<Workspace, MyError> {
         return Ok(diesel::insert_into(workspaces::table)
             .values(NewWorkspace {
-                display_order: 0,
+                display_order: new_workspace.display_order,
                 name: new_workspace.name,
-                tenant_id: 1
+                tenant_id: new_workspace.tenant_id
             })
             .get_result(conn)?);
     }
 
     pub fn all(conn: &PgConnection) -> QueryResult<Vec<Workspace>> {
-        return workspaces::table.load::<Workspace>(&*conn);
+        return workspaces::table.load::<Workspace>(conn);
+    }
+
+    pub fn all_for_tenant(conn: &PgConnection, id: &i32) -> Result<Vec<Workspace>, diesel::result::Error> {
+        return workspaces::table
+            .filter(tenant_id.eq(&id))
+            .load::<Workspace>(conn);
     }
 
     pub fn create_with_applets(conn: &PgConnection, new_workspace: NewWorkspaceWithApplets)
@@ -120,9 +126,9 @@ impl Workspace {
             name: new_workspace.name,
             tenant_id: new_workspace.tenant_id
         };
-        let workspace = Workspace::create(&*conn, add_workspace)?;
+        let workspace = Workspace::create(conn, add_workspace)?;
         for new_applet in new_workspace.applets {
-            let new_applet_worksapce_id = NewApplet {
+            let new_applet_workspace_id = NewApplet {
                 name: new_applet.name,
                 position_x: new_applet.position_x,
                 position_y: new_applet.position_y,
@@ -132,7 +138,7 @@ impl Workspace {
                 applet_data: new_applet.applet_data,
                 workspace_id: workspace.id
             };
-            let _applets = Applet::create(&*conn, new_applet_worksapce_id);
+            let _applets = Applet::create(conn, new_applet_workspace_id);
         }
         return Ok(workspace)
     }

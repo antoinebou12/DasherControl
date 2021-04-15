@@ -1,7 +1,7 @@
 <template>
-  <div class="center workspace-selector-container">
+  <div v-if="token !== ''" class="center workspace-selector-container">
     <span class="toggle-hide" >
-      <i class="bx bx-down-arrow" @click="isVisible = !isVisible"/>
+      <i class="bx bx-down-arrow" @click="isVisible = !isVisible; get_workspaces()"/>
     </span>
     <vs-table class="workspace-selector" v-model="selected">
       <template #thead>
@@ -35,11 +35,12 @@ export default {
     return {
       selected: null,
       workspaces: [],
-      isVisible: true
+      isVisible: true,
+      token: ''
     }
   },
   beforeMount() {
-    this.get_workspaces();
+    this.get_token()
   },
   methods: {
     get_workspaces(){
@@ -48,11 +49,27 @@ export default {
         method: 'get',
         url: '/workspaces/api/list',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.get_token()}`
         },
       }).then(function(response){
         self.workspaces = response.data
+      }).catch(function(error){
+        self.workspaces = []
       });
+    },
+    get_token(){
+      if (this.token == '') {
+        axios({
+          method: 'get',
+          url: '/tenants/api/token',
+        }).then((response) => {
+          this.token = response.data
+          return this.token
+        })
+      } else {
+        return this.token
+      }
     },
   }
 }
