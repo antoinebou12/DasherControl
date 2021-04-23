@@ -157,8 +157,8 @@ export default {
       }).then((response) => {
         createNotification(
             self,
-            "Error while save workspace",
-            error.response.data,
+            "workspace Saved",
+            "",
             'danger')
       }).catch(function (error) {
         createNotification(
@@ -175,6 +175,10 @@ export default {
       axios({
         method: 'get',
         url: '/workspaces/api/' + id,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.$store.state.user.token}`
+        },
       }).then((response) => {
         for (let i=0;i < response.data.length;i++) {
           this.addItemCustom(
@@ -185,7 +189,7 @@ export default {
               response.data[i].editable,
               response.data[i].editable,
               response.data[i].editable,
-              JSON.parse(response.data[i].applet_data),
+              response.data[i].applet_data,
               {}
           )
         }
@@ -198,8 +202,8 @@ export default {
       }).catch(function (error) {
         createNotification(
             self,
-            "Error while save workspace",
-            error.response.data,
+            "Error while loading workspace",
+            error.response,
             'danger')
       });
     },

@@ -36,7 +36,16 @@ export default {
       selected: null,
       workspaces: [],
       isVisible: true,
-      token: ''
+    }
+  },
+  computed: {
+    token: {
+      get: function (){
+        return this.$store.state.user.token
+      },
+      set: function (newVal) {
+        this.token = newVal;
+      }
     }
   },
   methods: {
@@ -51,9 +60,7 @@ export default {
         },
       }).then(function(response){
         self.workspaces = response.data
-        self.isVisible = true
       }).catch(function(error){
-        self.isVisible = false
         self.workspaces = []
       });
     },

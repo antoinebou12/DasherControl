@@ -8,10 +8,18 @@ use diesel::result::Error;
 use crate::tenants::token::Claims;
 
 #[get("/api/<workspace_id>")]
-pub fn get_applets_in_workspace(conn: DbConn, workspace_id: i32) -> Result<Json<Vec<Applet>>, Status> {
-    return Applet::all_applets_by_workspace(&conn, workspace_id)
-        .map_err(|error| error_status(error))
-        .map(|applets| Json(applets));
+pub fn get_applets_in_workspace(conn: DbConn, workspace_id: i32, token: Result<Claims, Status>) -> Result<Json<Vec<Applet>>, Status> {
+    let token = match token {
+        Ok(token) => token,
+        Err(e) => return Err(e)
+    };
+    return if token.has_role("Admin") && token.is_claimed_user(0) {
+        Applet::all_applets_by_workspace(&conn, workspace_id)
+            .map_err(|error| error_status(error))
+            .map(|applets| Json(applets))
+    } else {
+        Err(Status::Unauthorized)
+    }
 }
 
 #[get("/api/list")]
