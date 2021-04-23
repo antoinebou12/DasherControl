@@ -72,10 +72,10 @@ export default {
 <style lang="scss" scoped>
 .create-applet-container {
   background: var(--darcule-bg);
-  color: var(--darcula-fg);
+  color: var(--fg);
 
   vs-select {
-    color: var(--darcula-fg)
+    color: var(--fg)
   }
 
   .select-applet-form {

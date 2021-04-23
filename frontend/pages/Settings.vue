@@ -1,20 +1,52 @@
 <template>
-  <div class="content-tooltip" vs-theme="dark">
-    <h4>
-      Settings
-    </h4>
-    <p>
-      - Settings 1
-    </p>
-    <p>
-      - Settings 2
-    </p>
+  <div class="settings">
+    <div class="center">
+      <vs-dialog ref="settings_dialog" v-model="show" class="dialog-login dark">
+        <div v-if="loading" class="vs-dialog__loading">
+          <div class="vs-dialog__loading__load"></div>
+        </div>
+        <template #header>
+          <h4 class="not-margin">
+            <b>Settings</b>
+          </h4>
+        </template>
+      </vs-dialog>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: "Settings"
+  name: "Settings",
+  data: () => ({
+    show: false,
+    loading: false,
+  }),
+  methods: {
+    showDialog() {
+      this.show = true;
+    },
+    hideDialog() {
+      this.show = false;
+    },
+    loadingDialog(state) {
+      if (state === true) {
+        this.$refs.settings_dialog.$el.classList.add("vs-dialog--loading");
+        this.loading = true;
+      } else {
+        this.$refs.settings_dialog.$el.classList.remove("vs-dialog--loading");
+        this.loading = false;
+      }
+    },
+    get_tenant_configuration() {
+      axios({
+        method: 'get',
+        url: '/tenants/api/config',
+      })
+    }
+  },
 }
 </script>
 

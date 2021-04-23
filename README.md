@@ -31,29 +31,29 @@ Preview Look
 - [x] Save Workspace and switch between workspace
 - [X] Applets Management 
 - [X] Simple Start and Manage Docker Containers
+- [X] CI/CD
+- [X] User Auth
 
 # In Progress
-
-- [ ] User Auth (Half done W.I.P)
+- [ ] Customise Theme and Change Background
+- [ ] Logging
+- [ ] Canvas applets
 - [ ] Terminal ssh web
 - [ ] Install App with Docker/Docker-Compose
-- [ ] CI/CD
-- [ ] Canvas applets
+- [ ] Tests
 
 ## TODO
 - [ ] Documentation
 - [ ] RTMP IP Camera Client
-- [ ] Customise Theme and Change Background
+- [ ] User Auth (OAUTH@ Github)
 - [ ] Save docker-compose/container info in the database
 - [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
 - [ ] Export and import of containers and workspaces
-- [ ] Tests
-
 
 # Issues
 I use Iframe to display the other website some the login of the website will not work because of the csrf token or other restriction of iframe.
 
-## Install (Tested on Ubuntu)
+## Install (Tested only on Ubuntu 20.04)
 
 ```sh
 // bash scripts/rust-setup-dev.sh
@@ -64,6 +64,11 @@ cd frontend && npm install && npm run build && cd ..
 cargo install diesel_cli --no-default-features --features postgres
 // go in Rocket.toml and .env and change DATABASE_URL to your postgresql server
 diesel migration run
+
+// create admin user
+cargo run --bin create_admin
+
+// run web app
 cargo run
 ```
 
@@ -80,8 +85,7 @@ docker-compose up -d
 ```
 
 ## Run tests
-# not implemented yet
 ```sh
 cargo test
-cd frontend && npm test
+cd frontend && npm test // no test yet on frontend
 ```

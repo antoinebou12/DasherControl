@@ -88,7 +88,7 @@ export default {
 }
 
 .vue-grid-item {
-  background: var(--darcula-fg);
+  background: var(--fg);
 }
 
 
@@ -106,7 +106,7 @@ export default {
   margin: auto;
   height: 100%;
   width: 100%;
-  background: var(--darcula-fg);
+  background: var(--fg);
   overflow: hidden;
 }
 
@@ -138,7 +138,7 @@ export default {
 .vue-draggable-handle {
   width: 100%;
   height: 24px;
-  background: var(--darcula-cl);
+  background: var(--cl);
   box-sizing: border-box;
   cursor: grab;
   .remove-item{
@@ -147,7 +147,7 @@ export default {
     top: 0px;
     font-size: 18px;
     cursor: pointer;
-    color: var(--darcula-fg)
+    color: var(--fg)
   }
   .open-new-tab-item {
     position: absolute;
@@ -155,7 +155,7 @@ export default {
     top: 2px;
     font-size: 14px;
     cursor: pointer;
-    color: var(--darcula-fg)
+    color: var(--fg)
   }
 }
 

@@ -117,8 +117,8 @@ export default {
 
     .vs-input {
       width: 100%;
-      background: var(--darcula-bg);
-      color: var(--darcula-fg);
+      background: var(--bg);
+      color: var(--fg);
     }
   }
 }

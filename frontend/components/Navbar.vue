@@ -11,14 +11,9 @@
         <vs-navbar-item class="vs-navbar-item" @click="set_active('Edit')" id="edit" index="0">
           <i class="bx bx-edit-alt"></i>
         </vs-navbar-item>
-        <vs-tooltip bottom shadow not-hover interactivity v-model="activeSettings">
-          <vs-navbar-item class="vs-navbar-item" @click="activeSettings=!activeSettings; set_active('Settings')" id="settings" index="1">
+        <vs-navbar-item class="vs-navbar-item" @click="set_active('Settings')" id="settings" index="1">
             <i class="bx bx-cog"></i>
-          </vs-navbar-item>
-          <template #tooltip>
-            <Settings/>
-          </template>
-        </vs-tooltip>
+        </vs-navbar-item>
         <vs-button v-if="!is_login" flat @click="set_active('Login')">Login</vs-button>
 <!--        <vs-button v-if="!is_login" @click="set_active('SignUp')">Sign Up</vs-button>-->
         <vs-button v-if="is_login" flat @click="logout()">Logout</vs-button>
@@ -30,7 +25,6 @@
 <script>
 import Settings from '../pages/Settings.vue'
 import axios from "axios";
-import {emitter} from "../main";
 
 export default {
   name: "Navbar",
@@ -41,27 +35,24 @@ export default {
     return {
       active: "Home",
       activeSettings: false,
-      is_login: false
+      is_login: false,
     }
   },
-  created() {
+  created(){
     this.is_login = this.check_login()
   },
-  mounted(){
-    emitter.on('login', (e) => this.is_login=true)
-    emitter.on('logout', (e) => this.is_login=false)
+  mounted() {
+    this.is_login = this.check_login()
+  },
+  updated() {
+    this.is_login = this.check_login()
   },
   methods: {
     check_login(){
-      if (window.user_auth !== undefined || window.user_auth === {}){
-        return true
-      } else {
-        return false
-      }
+      return this.$store.getters.getUser !== false;
     },
     set_active(active) {
       this.active = active
-      this.is_login =this.check_login()
       this.$emit("changeActive", active)
     },
     logout() {
@@ -69,9 +60,7 @@ export default {
         method: 'post',
         url: '/tenants/api/logout',
       }).then((response) => {
-        emitter.emit('logout')
-        this.is_login=false
-        window.user_auth = {}
+        this.is_login = false
       })
     }
   }

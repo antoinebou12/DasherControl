@@ -174,8 +174,8 @@ export default {
 
 <style lang="scss" scoped>
 .docker-manager-containers{
-  background: var(--darcula-bg);
-  color: var(--darcula-fg);
+  background: var(--bg);
+  color: var(--fg);
 
   .quick-status-col {
     width: 10px

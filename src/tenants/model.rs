@@ -1,14 +1,23 @@
 use bcrypt::{DEFAULT_COST, hash, verify};
+use std::io::Write;
 use uuid::Uuid;
 use chrono::{Local, NaiveDateTime};
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, select};
-use diesel::expression::dsl::exists;
+use serde_json::{Value, json};
 
-use crate::schema::tenants;
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, select, serialize, deserialize};
+use diesel::expression::dsl::exists;
+use diesel::sql_types::Varchar;
+use diesel::serialize::{ToSql, Output};
+use diesel::backend::Backend;
+use diesel::pg::Pg;
+
+use crate::schema::{tenants, tenant_configuration};
 use crate::schema::login_history;
-use crate::schema::tenants::dsl::{username, email, login_session, id};
+use crate::schema::tenants::dsl::{username, email, login_session, id as tid};
+use crate::schema::tenant_configuration::dsl::tenant_id as t_id;
 use crate::tenants::error::MyError;
 use crate::tenants::token::Claims;
+use diesel::deserialize::FromSql;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "tenants"]
@@ -29,7 +38,7 @@ pub struct Tenant {
 impl Tenant {
     pub fn create(register_tenant: RegisterTenant, conn: &PgConnection) ->
     Result<bool, MyError> {
-        return Ok(diesel::insert_into(tenants::table)
+        let tenant = diesel::insert_into(tenants::table)
             .values(NewTenant {
                 email: register_tenant.email,
                 name: register_tenant.name,
@@ -38,8 +47,18 @@ impl Tenant {
                 role: register_tenant.role,
                 created_at: Local::now().naive_local(),
             })
-            .execute(conn)
-            .is_ok());
+            .get_results::<Tenant>(conn)?;
+
+        let id = tenant[0].id;
+
+        TenantConfiguration::create(
+            &conn,
+            NewTenantConfiguration {
+                tenant_id: id,
+                config: DBJsonType(json!({}))
+            });
+
+        return Ok(true)
     }
 
     pub fn hash_password(plain: String) -> Result<String, MyError> {
@@ -52,7 +71,7 @@ impl Tenant {
 
     pub fn is_valid_login_session(tenant_token: &Claims, conn: &PgConnection) -> bool {
         tenants::table
-            .filter(id.eq(&tenant_token.sub))
+            .filter(tid.eq(&tenant_token.sub))
             .filter(login_session.eq(&tenant_token.login_session))
             .get_result::<Tenant>(conn)
             .is_ok()
@@ -153,6 +172,12 @@ pub struct AuthTenant {
     pub password: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TenantInfo {
+    pub email: String,
+    pub username: String,
+}
+
 impl AuthTenant {
     pub fn login(&self, conn: &PgConnection) ->
     Result<Tenant, MyError> {
@@ -222,3 +247,61 @@ impl LoginHistory {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
+#[table_name = "tenant_configuration"]
+pub struct TenantConfiguration {
+    #[serde(skip)]
+    pub id: i32,
+    #[serde(skip)]
+    pub tenant_id: i32,
+    pub config: DBJsonType
+}
+
+#[derive(Debug, Serialize, Deserialize, Insertable)]
+#[table_name = "tenant_configuration"]
+pub struct NewTenantConfiguration {
+    pub tenant_id: i32,
+    pub config: DBJsonType
+}
+
+impl TenantConfiguration {
+    pub fn create(conn: &PgConnection, new_tenant_configuration: NewTenantConfiguration) -> Result<TenantConfiguration, MyError> {
+        return Ok(diesel::insert_into(tenant_configuration::table)
+            .values(NewTenantConfiguration {
+                tenant_id: new_tenant_configuration.tenant_id,
+                config: new_tenant_configuration.config
+            })
+            .get_result(conn)?);
+    }
+
+    pub fn all(conn: &PgConnection) -> QueryResult<Vec<TenantConfiguration>> {
+        return tenant_configuration::table.load::<TenantConfiguration>(conn);
+    }
+    pub fn get(conn: &PgConnection, id: i32) -> Result<TenantConfiguration, diesel::result::Error> {
+        return tenant_configuration::table
+            .filter(t_id.eq(&id))
+            .first::<TenantConfiguration>(conn);
+    }
+}
+
+
+// TODO json validation
+impl FromSql<Varchar, Pg> for DBJsonType {
+    fn from_sql(
+        bytes: Option<&<Pg as Backend>::RawValue>,
+    ) -> deserialize::Result<Self> {
+        let t = <String as FromSql<Varchar, Pg>>::from_sql(bytes)?;
+        Ok(Self(serde_json::from_str(&t)?))
+    }
+}
+
+impl ToSql<Varchar, Pg> for DBJsonType {
+    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+        let s = serde_json::to_string(&self.0)?;
+        <String as ToSql<Varchar, Pg>>::to_sql(&s, out)
+    }
+}
+
+#[derive(AsExpression, Debug, Deserialize, Serialize, FromSqlRow)]
+#[sql_type = "Varchar"]
+pub struct DBJsonType(Value);

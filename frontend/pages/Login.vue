@@ -45,7 +45,7 @@
 
 <script>
 import axios from "axios";
-import {emitter} from "../main";
+import {createNotification} from "../utils";
 
 export default {
   name: "Login",
@@ -54,7 +54,6 @@ export default {
     username: '',
     password: '',
     remember: false,
-    token: '',
     loading: false,
   }),
   methods: {
@@ -74,6 +73,7 @@ export default {
       }
     },
     submitLogIn(){
+      let self = this;
       this.loadingDialog(true)
       axios({
           method: 'post',
@@ -87,22 +87,22 @@ export default {
             password: this.password
           }
       }).then((response) => {
-        this.token = this.get_token()
-        emitter.emit('login',
-            {'email': this.email, 'username': this.username, 'password': this.password, 'token': this.token});
-        window.user_auth = {'email': this.email, 'username': this.username, 'password': this.password, 'token': this.token};
+        this.$store.commit("setUser",
+        {
+          'username': this.username,
+          'email': this.email,
+        })
         this.loadingDialog(false)
         this.hideDialog();
+      }).catch(function (error) {
+        self.loadingDialog(false)
+        createNotification(
+            self,
+            "Bad login",
+            error.response.data,
+            'danger')
       });
 
-    },
-    get_token() {
-      axios({
-        method: 'get',
-        url: '/tenants/api/token',
-      }).then((response) => {
-        return response.data
-      })
     },
   }
 };
@@ -144,8 +144,8 @@ export default {
 
     .vs-input {
       width: 100%;
-      background: var(--darcula-bg);
-      color: var(--darcula-fg);
+      background: var(--bg);
+      color: var(--fg);
     }
   }
 }
@@ -163,7 +163,7 @@ export default {
     font-size: 0.7rem;
 
     a {
-      color: var(--darcula-cl);
+      color: var(--cl);
       margin-left: 6px;
       &:hover {
         text-decoration: underline;

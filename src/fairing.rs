@@ -29,17 +29,3 @@ impl Fairing for CORS {
         }
     }
 }
-
-
-// fn create_cors_rocket() -> rocket_cors::Cors {
-//     allowed_origins = AllowedOrigins::all();
-
-//     let options = rocket_cors::Cors {
-//         allowed_origins: allowed_origins,
-//         allowed_methods: vec![Method::Get].into_iter().map(From::from).collect(),
-//         allowed_headers: AllowedHeaders::some(&["Authorization", "Accept"]),
-//         allow_credentials: true,
-//         ..Default::default()
-//     };
-//     return options
-// } 

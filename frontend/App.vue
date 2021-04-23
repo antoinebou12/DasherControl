@@ -7,11 +7,22 @@
 
 <script>
 import Main from './pages/Main.vue'
+import axios from "axios";
 
 export default {
   name: 'app',
   components: {
     Main
+  },
+  created() {
+    axios({
+      method: 'get',
+      url: '/tenants/api/token',
+    }).then((response) => {
+      this.$store.commit("setToken", response.data)
+    })
+  },
+  methods: {
   }
 }
 </script>
@@ -24,15 +35,15 @@ export default {
   font-style: normal;
 }
 :root {
-  --darcula-bg: #282a36;
-  --darcula-bg-rgb: 40, 42, 54;
-  --darcula-fg: #f8f8f2;
-  --darcula-fg-rgb: 248, 248, 242;
-  --darcula-comment: #6272a4;
-  --darcula-cl: #44475a;
+  --bg: #282a36;
+  --bg-rgb: 40, 42, 54;
+  --fg: #f8f8f2;
+  --fg-rgb: 248, 248, 242;
+  --comment: #6272a4;
+  --cl: #44475a;
 }
 html {
-  background: var(--darcula-bg);
+  background: var(--bg);
   font-family: 'Poppins';
 }
 #app {

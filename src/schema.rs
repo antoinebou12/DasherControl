@@ -7,7 +7,7 @@ table! {
         width -> Int4,
         height -> Int4,
         editable -> Bool,
-        applet_data -> Nullable<Varchar>,
+        applet_data -> Varchar,
         workspace_id -> Int4,
     }
 }
@@ -25,6 +25,14 @@ table! {
         id -> Int4,
         tenant_id -> Int4,
         login_timestamp -> Timestamp,
+    }
+}
+
+table! {
+    tenant_configuration (id) {
+        id -> Int4,
+        tenant_id -> Int4,
+        config -> Varchar,
     }
 }
 
@@ -53,11 +61,14 @@ table! {
 joinable!(applets -> workspaces (workspace_id));
 joinable!(containers -> tenants (tenant_id));
 joinable!(login_history -> tenants (tenant_id));
+joinable!(tenant_configuration -> tenants (tenant_id));
 joinable!(workspaces -> tenants (tenant_id));
 
 allow_tables_to_appear_in_same_query!(
     applets,
+    containers,
     login_history,
+    tenant_configuration,
     tenants,
     workspaces,
 );

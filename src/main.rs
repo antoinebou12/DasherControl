@@ -23,6 +23,7 @@ pub mod db;
 pub mod schema;
 pub mod containers;
 pub mod terminal;
+pub mod tests;
 
 
 #[catch(404)]
@@ -50,7 +51,6 @@ pub fn create_rocket() -> rocket::Rocket {
 
     // Start Rocket app
     return rocket::ignite()
-     // .attach(db::DbConnRocket::fairing())
         .manage(db::init_pool())
         .attach(fairing::CORS())
         .mount("/", routes)
@@ -66,3 +66,4 @@ pub fn main() {
     // Start rocket with CORS
     create_rocket().launch();
 }
+

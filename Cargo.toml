@@ -6,17 +6,17 @@ keywords = ["rocket", "tilling", "vue", "web-server", "dashercontrol", "dashboar
 license = "MIT"
 categories = ["dashboard", "server", "web"]
 edition = "2018"
+default-run = "dasher_control"
 
 
 [dependencies]
 rocket = { version = "0.4.7", features = ["tls"] }
-rocket_contrib = {version="0.4.5", features=["json", "tera_templates", "diesel_postgres_pool"]}
+rocket_contrib = { version="0.4.5", features=["json", "tera_templates", "diesel_postgres_pool"] }
 rocket_codegen = "0.4.7"
-rocket_cors = "0.4.0"
 serde = { version = "1.0.104", features = ["derive"] }
 serde_derive = "1.0.99"
 serde_json = "1.0.40"
-diesel = { version = "1.4.5", features = ["postgres", "r2d2", "chrono"] }
+diesel = { version = ">=1.4.6", features = ["postgres", "r2d2", "chrono", "serde_json"] }
 diesel_codegen = { version = "0.16.1", features = ["postgres"] }
 chrono = { version = "0.4.10", features = ["serde"] }
 r2d2-diesel = "1.0.0"

@@ -39,9 +39,6 @@ export default {
       token: ''
     }
   },
-  beforeMount() {
-    this.get_token()
-  },
   methods: {
     get_workspaces(){
       let self = this;
@@ -50,26 +47,15 @@ export default {
         url: '/workspaces/api/list',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.get_token()}`
+          'Authorization': `Bearer ${this.$store.state.user.token}`
         },
       }).then(function(response){
         self.workspaces = response.data
+        self.isVisible = true
       }).catch(function(error){
+        self.isVisible = false
         self.workspaces = []
       });
-    },
-    get_token(){
-      if (this.token == '') {
-        axios({
-          method: 'get',
-          url: '/tenants/api/token',
-        }).then((response) => {
-          this.token = response.data
-          return this.token
-        })
-      } else {
-        return this.token
-      }
     },
   }
 }
@@ -77,7 +63,7 @@ export default {
 
 <style lang="scss" scoped>
   .workspace-selector-container{
-    color: var(--darcula-fg);
+    color: var(--fg);
 
     .tr-selected {
       background: rgba(var(--vs-color),0.1);

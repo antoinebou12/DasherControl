@@ -4,7 +4,7 @@ use rocket_contrib::json::Json;
 
 use crate::db::DbConn;
 use crate::tenants::token::*;
-use crate::tenants::model::AuthTenant;
+use crate::tenants::model::{AuthTenant, TenantInfo};
 use crate::tenants::model::RegisterTenant;
 use crate::tenants::model::Tenant;
 
@@ -63,9 +63,9 @@ pub fn create_tenant(conn: DbConn, tenant: Json<RegisterTenant>, token: Result<C
 
 
 #[post("/api/login", format="application/json", data = "<auth_tenant>")]
-pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>, mut cookies: Cookies) -> Result<Json<String>, Status> {
-
-    if cookies.get_private("session-token").is_none()  {
+pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>, mut cookies: Cookies) -> Result<Json<TenantInfo>, Status> {
+    let token_cookies = cookies.get_private("session-token");
+    return if token_cookies.is_none() {
         let tenant = match auth_tenant.login(&conn) {
             Ok(tenant) => tenant,
             Err(_) => return Err(Status::Conflict),
@@ -92,9 +92,23 @@ pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>, mut cookies: Cookies) 
                 // .secure(true)
                 .finish());
 
-        return Ok(Json(tenant.id.to_string()));
+        Ok(Json(TenantInfo {
+            email: tenant.email,
+            username: tenant.username
+        }))
+    } else {
+        let token = match token_cookies {
+            Some(c) => c.value().to_string(),
+            None => "".to_string()
+        };
+        return match decode_token(&*token) {
+            Ok(claims) => Ok(Json(TenantInfo {
+                        email: claims.email,
+                        username: claims.username
+                    })),
+            Err(_) =>  Err(Status::Conflict),
+        }
     }
-    return Ok(Json("already login".to_string()))
 }
 
 

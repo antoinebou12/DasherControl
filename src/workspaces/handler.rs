@@ -52,10 +52,18 @@ pub fn create_applet(conn: DbConn, applet: Json<NewApplet>) -> Result<status::Ac
 }
 
 #[post("/api/create", format="application/json", data = "<workspace>")]
-pub fn create_workspace_with_applets(conn: DbConn, workspace: Json<NewWorkspaceWithApplets>, ) -> Result<status::Accepted<String>, Status> {
-    let new_workspace = workspace.into_inner();
-    let _workspace_create = match Workspace::create_with_applets(&conn, new_workspace) {
-        Ok(_workspace) => return Ok(status::Accepted(Some("workspace with applets created".to_string()))),
-        Err(_) => return Err(Status::Conflict)
+pub fn create_workspace_with_applets(conn: DbConn, workspace: Json<NewWorkspaceWithApplets>, token: Result<Claims, Status>) -> Result<Json<String>, Status> {
+    let token = match token {
+        Ok(token) => token,
+        Err(e) => return Err(e)
     };
+    return if token.has_role("Admin") && token.is_claimed_user(workspace.tenant_id) {
+        let new_workspace = workspace.into_inner();
+        match Workspace::create_with_applets(&conn, new_workspace) {
+            Ok(_workspace) => Ok(Json("workspace with applets created".to_string())),
+            Err(_) => Err(Status::Conflict)
+        }
+    } else {
+        Err(Status::Unauthorized)
+    }
 }

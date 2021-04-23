@@ -20,11 +20,11 @@
         <link rel="icon" type="image/png" sizes="32x32" href="public/imgs/favicon/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="96x96" href="public/imgs/favicon/favicon-96x96.png">
         <link rel="icon" type="image/png" sizes="16x16" href="public/imgs/favicon/favicon-16x16.png">
-        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileColor" content="#282a36">
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-        <meta name="theme-color" content="#ffffff">
-        <title>rocketrustvuejs</title>
-        <meta name="Description" content="rocketrustvuejs">
+        <meta name="theme-color" content="#282a36">
+        <title>DasherControl</title>
+        <meta name="Description" content="DasherControl">
     </head>
     <body>
         <div id="app"></div>

@@ -1,13 +1,20 @@
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl};
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, deserialize, serialize};
 
 use crate::schema::applets;
 use crate::schema::workspaces;
 use crate::tenants::error::MyError;
 use crate::schema::applets::workspace_id;
 use crate::schema::workspaces::dsl::tenant_id;
+use diesel::backend::Backend;
+use diesel::deserialize::FromSql;
+use serde_json::Value;
+use diesel::sql_types::{Varchar};
+use diesel::serialize::{ToSql, Output};
+use std::io::Write;
+use diesel::pg::Pg;
 
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Clone, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
 #[table_name = "applets"]
 pub struct Applet {
     #[serde(skip)]
@@ -18,7 +25,7 @@ pub struct Applet {
     pub width: i32,
     pub height: i32,
     pub editable: bool,
-    pub applet_data: Option<String>,
+    pub applet_data: DBJsonType,
     #[serde(skip)]
     pub workspace_id: i32
 }
@@ -32,7 +39,7 @@ pub struct NewApplet {
     pub width: i32,
     pub height: i32,
     pub editable: bool,
-    pub applet_data: Option<String>,
+    pub applet_data: DBJsonType,
     pub workspace_id: i32
 }
 #[derive(Debug, Serialize, Deserialize)]
@@ -43,7 +50,7 @@ pub struct NewAppletNoWorkspace {
     pub width: i32,
     pub height: i32,
     pub editable: bool,
-    pub applet_data: Option<String>,
+    pub applet_data: DBJsonType
 }
 
 impl Applet {
@@ -89,6 +96,7 @@ pub struct NewWorkspace {
     pub name: String,
     pub tenant_id: i32,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NewWorkspaceWithApplets {
     pub display_order: i32,
@@ -146,3 +154,23 @@ impl Workspace {
 }
 
 
+// Custom json as a varchar
+impl FromSql<Varchar, Pg> for DBJsonType {
+    fn from_sql(
+        bytes: Option<&<Pg as Backend>::RawValue>,
+    ) -> deserialize::Result<Self> {
+        let t = <String as FromSql<Varchar, Pg>>::from_sql(bytes)?;
+        Ok(Self(serde_json::from_str(&t)?))
+    }
+}
+
+impl ToSql<Varchar, Pg> for DBJsonType {
+    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+        let s = serde_json::to_string(&self.0)?;
+        <String as ToSql<Varchar, Pg>>::to_sql(&s, out)
+    }
+}
+
+#[derive(AsExpression, Debug, Deserialize, Serialize, FromSqlRow)]
+#[sql_type = "Varchar"]
+pub struct DBJsonType(Value);

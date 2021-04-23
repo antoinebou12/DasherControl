@@ -36,6 +36,7 @@ import GridItemApplet from "./GridItemApplet.vue";
 import GridEditMenu from "./GridEditMenu.vue";
 import Applet from "./applets/Applet.vue"
 import axios from "axios";
+import {createNotification} from "../utils";
 
 export default {
   name: "GridLayoutMain",
@@ -125,7 +126,8 @@ export default {
         this.layout[item].static = false;
       }
     },
-    saveWorkspaceLayout(){
+    saveWorkspaceLayout(name="workspace"){
+      let self = this;
       let applets_layout = []
       for (let i=0;i < this.layout.length;i++) {
         let applet = {}
@@ -135,7 +137,7 @@ export default {
         applet.width = this.layout[i].w
         applet.height = this.layout[i].h
         applet.editable = this.layout[i].static
-        applet.applet_data = JSON.stringify(this.layout[i].appletData)
+        applet.applet_data = this.layout[i].appletData
         applets_layout.push(applet)
       }
 
@@ -143,17 +145,31 @@ export default {
         method: 'post',
         url: '/workspaces/api/create',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.$store.state.user.token}`
         },
         data: {
           name: "workspace",
           display_order: 0,
-          tenant_id: 1,
+          tenant_id: 0,
           applets: applets_layout
         }
+      }).then((response) => {
+        createNotification(
+            self,
+            "Error while save workspace",
+            error.response.data,
+            'danger')
+      }).catch(function (error) {
+        createNotification(
+            self,
+            "Error while save workspace",
+            error.response.data,
+            'danger')
       });
     },
     setWorkspaceLayout(id) {
+      let self = this;
       this.layout = []
       this.index = 0
       axios({
@@ -173,7 +189,18 @@ export default {
               {}
           )
         }
+        createNotification(
+            self,
+            "Workspace Updated",
+            "",
+            'dark')
         this.$emit("setWorkspace")
+      }).catch(function (error) {
+        createNotification(
+            self,
+            "Error while save workspace",
+            error.response.data,
+            'danger')
       });
     },
   }
@@ -182,10 +209,10 @@ export default {
 
 <style lang="scss" scoped>
 .grid-layout-container {
-  background: var(--darcula-bg);
+  background: var(--bg);
 }
 
 .vue-grid-layout {
-  background: var(--darcula-bg);
+  background: var(--bg);
 }
 </style>

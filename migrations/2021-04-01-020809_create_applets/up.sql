@@ -6,6 +6,6 @@ CREATE TABLE applets (
     width integer NOT NULL,
     height integer NOT NULL,
     editable boolean NOT NULL,
-    applet_data varchar,
+    applet_data varchar DEFAULT '{}' NOT NULL,
     workspace_id integer NOT NULL REFERENCES workspaces(id)
 )
