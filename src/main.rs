@@ -13,6 +13,7 @@ use std::sync::atomic::AtomicUsize;
 
 use rocket::Request;
 use rocket_contrib::templates::Template;
+use crate::terminal::websocket;
 
 
 pub mod tenants;
@@ -53,17 +54,20 @@ pub fn create_rocket() -> rocket::Rocket {
     return rocket::ignite()
         .manage(db::init_pool())
         .attach(fairing::CORS())
+
         .mount("/", routes)
         .mount("/tenants", tenants_routes)
         .mount("/workspaces", workspaces_routes)
         .mount("/containers", containers_routes)
+
         .manage(router::HitCount(AtomicUsize::new(0)))
         .attach(Template::fairing())
+
         .register(catchers![not_found]);
 }
 
 pub fn main() {
-    // Start rocket with CORS
+    // Start rocket
     create_rocket().launch();
 }
 

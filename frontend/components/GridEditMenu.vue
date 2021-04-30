@@ -66,12 +66,12 @@ export default {
   }),
   methods: {
     workspaceSelector() {
-      this.gridLayout.setWorkspaceLayout(this.$refs.workspaceSelector.selected.id)
+      this.gridLayout.setWorkspaceLayout(this.$refs.workspaceSelector.selected.id);
       this.gridLayout.workspace_id = this.$refs.workspaceSelector.selected.id;
     },
     saveWorkspace(){
-      this.gridLayout.saveWorkspaceLayout()
-      this.$refs.workspaceSelector.get_workspaces()
+      this.gridLayout.saveWorkspaceLayout();
+      this.$refs.workspaceSelector.get_workspaces();
     }
   }
 }

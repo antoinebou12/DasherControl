@@ -1,5 +1,8 @@
 import Vue from 'vue';
+// vuex
 import Vuex from 'vuex';
+import createPersistedState from 'vuex-persistedstate'
+
 import Vuesax from 'vuesax'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
 
@@ -15,6 +18,9 @@ Vue.use(Vuesax)
 // vuex
 Vue.use(Vuex)
 export const store = new Vuex.Store({
+  plugins: [
+    createPersistedState()
+  ],
   state: {
     user: {
       username: '',
@@ -31,20 +37,20 @@ export const store = new Vuex.Store({
       state.user.token = token
     }
   },
-  getters: {
-    getUser: state => {
-      if (state.user.token !== '') {
+  actions: {
+    async getToken({ commit }){
+      if (this.state.user.token === '') {
         axios({
           method: 'get',
           url: '/tenants/api/token',
         }).then((response) => {
-          state.user.token = response.data
+          if (response.data !== '') {
+            commit('setToken', response.data)
+          } else {
+            commit('setToken', '')
+          }
         })
       }
-      if (state.user.token !== '') {
-        return state.user
-      }
-      return false
     }
   }
 })

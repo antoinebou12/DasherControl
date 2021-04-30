@@ -1,9 +1,9 @@
 
 <template>
   <div class="main">
-    <Navbar ref="navbar" @changeActive="manageNav" />
+    <Navbar ref="Navbar" @changeActive="manageNav" />
     <GridLayoutMain ref="gridLayout"/>
-    <Login ref="Login"/>
+    <Login @login="login()" ref="Login"/>
     <SignUp ref="SignUp"/>
     <Settings ref="Settings"/>
   </div>
@@ -41,6 +41,9 @@ export default {
           this.$refs.Settings.showDialog();
           break;
       }
+    },
+    login() {
+      console.log('login')
     }
   },
 };

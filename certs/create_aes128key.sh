@@ -1,0 +1,1 @@
+openssl enc -nosalt -aes-128-cbc -k crsf -P 2>/dev/null | grep key | sed -r 's/.*=//g'

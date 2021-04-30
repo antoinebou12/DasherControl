@@ -16,7 +16,7 @@
         </vs-navbar-item>
         <vs-button v-if="!is_login" flat @click="set_active('Login')">Login</vs-button>
 <!--        <vs-button v-if="!is_login" @click="set_active('SignUp')">Sign Up</vs-button>-->
-        <vs-button v-if="is_login" flat @click="logout()">Logout</vs-button>
+        <vs-button v-if="is_login"  flat @click="logout()">Logout</vs-button>
       </template>
     </vs-navbar>
   </div>
@@ -35,22 +35,19 @@ export default {
     return {
       active: "Home",
       activeSettings: false,
-      is_login: false,
     }
   },
-  created(){
-    this.is_login = this.check_login()
-  },
-  mounted() {
-    this.is_login = this.check_login()
-  },
-  updated() {
-    this.is_login = this.check_login()
+  computed: {
+    is_login: {
+      get: function() {
+        return this.$store.state.user.token !== ""
+      },
+      set : function(newVal) {
+        this.is_login = newVal;
+      }
+    }
   },
   methods: {
-    check_login(){
-      return this.$store.getters.getUser !== false;
-    },
     set_active(active) {
       this.active = active
       this.$emit("changeActive", active)
@@ -60,7 +57,8 @@ export default {
         method: 'post',
         url: '/tenants/api/logout',
       }).then((response) => {
-        this.is_login = false
+        this.$store.commit('setUser', { 'email': '', 'username': ''})
+        this.$store.commit('setToken', '')
       })
     }
   }

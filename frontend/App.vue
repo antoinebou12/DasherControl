@@ -7,7 +7,6 @@
 
 <script>
 import Main from './pages/Main.vue'
-import axios from "axios";
 
 export default {
   name: 'app',
@@ -15,12 +14,7 @@ export default {
     Main
   },
   created() {
-    axios({
-      method: 'get',
-      url: '/tenants/api/token',
-    }).then((response) => {
-      this.$store.commit("setToken", response.data)
-    })
+    this.$store.dispatch('getToken')
   },
   methods: {
   }

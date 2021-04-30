@@ -21,6 +21,7 @@ pub struct Claims {
     pub iat: i64,
     pub sub: i32,
     pub exp: i64,
+    pub xsrf_token: String,
 
     // data
     pub email: String,
@@ -62,7 +63,8 @@ impl Claims {
             role: role.to_string(),
             login_session: login_session.to_string(),
             iat: (Local::now()).timestamp(),
-            exp: (Local::now() + Duration::hours(24)).timestamp()
+            exp: (Local::now() + Duration::hours(24)).timestamp(),
+            xsrf_token: generate_csrf().b64_string()
         };
     }
 
@@ -143,7 +145,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Claims {
 pub fn generate_csrf() -> CsrfToken {
     // let _csrf_token = get_secret("CSRF_TOKEN");
     let protect =
-        AesGcmCsrfProtection::from_key(*b"01234567012345670123456701234567");
+        AesGcmCsrfProtection::from_key(*b"E078C5E8743F4F4E14CED526A60B2C99");
 
     let (token, _cookie) =
         protect.generate_token_pair(None, 3600)

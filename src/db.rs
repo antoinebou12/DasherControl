@@ -3,13 +3,13 @@ use std::ops::Deref;
 
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
-use r2d2;
-use r2d2_diesel::ConnectionManager;
 use rocket::{Outcome, Request};
 use rocket::http::Status;
 use rocket::request::{self, FromRequest};
 use rocket::State;
 use rocket_contrib::databases::diesel;
+use diesel::r2d2::ConnectionManager;
+use diesel::r2d2;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 

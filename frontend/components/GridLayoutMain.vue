@@ -127,7 +127,7 @@ export default {
       }
     },
     saveWorkspaceLayout(name="workspace"){
-      let self = this;
+      const self = this;
       let applets_layout = []
       for (let i=0;i < this.layout.length;i++) {
         let applet = {}
@@ -159,7 +159,7 @@ export default {
             self,
             "workspace Saved",
             "",
-            'danger')
+            'primary')
       }).catch(function (error) {
         createNotification(
             self,
@@ -169,7 +169,7 @@ export default {
       });
     },
     setWorkspaceLayout(id) {
-      let self = this;
+      const self = this;
       this.layout = []
       this.index = 0
       axios({
@@ -197,7 +197,7 @@ export default {
             self,
             "Workspace Updated",
             "",
-            'dark')
+            'primary')
         this.$emit("setWorkspace")
       }).catch(function (error) {
         createNotification(

@@ -1,7 +1,7 @@
 <template>
   <div v-if="token !== ''" class="center workspace-selector-container">
     <span class="toggle-hide" >
-      <i class="bx bx-down-arrow" @click="isVisible = !isVisible; get_workspaces()"/>
+      <i class="bx bx-down-arrow" @click="isVisible = !isVisible"/>
     </span>
     <vs-table class="workspace-selector" v-model="selected">
       <template #thead>
@@ -48,23 +48,27 @@ export default {
       }
     }
   },
+  watch: {
+    isVisible: function(newVal, oldVal) {
+      this.get_workspaces()
+    }
+  },
   methods: {
     get_workspaces(){
-      let self = this;
-      axios({
-        method: 'get',
-        url: '/workspaces/api/list',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.$store.state.user.token}`
-        },
-      }).then(function(response){
-        self.workspaces = response.data
-      }).catch(function(error){
-        self.workspaces = []
-      });
+        axios({
+          method: 'get',
+          url: '/workspaces/api/list',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
+          },
+        }).then((response) => {
+          this.workspaces = response.data
+        }).catch((error) => {
+          this.workspaces = []
+        });
     },
-  }
+  },
 }
 </script>
 

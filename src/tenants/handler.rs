@@ -76,16 +76,6 @@ pub fn login(conn: DbConn, auth_tenant: Json<AuthTenant>, mut cookies: Cookies) 
         let token = create_token(
             tenant.id, &tenant.email, &tenant.username, &tenant.role, &tenant.login_session);
 
-
-        // Finally our response will have a csrf token for security.
-        let csrf = generate_csrf();
-
-        cookies.add_private(
-            Cookie::build("csrf", csrf.b64_string())
-                // .path("/")
-                // .secure(true)
-                .finish());
-
         cookies.add_private(
             Cookie::build("session-token", token)
                 // .path("/")

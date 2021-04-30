@@ -3,10 +3,7 @@
     <div class="select-applet-form">
       <vs-row align="center" justify="center">
         <vs-select placeholder="Choose Applets" v-model="appletName">
-          <vs-option label="IFrame" value="IFrame">IFrame</vs-option>
-          <vs-option label="Editor" value="Editor">Editor</vs-option>
-          <vs-option label="Shortcut" value="Shortcut">Shortcut</vs-option>
-          <vs-option label="DockerManager" value="DockerManager">DockerManager</vs-option>
+          <vs-option v-for="applet in appletsChoice" :key="applet" label="applet" value="applet">applet</vs-option>
         </vs-select>
         <vs-button @click="newApplet()">+</vs-button>
       </vs-row>
@@ -22,13 +19,15 @@ import CreateNewSetting from './CreateNewSetting.vue'
 import IFrameSetting from '../IFrame/IFrameSetting.vue'
 import ShortcutSetting from '../Shortcut/ShortcutSetting.vue'
 import DockerManagerSetting from '../DockerManager/DockerManagerSetting.vue'
+import TerminalSetting from '../Terminal/TerminalSetting.vue'
 
 export default {
   name: "CreateNew",
   data () {
     return {
       appletName: '',
-      settingForm: null
+      settingForm: null,
+      appletsChoice: ["IFrame", "Editor", "Shortcut", "DockerManager", "Terminal"]
     }
   },
   watch: {
@@ -42,6 +41,9 @@ export default {
           break;
         case "DockerManager":
           this.settingForm = DockerManagerSetting
+          break;
+        case "Terminal":
+          this.settingForm = TerminalSetting
           break;
         default:
           this.settingForm = CreateNewSetting

@@ -87,11 +87,13 @@ export default {
             password: this.password
           }
       }).then((response) => {
+        this.$emit('login')
         this.$store.commit("setUser",
         {
           'username': this.username,
           'email': this.email,
         })
+        this.$store.dispatch('getToken')
         this.loadingDialog(false)
         this.hideDialog();
       }).catch(function (error) {
