@@ -3,7 +3,12 @@
     <div class="select-applet-form">
       <vs-row align="center" justify="center">
         <vs-select placeholder="Choose Applets" v-model="appletName">
-          <vs-option v-for="applet in appletsChoice" :key="applet" label="applet" value="applet">applet</vs-option>
+          <vs-option v-for="appletChoice in appletChoices"
+                     :key="appletChoice.applet"
+                     :label="appletChoice.applet"
+                     :value="appletChoice.applet">
+            {{appletChoice.applet}}
+          </vs-option>
         </vs-select>
         <vs-button @click="newApplet()">+</vs-button>
       </vs-row>
@@ -27,7 +32,12 @@ export default {
     return {
       appletName: '',
       settingForm: null,
-      appletsChoice: ["IFrame", "Editor", "Shortcut", "DockerManager", "Terminal"]
+      appletChoices: [
+        {applet: "IFrame"},
+        {applet: "Editor"},
+        {applet: "Shortcut"},
+        {applet: "DockerManager"},
+        {applet: "Terminal"}]
     }
   },
   watch: {
@@ -64,6 +74,8 @@ export default {
           this.$parent.$attrs.description = this.$refs.settingForm.description
           break;
         case "DockerManager":
+          break;
+        case "Terminal":
           break;
       }
     }

@@ -8,6 +8,7 @@ import Editor from "./Editor/Editor.vue";
 import BorderlessIFrame from "./IFrame/BorderlessIFrame.vue";
 import Shortcut from "./Shortcut/Shortcut.vue";
 import DockerManager from "./DockerManager/DockerManager.vue";
+import Terminal from "./Terminal/Terminal.vue";
 
 export default {
   inheritAttrs: false,
@@ -16,6 +17,7 @@ export default {
     CreateNew,
     Editor,
     BorderlessIFrame,
+    Terminal
   },
   props: {
     appletName: String,
@@ -65,6 +67,9 @@ export default {
           break;
         case "DockerManager":
           this.applet = DockerManager
+          break;
+        case "Terminal":
+          this.applet = Terminal
           break;
       }
     }
