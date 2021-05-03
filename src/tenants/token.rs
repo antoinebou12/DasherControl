@@ -1,7 +1,9 @@
 extern crate csrf;
 
 use serde_json::Value;
-
+use dotenv::dotenv;
+use std::env;
+use std::convert::TryFrom;
 use chrono::{Duration, Local};
 use csrf::{AesGcmCsrfProtection, CsrfProtection, CsrfToken};
 use jsonwebtoken::{decode, encode, Header, Validation, Algorithm};
@@ -11,6 +13,7 @@ use rocket::{Outcome, Request, request};
 use crate::db::DbConn;
 use crate::tenants::error::MyError;
 use crate::tenants::model::Tenant;
+
 
 static KEY: &'static [u8; 16] = include_bytes!("../../certs/secret.key");
 
@@ -143,9 +146,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for Claims {
 
 
 pub fn generate_csrf() -> CsrfToken {
-    // let _csrf_token = get_secret("CSRF_TOKEN");
+    dotenv().ok();
+    let csrf_token= env::var("CSRF_TOKEN_KEY").expect("CSRF_TOKEN_KEY must be set");
+    let aead_key = <[u8; 32]>::try_from(csrf_token.into_bytes()).unwrap();
     let protect =
-        AesGcmCsrfProtection::from_key(*b"E078C5E8743F4F4E14CED526A60B2C99");
+        AesGcmCsrfProtection::from_key(aead_key);
 
     let (token, _cookie) =
         protect.generate_token_pair(None, 3600)

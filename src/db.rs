@@ -15,7 +15,7 @@ type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 fn database_url() -> String {
     dotenv().ok();
-    env::var("DATABASE_URL").expect("DATABASE_URL must be set")
+    return env::var("DATABASE_URL").expect("DATABASE_URL must be set")
 }
 
 pub fn init_pool() -> Pool {

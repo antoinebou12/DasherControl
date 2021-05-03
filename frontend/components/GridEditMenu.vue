@@ -72,6 +72,8 @@ export default {
     saveWorkspace(){
       this.gridLayout.saveWorkspaceLayout();
       this.$refs.workspaceSelector.get_workspaces();
+      this.$refs.workspaceSelector.isVisible = true;
+      this.$refs.workspaceSelector.$forceUpdate();
     }
   }
 }

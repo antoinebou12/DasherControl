@@ -7,6 +7,7 @@
         <meta name="theme-color" content="#FFFFFF"/>
         <link rel="manifest" href="public/manifest.json"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.11.0/css/xterm.css">
         <link rel="apple-touch-icon" sizes="57x57" href="public/imgs/favicon/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="public/imgs/favicon/apple-icon-60x60.png">
         <link rel="apple-touch-icon" sizes="72x72" href="public/imgs/favicon/apple-icon-72x72.png">

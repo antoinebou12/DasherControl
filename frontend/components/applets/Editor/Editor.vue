@@ -112,7 +112,9 @@
         <vs-button class="menubar__button" @click="save">
         save
         </vs-button>
-
+        <vs-button @click="save()">
+          <i class="bx bx-save"/>
+        </vs-button>
       </div>
     </editor-menu-bar>
 
@@ -143,17 +145,6 @@ import {
   Image
 } from "tiptap-extensions";
 
-const default_content =  `
-          <ul>
-            <li>
-              A regular list
-            </li>
-            <li>
-              With regular items
-            </li>
-          </ul>`
-
-
 export default {
   name: "Editor",
   components: {
@@ -162,7 +153,7 @@ export default {
   },
   props: {
     name: String,
-    content: String
+    textContent: String
   },
   data() {
     return {
@@ -187,24 +178,23 @@ export default {
           new History(),
           new Image()
         ],
-        content: this.content || default_content,
-        data:  this.content
-      })
+      }),
     }
+  },
+  created() {
+    this.editor.setContent(this.textContent)
   },
   beforeDestroy() {
     this.editor.destroy();
   },
   methods: {
     save(){
-      this.editor.save().then( (data)=> {
-        this.content = data.blocks
-        console.log(data.blocks)
-      })
+      let htmlText = this.editor.getHTML()
+      // GridItem
+      this.$parent.$attrs["textContent"] = htmlText;
+      // GridItemApplet
+      this.$parent.$parent.$parent.currentAppletData["textContent"] = htmlText;
     },
-    load() {
-
-    }
   }
 };
 </script>
