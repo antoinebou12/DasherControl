@@ -50,7 +50,7 @@ export default {
   data: () => ({
     layout: [
       {x: 0, y: 0, w: 6, h: 12, i: 0, static: false, appletData: { appletName: 'Editor'}, extra: {title: '0'}},
-      {x: 6, y: 0, w: 6, h: 12, i: 1, static: false, appletData: { appletName: 'IFrame', src: 'https://www.chess.com/daily_puzzle'}, extra: {title: '1'}},
+      {x: 6, y: 0, w: 4, h: 24, i: 1, static: false, appletData: { appletName: 'IFrame', src: 'https://www.chess.com/daily_puzzle'}, extra: {title: '1'}},
       {x: 0, y: 6, w: 6, h: 12, i: 2, static: false, appletData: { appletName: 'CreateNew'}, extra: {title: '2'}},
     ],
     draggable: true,
@@ -136,7 +136,7 @@ export default {
         applet.position_y = this.layout[i].y
         applet.width = this.layout[i].w
         applet.height = this.layout[i].h
-        applet.editable = this.layout[i].static
+        applet.editable = !this.layout[i].static
         applet.applet_data = this.layout[i].appletData
         applets_layout.push(applet)
       }
@@ -149,22 +149,63 @@ export default {
           'Authorization': `Bearer ${this.$store.state.user.token}`
         },
         data: {
-          name: "workspace",
+          name: name,
           display_order: 0,
-          tenant_id: 0,
           applets: applets_layout
         }
       }).then((response) => {
         createNotification(
             self,
-            "workspace Saved",
+            name + " Workspace Saved",
             "",
             'primary')
       }).catch(function (error) {
         createNotification(
             self,
             "Error while save workspace",
-            error.response.data,
+            error.data,
+            'danger')
+      });
+    },
+    updateWorkspaceLayout(id, name="workspace"){
+      const self = this;
+      let applets_layout = []
+      for (let i=0;i < this.layout.length;i++) {
+        let applet = {}
+        applet.name = this.layout[i].i.toString()
+        applet.position_x = this.layout[i].x
+        applet.position_y = this.layout[i].y
+        applet.width = this.layout[i].w
+        applet.height = this.layout[i].h
+        applet.editable = !this.layout[i].static
+        applet.applet_data = this.layout[i].appletData
+        applets_layout.push(applet)
+      }
+
+      axios({
+        method: 'post',
+        url: '/workspaces/api/update',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.$store.state.user.token}`
+        },
+        data: {
+          id: id,
+          name: name,
+          display_order: 0,
+          applets: applets_layout
+        }
+      }).then((response) => {
+        createNotification(
+            self,
+            name + " Workspace Saved",
+            "",
+            'primary')
+      }).catch(function (error) {
+        createNotification(
+            self,
+            "Error while save workspace",
+            error.data,
             'danger')
       });
     },
@@ -187,8 +228,8 @@ export default {
               response.data[i].width,
               response.data[i].height,
               response.data[i].editable,
-              response.data[i].editable,
-              response.data[i].editable,
+              !response.data[i].editable,
+              !response.data[i].editable,
               response.data[i].applet_data,
               {}
           )

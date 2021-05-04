@@ -1,10 +1,10 @@
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, deserialize, serialize};
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, deserialize, serialize, update};
 
 use crate::schema::applets;
 use crate::schema::workspaces;
 use crate::tenants::error::MyError;
-use crate::schema::applets::workspace_id;
-use crate::schema::workspaces::dsl::tenant_id;
+use crate::schema::applets::dsl::{workspace_id, id as aid};
+use crate::schema::workspaces::dsl::{tenant_id, id as wid, display_order, name};
 use diesel::backend::Backend;
 use diesel::deserialize::FromSql;
 use serde_json::Value;
@@ -14,10 +14,9 @@ use std::io::Write;
 use diesel::pg::Pg;
 
 
-#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Identifiable, Queryable, AsChangeset)]
 #[table_name = "applets"]
 pub struct Applet {
-    #[serde(skip)]
     pub id: i32,
     pub name: String,
     pub position_x: i32,
@@ -26,11 +25,10 @@ pub struct Applet {
     pub height: i32,
     pub editable: bool,
     pub applet_data: DBJsonType,
-    #[serde(skip)]
     pub workspace_id: i32
 }
 
-#[derive(Debug, Serialize, Deserialize, Insertable)]
+#[derive(Debug, Serialize, Deserialize, Insertable, PartialEq)]
 #[table_name = "applets"]
 pub struct NewApplet {
     pub name: String,
@@ -42,7 +40,8 @@ pub struct NewApplet {
     pub applet_data: DBJsonType,
     pub workspace_id: i32
 }
-#[derive(Debug, Serialize, Deserialize)]
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct NewAppletNoWorkspace {
     pub name: String,
     pub position_x: i32,
@@ -74,7 +73,27 @@ impl Applet {
     }
 
     pub fn all_applets_by_workspace(conn: &PgConnection, id: i32) -> QueryResult<Vec<Applet>> {
-        return applets::table.filter(workspace_id.eq(&id)).load::<Applet>(conn);
+        return applets::table.filter(workspace_id.eq(&id)).order(aid.asc()).load::<Applet>(conn);
+    }
+
+    pub fn delete_all_from_workspace(conn: &PgConnection, id: i32) -> QueryResult<usize> {
+        return diesel::delete(applets::table.filter(workspace_id.eq(&id))).execute(conn);
+    }
+
+    pub fn update(conn: &PgConnection, change_applet: Applet) -> Result<Applet, MyError> {
+        return Ok(diesel::update(applets::table.filter(aid.eq(change_applet.id)))
+            .set(Applet {
+                id: change_applet.id,
+                name: change_applet.name,
+                position_x: change_applet.position_x,
+                position_y: change_applet.position_y,
+                width: change_applet.width,
+                height: change_applet.height,
+                editable: change_applet.editable,
+                applet_data: change_applet.applet_data,
+                workspace_id: change_applet.workspace_id
+            })
+            .get_result(conn)?);
     }
 }
 
@@ -82,10 +101,8 @@ impl Applet {
 #[table_name = "workspaces"]
 pub struct Workspace {
     pub id: i32,
-    #[serde(skip)]
     pub display_order: i32,
     pub name: String,
-    #[serde(skip)]
     pub tenant_id: i32,
 }
 
@@ -98,12 +115,29 @@ pub struct NewWorkspace {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct WorkspaceWithApplets {
+    pub id: i32,
+    pub display_order: i32,
+    pub name: String,
+    pub tenant_id: i32,
+    pub applets: Vec<NewAppletNoWorkspace>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct NewWorkspaceWithApplets {
     pub display_order: i32,
     pub name: String,
     pub tenant_id: i32,
     pub applets: Vec<NewAppletNoWorkspace>
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct WorkspaceNoIDWithApplets {
+    pub display_order: i32,
+    pub name: String,
+    pub applets: Vec<NewAppletNoWorkspace>
+}
+
 
 
 impl Workspace {
@@ -114,6 +148,18 @@ impl Workspace {
                 name: new_workspace.name,
                 tenant_id: new_workspace.tenant_id
             })
+            .get_result(conn)?);
+    }
+
+    pub fn update(conn: &PgConnection, update_workspace: Workspace) -> Result<Workspace, MyError> {
+        return Ok(diesel::update(
+            workspaces::table.filter(wid.eq(update_workspace.id)))
+            .set(
+                (
+                    display_order.eq(update_workspace.display_order),
+                    name.eq(update_workspace.name),
+                ))
+
             .get_result(conn)?);
     }
 
@@ -151,6 +197,53 @@ impl Workspace {
         return Ok(workspace)
     }
 
+    pub fn update_with_applets(conn: &PgConnection, update_workspace: WorkspaceWithApplets)
+                               -> Result<Workspace, MyError> {
+        let change_workspace = Workspace {
+            id: update_workspace.id,
+            display_order: update_workspace.display_order,
+            name: update_workspace.name,
+            tenant_id: update_workspace.tenant_id
+        };
+        let workspace = Workspace::update(conn, change_workspace)?;
+        let mut current_applets = Applet::all_applets_by_workspace(conn, update_workspace.id).unwrap();
+        let mut count = 0;
+        if update_workspace.applets.len() == 0 {
+            Applet::delete_all_from_workspace(conn, update_workspace.id);
+        }
+        for change_applet in update_workspace.applets {
+            if count >= current_applets.len() {
+                let new_applet_workspace_id = NewApplet {
+                    name: change_applet.name,
+                    position_x: change_applet.position_x,
+                    position_y: change_applet.position_y,
+                    width: change_applet.width,
+                    height: change_applet.height,
+                    editable: change_applet.editable,
+                    applet_data: change_applet.applet_data,
+                    workspace_id: workspace.id
+                };
+                let _applets = Applet::create(conn, new_applet_workspace_id);
+            } else {
+                let current_applet = &mut current_applets[count];
+                    let change_applet_workspace_id = Applet {
+                        id: current_applet.id,
+                        name: change_applet.name,
+                        position_x: change_applet.position_x,
+                        position_y: change_applet.position_y,
+                        width: change_applet.width,
+                        height: change_applet.height,
+                        editable: change_applet.editable,
+                        applet_data: change_applet.applet_data,
+                        workspace_id: update_workspace.id
+                    };
+                    let _applets = Applet::update(conn, change_applet_workspace_id);
+            }
+            count += 1;
+        }
+        return Ok(workspace)
+    }
+
 }
 
 
@@ -171,6 +264,6 @@ impl ToSql<Varchar, Pg> for DBJsonType {
     }
 }
 
-#[derive(AsExpression, Debug, Deserialize, Serialize, FromSqlRow)]
+#[derive(AsExpression, Debug, Deserialize, Serialize, FromSqlRow, PartialEq, Clone)]
 #[sql_type = "Varchar"]
 pub struct DBJsonType(Value);

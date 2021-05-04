@@ -8,6 +8,7 @@
       <vs-button @click="gridLayout.unlockGridLayout()"><i class="bx bx-lock-open-alt"/></vs-button>
       <vs-button @click="saveWorkspace()"><i class="bx bx-save"/></vs-button>
       <vs-button @click="workspaceSelector()"><i class="bx bx-download"/></vs-button>
+      <vs-button @click="updateWorkspace()"><i class="bx bx-export"/></vs-button>
 <!--    <vs-sidebar v-model="sidebarActive">-->
 <!--      <vs-sidebar-item @click="gridLayout.addNewItem()">-->
 <!--        <template #icon>-->
@@ -70,7 +71,13 @@ export default {
       this.gridLayout.workspace_id = this.$refs.workspaceSelector.selected.id;
     },
     saveWorkspace(){
-      this.gridLayout.saveWorkspaceLayout();
+      this.gridLayout.saveWorkspaceLayout(this.$refs.workspaceSelector.workspaceName);
+      this.$refs.workspaceSelector.get_workspaces();
+      this.$refs.workspaceSelector.isVisible = true;
+      this.$refs.workspaceSelector.$forceUpdate();
+    },
+    updateWorkspace(){
+      this.gridLayout.updateWorkspaceLayout();
       this.$refs.workspaceSelector.get_workspaces();
       this.$refs.workspaceSelector.isVisible = true;
       this.$refs.workspaceSelector.$forceUpdate();

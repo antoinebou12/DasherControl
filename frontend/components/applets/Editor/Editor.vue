@@ -6,42 +6,42 @@
           class="menubar__button"
           :active="isActive.bold()"
           @click="commands.bold">
-          B
+          <i class="bx bx-bold"/>
         </vs-button>
 
         <vs-button
           class="menubar__button"
           :active="isActive.italic()"
           @click="commands.italic">
-          /
+          <i class="bx bx-italic"/>
         </vs-button>
 
         <vs-button
           class="menubar__button"
           :active="isActive.strike()"
           @click="commands.strike">
-          -
+          <i class="bx bx-strikethrough"/>
         </vs-button>
 
         <vs-button
           class="menubar__button"
           :active="isActive.underline()"
           @click="commands.underline">
-          _
+          <i class="bx bx-underline"/>
         </vs-button>
 
         <vs-button
           class="menubar__button"
           :active="isActive.code()"
           @click="commands.code">
-          pre
+          <i class="bx bx-code"/>
         </vs-button>
 
         <vs-button
           class="menubar__button"
           :active="isActive.paragraph()"
           @click="commands.paragraph">
-          p
+          <i class="bx bx-paragraph"/>
         </vs-button>
 
         <vs-button
@@ -71,14 +71,14 @@
           class="menubar__button"
           :active="isActive.bullet_list()"
           @click="commands.bullet_list">
-          ul
+          <i class="bx bx-list-ul"/>
         </vs-button>
 
         <vs-button
           class="menubar__button"
           :active="isActive.ordered_list()"
           @click="commands.ordered_list">
-          ol
+          <i class="bx bx-list-ol"/>
         </vs-button>
 
         <vs-button
@@ -86,7 +86,7 @@
           :active="isActive.blockquote()"
           @click="commands.blockquote"
         >
-          >
+          <i class="bx bx-quote"/>
         </vs-button>
 
         <vs-button
@@ -94,7 +94,7 @@
           :active="isActive.code_block()"
           @click="commands.code_block"
         >
-          code
+          <i class="bx bx-code-block"/>
         </vs-button>
 
         <vs-button class="menubar__button" @click="commands.horizontal_rule">
@@ -102,17 +102,13 @@
         </vs-button>
 
         <vs-button class="menubar__button" @click="commands.undo">
-          undo
+          <i class="bx bx-undo"/>
         </vs-button>
 
         <vs-button class="menubar__button" @click="commands.redo">
-          redo
+          <i class="bx bx-redo"/>
         </vs-button>
-
-        <vs-button class="menubar__button" @click="save">
-        save
-        </vs-button>
-        <vs-button @click="save()">
+        <vs-button class="menubar__button" @click="save()">
           <i class="bx bx-save"/>
         </vs-button>
       </div>

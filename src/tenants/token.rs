@@ -83,6 +83,10 @@ impl Claims {
     pub fn has_role(&self, role: &str) -> bool {
         self.role == role.to_string()
     }
+
+    pub fn get_tenant_id(&self) -> i32 {
+        return self.sub;
+    }
 }
 
 pub fn create_token(id: i32, email: &str, username: &str, role: &str, login_session: &str) -> String {

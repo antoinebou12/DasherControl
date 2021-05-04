@@ -19,6 +19,9 @@
             :is-selected="selected == workspace">
           <vs-td>{{ workspace.name }}</vs-td>
         </vs-tr>
+        <vs-tr>
+          <vs-td><vs-input ref="workspaceNameInput" type="text" placeholder="workspace" v-model="workspaceName"/></vs-td>
+        </vs-tr>
       </template>
       <template #notFound>
         <span></span>
@@ -36,6 +39,7 @@ export default {
       selected: null,
       workspaces: [],
       isVisible: true,
+      workspaceName: "Workspace"
     }
   },
   computed: {
@@ -46,12 +50,15 @@ export default {
       set: function (newVal) {
         this.token = newVal;
       }
-    }
+    },
   },
   watch: {
     isVisible: function(newVal, oldVal) {
       this.get_workspaces()
     }
+  },
+  created() {
+    this.get_workspaces()
   },
   methods: {
     get_workspaces(){
