@@ -18,7 +18,8 @@
   Also i want to make a simple dashboard with widget (vuejs compoment) like windows vista, but on the web and save in db.
 </p>
 
-Preview Look
+# Preview Look
+
 Preview look 0.1.5
 ![gif](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/demo%20dashercontrol.gif)
 Preview look 0.1.2
