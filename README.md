@@ -19,12 +19,14 @@
 </p>
 
 Preview Look
+Preview look 0.1.5
 ![gif](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/demo%20dashercontrol.gif)
+Preview look 0.1.2
 ![preview look](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/DasherControl.png)
 
 
 # Roadmap
-![DasherControlv1](https://github.com/antoinebou13/DasherControl/projects/1)
+[DasherControlv1](https://github.com/antoinebou13/DasherControl/projects/1)
 
 ## Finish
 
