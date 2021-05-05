@@ -19,6 +19,7 @@
 </p>
 
 Preview Look
+![gif](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/demo%20dashercontrol.gif)
 ![preview look](https://raw.githubusercontent.com/antoinebou13/DasherControl/main/images/DasherControl.png)
 
 
