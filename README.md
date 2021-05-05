@@ -6,7 +6,7 @@
 <p>
   <a href="#" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/antoinebou13/DasherControl/CI">
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/antoinebou13/DasherControl/build">
     <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/antoinebou13/DasherControl">
   </a>
 </p>
