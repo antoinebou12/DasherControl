@@ -3,7 +3,7 @@ use rocket::response::status;
 use rocket_contrib::json::Json;
 
 use crate::db::DbConn;
-use crate::workspaces::model::{NewWorkspace, Workspace, NewApplet, Applet, NewWorkspaceWithApplets, WorkspaceNoIDWithApplets, WorkspaceWithApplets};
+use crate::workspaces::model::{NewWorkspace, Workspace, NewApplet, Applet, NewWorkspaceWithApplets, WorkspaceNoIDWithApplets, WorkspaceWithApplets, WorkspaceNoTenantWithApplets};
 use diesel::result::Error;
 use crate::tenants::token::Claims;
 
@@ -51,7 +51,7 @@ pub fn create_workspace(conn: DbConn, workspace: Json<NewWorkspace>) -> Result<s
 }
 
 #[post("/api/update", format="application/json", data = "<workspace>")]
-pub fn update_workspace(conn: DbConn, workspace: Json<WorkspaceWithApplets>, token: Result<Claims, Status>) -> Result<Json<String>, Status> {
+pub fn update_workspace(conn: DbConn, workspace: Json<WorkspaceNoTenantWithApplets>, token: Result<Claims, Status>) -> Result<Json<String>, Status> {
     let token = match token {
         Ok(token) => token,
         Err(e) => return Err(e)
@@ -99,3 +99,15 @@ pub fn create_workspace_with_applets(conn: DbConn, workspace: Json<WorkspaceNoID
         Err(_) => Err(Status::Conflict)
     }
 }
+
+
+#[post("/api/delete/<workspace_id>")]
+pub fn delete_workspace_with_applets(conn: DbConn, workspace_id: i32, token: Result<Claims, Status>) -> Result<Json<String>, Status> {
+    let token = match token {
+        Ok(token) => token,
+        Err(e) => return Err(e)
+    };
+    Workspace::delete_with_applets(&conn, &workspace_id);
+    Ok(Json("workspace with applets deleted".to_string()))
+}
+

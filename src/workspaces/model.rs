@@ -138,6 +138,14 @@ pub struct WorkspaceNoIDWithApplets {
     pub applets: Vec<NewAppletNoWorkspace>
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct WorkspaceNoTenantWithApplets {
+    pub id: i32,
+    pub display_order: i32,
+    pub name: String,
+    pub applets: Vec<NewAppletNoWorkspace>
+}
+
 
 
 impl Workspace {
@@ -163,6 +171,11 @@ impl Workspace {
             .get_result(conn)?);
     }
 
+    pub fn delete_with_applets(conn: &PgConnection, id: &i32) -> usize {
+        diesel::delete(applets::table.filter(workspace_id.eq(id))).execute(conn).unwrap();
+        return diesel::delete(workspaces::table.filter(wid.eq(id))).execute(conn).unwrap();
+    }
+
     pub fn all(conn: &PgConnection) -> QueryResult<Vec<Workspace>> {
         return workspaces::table.load::<Workspace>(conn);
     }
@@ -170,6 +183,7 @@ impl Workspace {
     pub fn all_for_tenant(conn: &PgConnection, id: &i32) -> Result<Vec<Workspace>, diesel::result::Error> {
         return workspaces::table
             .filter(tenant_id.eq(&id))
+            .order(display_order.asc())
             .load::<Workspace>(conn);
     }
 

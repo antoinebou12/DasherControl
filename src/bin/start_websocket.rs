@@ -53,16 +53,15 @@ async fn handle_connection(peer: SocketAddr, stream: TTcpStream) -> Result<()> {
 
 #[tokio::main]
 pub(crate) async fn main() {
-    tokio::spawn(connnect_ssh("username", "password"));
-    // let addr = "0.0.0.0:9000";
-    // let listener = TTcpListener::bind(&addr).await.expect("Can't listen");
-    // println!("Listening on: {}", addr);
-    //
-    // while let Ok((stream, _)) = listener.accept().await {
-    //     let peer = stream.peer_addr().expect("connected streams should have a peer address");
-    //     println!("Peer address: {}", peer);
-    //
-    //     tokio::spawn(accept_connection(peer, stream));
-    // }
+    let addr = "0.0.0.0:9000";
+    let listener = TTcpListener::bind(&addr).await.expect("Can't listen");
+    println!("Listening on: {}", addr);
+
+    while let Ok((stream, _)) = listener.accept().await {
+        let peer = stream.peer_addr().expect("connected streams should have a peer address");
+        println!("Peer address: {}", peer);
+
+        tokio::spawn(accept_connection(peer, stream));
+    }
 }
 

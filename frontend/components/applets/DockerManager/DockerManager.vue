@@ -85,6 +85,7 @@ export default {
   name: "DockerManager",
   data() {
     return {
+      statusInterval: null,
       containers: [],
       token: '',
     }
@@ -92,12 +93,18 @@ export default {
   created() {
     this.get_container();
     this.get_token();
+    this.statusInterval = setInterval(() => {
+      this.get_container();
+    }, 1000)
+  },
+  updated() {
+    this.get_container();
+  },
+  beforeDestroy() {
+    clearInterval(this.statusInterval);
   },
   methods: {
-
     get_container() {
-      this.containers = []
-
       axios({
         method: 'get',
         url: '/containers/api/docker_list',
@@ -105,17 +112,18 @@ export default {
           'Content-Type': 'application/json'
         },
       }).then((response) => {
-
+        this.containers = []
         if (response.data.length != 0) {
           for (let i = 0; i < response.data.length; i++) {
+            let ports = (response.data[i]["Ports"].length == 0 ? [{"Ip": "Host", "PublicPort": "X"}]: response.data[i]["Ports"]);
             this.containers.push({
               id: response.data[i].Id.slice(0, 11),
               name: response.data[i].Names[0].replace("/", ""),
               image: response.data[i].Image,
               state: response.data[i].State,
               status: response.data[i].Status,
-              ip: response.data[i].Ports["Ip"] || "Host",
-              public_port: response.data[i].Ports["PublicPort"] || "X"
+              ip: ports[0]["Ip"] || window.location.hostname.replace("www.", ""),
+              public_port: ports[0]["PublicPort"] || "X"
             })
           }
         }
@@ -156,6 +164,8 @@ export default {
           Authorization: `Bearer ${this.get_token()}`
         },
         url: '/containers/api/stop/' + id,
+      }).then((response) => {
+        this.get_container()
       })
     },
     restart_container(id) {
@@ -166,6 +176,8 @@ export default {
           Authorization: `Bearer ${this.get_token()}`
         },
         url: '/containers/api/restart/' + id,
+      }).then((response) => {
+        this.get_container()
       })
     }
   }

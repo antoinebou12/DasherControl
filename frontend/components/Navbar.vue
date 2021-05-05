@@ -8,9 +8,6 @@
         <img src="/public/imgs/favicon/favicon-32x32.png" alt=""/>
       </template>
       <template #right>
-        <vs-navbar-item class="vs-navbar-item" @click="set_active('Edit')" id="edit" index="0">
-          <i class="bx bx-edit-alt"></i>
-        </vs-navbar-item>
         <vs-navbar-item class="vs-navbar-item" @click="set_active('Settings')" id="settings" index="1">
             <i class="bx bx-cog"></i>
         </vs-navbar-item>

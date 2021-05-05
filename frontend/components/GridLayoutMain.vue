@@ -24,6 +24,7 @@
           :appletData="item.appletData"
           :extra="item.extra"
           :id="item.i"
+          ref=""
           @removeItem="removeItem">
       </GridItemApplet>
     </grid-layout>
@@ -129,6 +130,10 @@ export default {
     saveWorkspaceLayout(name="workspace"){
       const self = this;
       let applets_layout = []
+      for (let i=0;i < this.$refs.gridLayout.$children.length;i++) {
+        this.$refs.gridLayout.$children
+      }
+
       for (let i=0;i < this.layout.length;i++) {
         let applet = {}
         applet.name = this.layout[i].i.toString()
@@ -198,13 +203,13 @@ export default {
       }).then((response) => {
         createNotification(
             self,
-            name + " Workspace Saved",
+            name + " Workspace Updated",
             "",
             'primary')
       }).catch(function (error) {
         createNotification(
             self,
-            "Error while save workspace",
+            "Error while updating workspace",
             error.data,
             'danger')
       });
@@ -227,9 +232,9 @@ export default {
               response.data[i].position_y,
               response.data[i].width,
               response.data[i].height,
+              !response.data[i].editable,
               response.data[i].editable,
-              !response.data[i].editable,
-              !response.data[i].editable,
+              response.data[i].editable,
               response.data[i].applet_data,
               {}
           )

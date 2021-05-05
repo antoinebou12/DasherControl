@@ -1,5 +1,5 @@
 <template>
-  <div class="editor-container">
+  <div ref="editorContainer" class="editor-container">
     <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
       <div class="menubar">
         <vs-button
@@ -86,7 +86,7 @@
           :active="isActive.blockquote()"
           @click="commands.blockquote"
         >
-          <i class="bx bx-quote"/>
+          <i class="bx bxs-quote-alt-right"/>
         </vs-button>
 
         <vs-button
@@ -108,13 +108,10 @@
         <vs-button class="menubar__button" @click="commands.redo">
           <i class="bx bx-redo"/>
         </vs-button>
-        <vs-button class="menubar__button" @click="save()">
-          <i class="bx bx-save"/>
-        </vs-button>
       </div>
     </editor-menu-bar>
 
-    <editor-content class="editor-content" :editor="editor" />
+    <editor-content ref="editorContent" class="editor-content" :editor="editor" />
   </div>
 </template>
 
@@ -152,8 +149,19 @@ export default {
     textContent: String
   },
   data() {
+    var self = this;
     return {
       editor: new Editor({
+        onUpdate({}) {
+          self.save()
+          self.$refs.editorContainer.style.height = (100 + self.$refs.editorContent.$el.offsetHeight).toString() + "px";
+          if (self.$parent.$parent.$parent.$refs.gridItemMain.offsetHeight < self.$refs.editorContent.$el.offsetHeight) {
+            self.$parent.$parent.$parent.$refs.draggableHandle.style.height = "auto";
+            setTimeout(() => {
+              self.$parent.$parent.$parent.$refs.draggableHandle.style.height = "24px";
+            }, 1);
+          }
+        },
         extensions: [
           new Blockquote(),
           new BulletList(),
@@ -198,6 +206,12 @@ export default {
 <style lang="scss" scoped>
 .menubar {
   display: flex;
+
+  .menubar__button {
+    background-color: var(--fg);
+    color: var(--bg);
+    border: var(--bg) 1px;
+  }
 }
 .editor-container {
   box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px,
@@ -212,7 +226,6 @@ export default {
     overflow-wrap: break-word;
     word-wrap: break-word;
     word-break: break-word;
-    height:100%;
 
     * {
       caret-color: currentColor;

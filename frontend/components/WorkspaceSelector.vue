@@ -1,7 +1,7 @@
 <template>
   <div v-if="token !== ''" class="center workspace-selector-container">
     <span class="toggle-hide" >
-      <i class="bx bx-down-arrow" @click="isVisible = !isVisible"/>
+      <i :class="{'bx-down-arrow': !isVisible, 'bx-up-arrow':isVisible}"  class="bx " @click="isVisible = !isVisible"/>
     </span>
     <vs-table class="workspace-selector" v-model="selected">
       <template #thead>
@@ -16,17 +16,22 @@
             :key="i"
             v-for="(workspace, i) in workspaces"
             :data="workspace"
-            :is-selected="selected == workspace">
-          <vs-td>{{ workspace.name }}</vs-td>
+            :is-selected="selected == workspace"
+            :class="{'selected': selected.id === workspace.id}">
+          <vs-td>
+            <span>{{ workspace.name }}</span>
+            <span @click="deleteWorkspace(workspace.id)"><i class="bx bx-x delete"></i></span>
+          </vs-td>
         </vs-tr>
-        <vs-tr>
-          <vs-td><vs-input ref="workspaceNameInput" type="text" placeholder="workspace" v-model="workspaceName"/></vs-td>
-        </vs-tr>
-      </template>
-      <template #notFound>
-        <span></span>
       </template>
     </vs-table>
+    <vs-input v-if="isVisible"
+              class="workspace-name-input"
+              v-on:keyup.enter="editWorkspaceName()"
+              ref="workspaceNameInput"
+              type="text"
+              placeholder="Press Enter to Save Name"
+              v-model="workspaceName"/>
   </div>
 </template>
 
@@ -36,10 +41,13 @@ export default {
   name: "WorkspaceSelector",
   data() {
     return {
-      selected: null,
+      selected: {"id": -1},
       workspaces: [],
       isVisible: true,
-      workspaceName: "Workspace"
+      workspaceName: "",
+      currentWorkspaceName: "",
+      clickCount: 0,
+      clickTimer: null
     }
   },
   computed: {
@@ -55,10 +63,20 @@ export default {
   watch: {
     isVisible: function(newVal, oldVal) {
       this.get_workspaces()
+    },
+    selected: function(newVal, oldVal) {
+      if (newVal === null) {
+        this.workspaceName = "";
+      }
+      this.workspaceName = newVal.name;
+      this.$emit('selected')
     }
   },
   created() {
-    this.get_workspaces()
+    this.get_workspaces();
+  },
+  updated() {
+    this.get_workspaces();
   },
   methods: {
     get_workspaces(){
@@ -75,6 +93,22 @@ export default {
           this.workspaces = []
         });
     },
+    editWorkspaceName() {
+      this.$emit("updateName")
+    },
+    deleteWorkspace(id) {
+      axios({
+        method: 'post',
+        url: '/workspaces/api/delete/' + id,
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        },
+      }).then((response) => {
+        this.get_workspaces()
+      }).catch((error) => {
+        this.get_workspaces()
+      });
+    }
   },
 }
 </script>
@@ -94,6 +128,15 @@ export default {
       position:absolute;
       top: 56px;
       right: 24px;
+    }
+    .delete {
+      color: rgba(var(--vs-danger));
+      position: absolute;
+      right: 23px;
+      font-size: 18px;
+    }
+    .workspace-name-input {
+      margin-top: 8px;
     }
   }
 </style>

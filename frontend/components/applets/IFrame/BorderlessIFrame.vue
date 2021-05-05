@@ -1,6 +1,7 @@
 <template>
   <div class="iframe-container">
     <iframe
+        ref="iframe"
         class="borderless-iframe"
         :src="link"
         loading="lazy"
@@ -23,12 +24,15 @@ export default {
   data() {
     return {
       scrolling: "yes",
-      link: this.src
+      link: this.src,
     }
   },
   methods:{
     openNewTab() {
       window.open(this.link, '_blank').focus()
+    },
+    reload() {
+      this.$refs.iframe.src += '';
     }
   }
 };

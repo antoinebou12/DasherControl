@@ -6,11 +6,12 @@
     <div class="grid-item-content">
       <div class="grid-item-main">
         <span v-if="showTitle" class="title">{{ getTitle() }}</span>
-        <div class="vue-draggable-handle">
+        <div ref="draggableHandle" class="vue-draggable-handle" style="height: 24px;">
           <span class="remove-item" @click="removeItem()"><i class="bx bx-x"/></span>
-          <span v-if="appletName == 'IFrame'" class="open-new-tab-item" @click="openNewTab"><i class="bx bx-export"/></span>
+          <span v-if="appletName == 'IFrame'" class="open-new-tab-item" @click="openNewTab()"><i class="bx bx-export"/></span>
+          <span v-if="appletName == 'IFrame'" class="reload-iframe" @click="reload()"><i class="bx bx-refresh"/></span>
         </div>
-        <div class="grid-item-main no-drag">
+        <div ref="gridItemMain" class="grid-item-main no-drag">
           <Applet ref="applet" @changeApplet="changeApplet" :appletName="appletName" v-bind="currentAppletData"></Applet>
         </div>
       </div>
@@ -60,19 +61,21 @@ export default {
     containerResizedEvent: function (i, newH, newW, newHPx, newWPx) {
     },
     changeApplet() {
-      this.appletData.appletName = this.$refs.applet.currentAppletName
-      this.currentAppletData.appletName = this.$refs.applet.currentAppletName
+      this.appletData.appletName = this.$refs.applet.currentAppletName;
+      this.currentAppletData.appletName = this.$refs.applet.currentAppletName;
       for(let key in this.$refs.applet.$attrs){
-        this.currentAppletData[key] = this.$refs.applet.$attrs[key]
+        this.currentAppletData[key] = this.$refs.applet.$attrs[key];
       }
     },
     removeItem() {
       this.$emit('removeItem', this.id);
     },
     openNewTab() {
-      window.open(this.appletData.src, '_blank').focus()
-    }
-
+      window.open(this.appletData.src, '_blank').focus();
+    },
+    reload() {
+      this.$refs.applet.$refs.applet.reload();
+    },
   }
 }
 </script>
@@ -137,7 +140,6 @@ export default {
 
 .vue-draggable-handle {
   width: 100%;
-  height: 24px;
   background: var(--cl);
   box-sizing: border-box;
   cursor: grab;
@@ -154,6 +156,14 @@ export default {
     right: 32px;
     top: 2px;
     font-size: 14px;
+    cursor: pointer;
+    color: var(--fg)
+  }
+  .reload-iframe {
+    position: absolute;
+    right: 54px;
+    top: 1px;
+    font-size: 16px;
     cursor: pointer;
     color: var(--fg)
   }

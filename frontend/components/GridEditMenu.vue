@@ -1,13 +1,12 @@
 <template>
   <div class="grid-edit-menu-container">
-    <WorkspaceSelector ref="workspaceSelector" />
+    <WorkspaceSelector @selected="workspaceSelector()" @updateName="updateWorkspace()" ref="workspaceSelector" />
     <div class="grid-edit-menu">
       <vs-button @click="gridLayout.addNewItem()"><i class="bx bx-add-to-queue"/></vs-button>
       <vs-button @click="gridLayout.removeItem()"><i class="bx bx-x"/></vs-button>
       <vs-button @click="gridLayout.lockGridLayout()"><i class="bx bx-lock-alt"/></vs-button>
       <vs-button @click="gridLayout.unlockGridLayout()"><i class="bx bx-lock-open-alt"/></vs-button>
       <vs-button @click="saveWorkspace()"><i class="bx bx-save"/></vs-button>
-      <vs-button @click="workspaceSelector()"><i class="bx bx-download"/></vs-button>
       <vs-button @click="updateWorkspace()"><i class="bx bx-export"/></vs-button>
 <!--    <vs-sidebar v-model="sidebarActive">-->
 <!--      <vs-sidebar-item @click="gridLayout.addNewItem()">-->
@@ -72,14 +71,14 @@ export default {
     },
     saveWorkspace(){
       this.gridLayout.saveWorkspaceLayout(this.$refs.workspaceSelector.workspaceName);
-      this.$refs.workspaceSelector.get_workspaces();
-      this.$refs.workspaceSelector.isVisible = true;
+      this.$refs.workspaceSelector.get_workspaces()
       this.$refs.workspaceSelector.$forceUpdate();
     },
     updateWorkspace(){
-      this.gridLayout.updateWorkspaceLayout();
-      this.$refs.workspaceSelector.get_workspaces();
-      this.$refs.workspaceSelector.isVisible = true;
+      this.gridLayout.updateWorkspaceLayout(
+          this.$refs.workspaceSelector.selected.id,
+          this.$refs.workspaceSelector.workspaceName);
+      this.$refs.workspaceSelector.get_workspaces()
       this.$refs.workspaceSelector.$forceUpdate();
     }
   }
@@ -90,7 +89,7 @@ export default {
 <style lang="scss" scoped>
 .grid-edit-menu {
   display: inline-flex;
-  margin-top: 36px;
+  margin-top: 12px;
   margin-bottom: 24px;
 
   button {

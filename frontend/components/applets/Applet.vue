@@ -1,5 +1,5 @@
 <template>
-  <component :is="applet" v-bind="$attrs"/>
+  <component ref="applet" :is="applet" v-bind="$attrs"/>
 </template>
 
 <script>

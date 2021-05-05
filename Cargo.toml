@@ -1,6 +1,6 @@
 [package]
 name = "dasher_control"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Antoine Boucher <antoine.bou13@gmail.com>"]
 keywords = ["rocket", "tilling", "vue", "web-server", "dashercontrol", "dashboard"]
 license = "MIT"
