@@ -8,11 +8,11 @@
         <img src="/public/imgs/favicon/favicon-32x32.png" alt=""/>
       </template>
       <template #right>
-        <vs-navbar-item class="vs-navbar-item" @click="set_active('Settings')" id="settings" index="1">
+        <vs-navbar-item  v-if="is_login" class="vs-navbar-item" @click="set_active('Settings')" id="settings" index="1">
             <i class="bx bx-cog"></i>
         </vs-navbar-item>
         <vs-button v-if="!is_login" flat @click="set_active('Login')">Login</vs-button>
-<!--        <vs-button v-if="!is_login" @click="set_active('SignUp')">Sign Up</vs-button>-->
+        <vs-button v-if="!is_login" @click="set_active('SignUp')">Sign Up</vs-button>
         <vs-button v-if="is_login"  flat @click="logout()">Logout</vs-button>
       </template>
     </vs-navbar>

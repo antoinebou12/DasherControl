@@ -24,6 +24,10 @@
           </vs-td>
         </vs-tr>
       </template>
+      <template #notFound>
+        <span v-if="isVisible">Try creating a new workspace with the Save icon</span>
+        <span v-else></span>
+      </template>
     </vs-table>
     <vs-input v-if="isVisible"
               class="workspace-name-input"
@@ -41,7 +45,7 @@ export default {
   name: "WorkspaceSelector",
   data() {
     return {
-      selected: {"id": -1},
+      selected: {"name": "", "id": -1},
       workspaces: [],
       isVisible: true,
       workspaceName: "",
@@ -73,7 +77,15 @@ export default {
     }
   },
   created() {
-    this.get_workspaces();
+    if (this.token !== '') {
+      this.get_workspaces();
+    }
+
+  },
+  mounted() {
+    if (this.workspaces.length && this.token !== '') {
+      this.selected = this.workspaces[0];
+    }
   },
   updated() {
     this.get_workspaces();
@@ -104,8 +116,18 @@ export default {
           'Authorization': `Bearer ${this.token}`
         },
       }).then((response) => {
+        createNotification(
+            self,
+            name + " Workspace Deleted",
+            "",
+            'primary')
         this.get_workspaces()
       }).catch((error) => {
+        createNotification(
+            self,
+            name + "Error While Deleting The Workspace",
+            "",
+            'danger')
         this.get_workspaces()
       });
     }

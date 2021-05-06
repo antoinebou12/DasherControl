@@ -49,11 +49,7 @@ export default {
     Applet
   },
   data: () => ({
-    layout: [
-      {x: 0, y: 0, w: 6, h: 12, i: 0, static: false, appletData: { appletName: 'Editor'}, extra: {title: '0'}},
-      {x: 6, y: 0, w: 4, h: 24, i: 1, static: false, appletData: { appletName: 'IFrame', src: 'https://www.chess.com/daily_puzzle'}, extra: {title: '1'}},
-      {x: 0, y: 6, w: 6, h: 12, i: 2, static: false, appletData: { appletName: 'CreateNew'}, extra: {title: '2'}},
-    ],
+    layout: [],
     draggable: true,
     resizable: true,
     verticalCompact: true,
@@ -130,10 +126,6 @@ export default {
     saveWorkspaceLayout(name="workspace"){
       const self = this;
       let applets_layout = []
-      for (let i=0;i < this.$refs.gridLayout.$children.length;i++) {
-        this.$refs.gridLayout.$children
-      }
-
       for (let i=0;i < this.layout.length;i++) {
         let applet = {}
         applet.name = this.layout[i].i.toString()
@@ -154,7 +146,7 @@ export default {
           'Authorization': `Bearer ${this.$store.state.user.token}`
         },
         data: {
-          name: name,
+          name: name || "Workspace",
           display_order: 0,
           applets: applets_layout
         }
@@ -239,11 +231,11 @@ export default {
               {}
           )
         }
-        createNotification(
-            self,
-            "Workspace Updated",
-            "",
-            'primary')
+        // createNotification(
+        //     self,
+        //     "Workspace Updated",
+        //     "",
+        //     'primary')
         this.$emit("setWorkspace")
       }).catch(function (error) {
         createNotification(

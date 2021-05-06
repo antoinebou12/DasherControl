@@ -3,7 +3,7 @@
   <div class="main">
     <Navbar ref="Navbar" @changeActive="manageNav" />
     <GridLayoutMain ref="gridLayout"/>
-    <Login @login="login()" ref="Login"/>
+    <Login @signUp="signUp()" @login="login()" ref="Login"/>
     <SignUp ref="SignUp"/>
     <Settings ref="Settings"/>
   </div>
@@ -44,6 +44,9 @@ export default {
     },
     login() {
       console.log('login')
+    },
+    signUp() {
+      this.$refs.SignUp.showDialog()
     }
   },
 };

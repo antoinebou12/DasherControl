@@ -25,7 +25,8 @@
               <i class='bx bxs-lock'></i>
             </template>
           </vs-input>
-          <vs-input type="password" v-model="password_confirmation" placeholder="Confirm Password">
+          <vs-input type="password" v-model="password_confirmation" placeholder="Confirm Password"
+                    v-on:keyup.enter="submitSignUp()">
             <template #icon>
               <i class='bx bxs-lock'></i>
             </template>
@@ -74,7 +75,6 @@ export default {
           username: this.username,
           password: this.password,
           password_confirmation: this.password_confirmation,
-          role: "tenant",
         }
       });
     }

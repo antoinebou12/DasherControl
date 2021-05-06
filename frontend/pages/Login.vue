@@ -11,12 +11,12 @@
           </h4>
         </template>
         <div class="login-form">
-          <vs-input v-model="username" placeholder="Email/Username" autocomplete="on">
+          <vs-input v-model="username" placeholder="Email/Username">
             <template #icon>
               <i class='bx bxs-user'></i>
             </template>
           </vs-input>
-          <vs-input type="password" v-model="password" placeholder="Password" autocomplete="on">
+          <vs-input type="password" v-model="password" placeholder="Password" v-on:keyup.enter="submitLogIn()">
             <template #icon>
               <i class='bx bxs-lock'></i>
             </template>
@@ -33,7 +33,7 @@
               Sign In
             </vs-button>
             <div class="new">
-              New Here? <a href="#">Create New Account</a>
+              New Here? <a @click="">Create New Account</a>
             </div>
           </div>
         </template>
@@ -104,9 +104,12 @@ export default {
             error.response.data,
             'danger')
       });
-
     },
+    signUp() {
+      this.$emit("signUp")
+    }
   }
+
 };
 </script>
 

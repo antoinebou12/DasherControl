@@ -159,6 +159,10 @@ impl Workspace {
             .get_result(conn)?);
     }
 
+    pub fn get(conn: &PgConnection, id: &i32) -> Result<Workspace, diesel::result::Error> {
+        return workspaces::table.filter(wid.eq(id)).first::<Workspace>(conn);
+    }
+
     pub fn update(conn: &PgConnection, update_workspace: Workspace) -> Result<Workspace, MyError> {
         return Ok(diesel::update(
             workspaces::table.filter(wid.eq(update_workspace.id)))

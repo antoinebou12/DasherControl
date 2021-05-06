@@ -8,6 +8,7 @@ import 'vuesax/dist/vuesax.css' //Vuesax styles
 
 import App from './App.vue';
 import axios from "axios";
+import Cookies from "js-cookie";
 
 Vue.config.productionTip = false
 
@@ -19,7 +20,13 @@ Vue.use(Vuesax)
 Vue.use(Vuex)
 export const store = new Vuex.Store({
   plugins: [
-    createPersistedState()
+    createPersistedState({
+      storage: {
+        getItem: (key) => Cookies.get(key),
+        setItem: (key, value) => Cookies.set(key, value, { expires: 3, secure:false , sameSite: 'strict' }),
+        removeItem: (key) => Cookies.remove(key)
+      }
+    })
   ],
   state: {
     user: {

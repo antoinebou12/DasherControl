@@ -13,12 +13,16 @@ pub fn get_applets_in_workspace(conn: DbConn, workspace_id: i32, token: Result<C
         Ok(token) => token,
         Err(e) => return Err(e)
     };
-    return if token.has_role("Admin") && token.is_claimed_user(0) {
+    let workspace = match Workspace::get(&conn, &workspace_id) {
+        Ok(workspace) => workspace,
+        Err(_) => return Err(Status::Conflict)
+    };
+    return if &token.sub == &workspace.tenant_id {
         Applet::all_applets_by_workspace(&conn, workspace_id)
             .map_err(|error| error_status(error))
             .map(|applets| Json(applets))
     } else {
-        Err(Status::Unauthorized)
+        Err(Status::Conflict)
     }
 }
 
@@ -86,12 +90,12 @@ pub fn create_workspace_with_applets(conn: DbConn, workspace: Json<WorkspaceNoID
         Ok(token) => token,
         Err(e) => return Err(e)
     };
-    let workspace_noId = workspace.into_inner();
+    let workspace_no_id = workspace.into_inner();
     let mut new_workspace: NewWorkspaceWithApplets = NewWorkspaceWithApplets {
-        display_order: workspace_noId.display_order,
-        name: workspace_noId.name,
+        display_order: workspace_no_id.display_order,
+        name: workspace_no_id.name,
         tenant_id: token.get_tenant_id(),
-        applets: workspace_noId.applets
+        applets: workspace_no_id.applets
     };
     new_workspace.tenant_id = token.get_tenant_id();
     match Workspace::create_with_applets(&conn, new_workspace) {

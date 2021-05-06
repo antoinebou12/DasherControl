@@ -123,6 +123,16 @@ pub struct NewTenant {
 }
 
 #[derive(Deserialize)]
+pub struct RegisterTenantNoRole {
+    pub email: String,
+    pub name: String,
+    pub username: String,
+    pub role: String,
+    pub password: String,
+    pub password_confirmation: String,
+}
+
+#[derive(Deserialize)]
 pub struct RegisterTenant {
     pub email: String,
     pub name: String,

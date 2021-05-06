@@ -66,7 +66,7 @@
           {{ tr.ip }}
         </vs-td>
         <vs-td>
-          {{ tr.public_port }}
+          <a @click="openContainer(tr)">{{ tr.public_port }}</a>
         </vs-td>
       </vs-tr>
     </template>
@@ -179,6 +179,9 @@ export default {
       }).then((response) => {
         this.get_container()
       })
+    },
+    openContainer(containerData) {
+      this.$emit('openContainer', containerData)
     }
   }
 }

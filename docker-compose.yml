@@ -1,29 +1,32 @@
-  
 version: '3.8'
 services:
     dashercontrol:
         build: .
-        container_name: v
+        container_name: dashercontrol
         ports:
             - 8080:8080
+        environment:
+            - CSRF_TOKEN_KEY=E078C5E8743F4F4E14CED526A60B2C99
+            - DATABASE_URL=postgres://postgres:root@localhost/diesel
+            - ROCKET_ENV=production
         volumes:
-            - ./src:/usr/src/app
-         links:
-             - database
-     database:
-         image: postgres
-         container_name: dashercontrol_db
-         hostname: dashercontrol_db
-         expose:
-             - 5432
-         volumes:
-             - pgdata:/var/lib/postgresql/data/pgdata
-         environment:
-             POSTGRES_PASSWORD: root   # put your superuser database password this here
-             POSTGRES_USER: postgres
-             POSTGRES_DB: diesel
-             PGDATA: /var/lib/postgresql/data/pgdata
-
+            - ./src:/usr/src/dashercontrol
+        links:
+            - database
+        command: "bash ./script/wait-for-db.sh database:5432 -q -- diesel setup && ROCKET_ENV=production cargo run"
+    database:
+        image: postgres
+        container_name: dashercontrol_db
+        hostname: dashercontrol_db
+        expose:
+            - 5432
+        volumes:
+            - pgdata:/var/lib/postgresql/data/pgdata
+        environment:
+            POSTGRES_PASSWORD: root
+            POSTGRES_USER: postgres
+            POSTGRES_DB: diesel
+            PGDATA: /var/lib/postgresql/data/pgdata
 
 volumes:
     pgdata: {}

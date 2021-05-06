@@ -4,7 +4,7 @@ use rocket_contrib::json::Json;
 
 use crate::db::DbConn;
 use crate::tenants::token::*;
-use crate::tenants::model::{AuthTenant, TenantInfo};
+use crate::tenants::model::{AuthTenant, TenantInfo, RegisterTenantNoRole};
 use crate::tenants::model::RegisterTenant;
 use crate::tenants::model::Tenant;
 
@@ -41,24 +41,24 @@ fn error_status(error: Error) -> Status {
 
 
 #[post("/api/create", format="application/json", data = "<tenant>")]
-pub fn create_tenant(conn: DbConn, tenant: Json<RegisterTenant>, token: Result<Claims, Status>) -> Result<Json<String>, Status> {
-    let token = match token {
-        Ok(token) => token,
-        Err(e) => return Err(e)
+pub fn create_tenant(conn: DbConn, tenant: Json<RegisterTenantNoRole>) -> Result<Json<String>, Status> {
+    let register_tenant_no_role = tenant.into_inner();
+    let register_tenant = RegisterTenant{
+        email: register_tenant_no_role.email,
+        name: register_tenant_no_role.name,
+        username: register_tenant_no_role.username,
+        role: "tenant".to_string(),
+        password: register_tenant_no_role.password,
+        password_confirmation: register_tenant_no_role.password_confirmation
     };
-    return if token.has_role("Admin") {
-        let register_tenant = match tenant.into_inner().validates(&conn) {
-            Ok(register_tenant) => register_tenant,
-            Err(_) => return Err(Status::Conflict),
-        };
-        match Tenant::create(register_tenant, &conn) {
-            Ok(_tenant) => Ok(Json("tenant created".to_string())),
-            Err(_) => Err(Status::Conflict),
-        }
-    } else {
-        Err(Status::Unauthorized)
+    let register_tenant = match register_tenant.validates(&conn) {
+        Ok(register_tenant) => register_tenant,
+        Err(_) => return Err(Status::Conflict),
+    };
+    return match Tenant::create(register_tenant, &conn) {
+        Ok(_tenant) => Ok(Json("tenant created".to_string())),
+        Err(_) => Err(Status::Conflict),
     }
-
 }
 
 

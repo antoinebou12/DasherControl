@@ -146,7 +146,7 @@ export default {
   },
   props: {
     name: String,
-    textContent: String
+    textContent: { type: String, default: ""}
   },
   data() {
     var self = this;
@@ -154,6 +154,9 @@ export default {
       editor: new Editor({
         onUpdate({}) {
           self.save()
+        },
+        onBlur({}) {
+          // hack to fix issue with draggable
           self.$refs.editorContainer.style.height = (100 + self.$refs.editorContent.$el.offsetHeight).toString() + "px";
           if (self.$parent.$parent.$parent.$refs.gridItemMain.offsetHeight < self.$refs.editorContent.$el.offsetHeight) {
             self.$parent.$parent.$parent.$refs.draggableHandle.style.height = "auto";
@@ -186,7 +189,7 @@ export default {
     }
   },
   created() {
-    this.editor.setContent(this.textContent)
+    this.editor.setContent(this.textContent || "")
   },
   beforeDestroy() {
     this.editor.destroy();
@@ -195,9 +198,9 @@ export default {
     save(){
       let htmlText = this.editor.getHTML()
       // GridItem
-      this.$parent.$attrs["textContent"] = htmlText;
+      this.$parent.$attrs["textContent"] = htmlText || "";
       // GridItemApplet
-      this.$parent.$parent.$parent.currentAppletData["textContent"] = htmlText;
+      this.$parent.$parent.$parent.currentAppletData["textContent"] = htmlText || "";
     },
   }
 };

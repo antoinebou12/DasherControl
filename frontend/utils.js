@@ -17,7 +17,7 @@ export function createNotification(
     sticky=true,
     flat=true,
     position="top-right",
-    duration=3000,
+    duration=1000,
     buttonClose=true,
     clickClose=true) {
     self.$vs.notification({
