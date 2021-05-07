@@ -1,0 +1,6 @@
+frontend/dist/*
+frontend/node_modules
+target/
+images/
+.github/
+.git/

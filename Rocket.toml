@@ -25,7 +25,7 @@ limits = { forms = 32768 }
 
 [production]
 address = "0.0.0.0"
-port = 8081
+port = 8080
 #workers = [number of cpus * 2]
 keep_alive = 5
 read_timeout = 5
@@ -36,6 +36,6 @@ limits = { forms = 32768 }
 tls = { certs = "certs/cert.crt", key = "certs/cert.key" }
 
 
-[global.databases]
-postgres_db = { url = "postgres://postgres:root@localhost/diesel" }
+#[global.databases]
+#postgres_db = { url = "postgres://postgres:root@localhost/diesel" }
 

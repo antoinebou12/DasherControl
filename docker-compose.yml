@@ -7,13 +7,12 @@ services:
             - 8080:8080
         environment:
             - CSRF_TOKEN_KEY=E078C5E8743F4F4E14CED526A60B2C99
-            - DATABASE_URL=postgres://postgres:root@localhost/diesel
+            - DATABASE_URL=postgres://postgres:root@database/diesel
             - ROCKET_ENV=production
-        volumes:
-            - ./src:/usr/src/dashercontrol
+#        volumes:
+#            - ./certs:/usr/src/dashercontrol/certs
         links:
             - database
-        command: "bash ./script/wait-for-db.sh database:5432 -q -- diesel setup && ROCKET_ENV=production cargo run"
     database:
         image: postgres
         container_name: dashercontrol_db
