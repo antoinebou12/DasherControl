@@ -53,6 +53,7 @@ Preview look 0.1.2
 - [ ] Save docker-compose/container info in the database
 - [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
 - [ ] Export and import of containers and workspaces
+- [ ] Flooting Windows
 
 # Issues
 I use Iframe to display the other website some the login of the website will not work because of the csrf token or other restriction of iframe.
