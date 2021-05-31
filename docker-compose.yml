@@ -1,7 +1,8 @@
-version: '3.8'
+version: '3.9'
 services:
     dashercontrol:
         build: .
+        image: antoine13/dashercontrol
         container_name: dashercontrol
         ports:
             - 8080:8080

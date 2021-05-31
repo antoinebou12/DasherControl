@@ -32,6 +32,9 @@ COPY ./scripts/wait-for-db.sh .
 # build small bin for rocket rust
 #RUN cargo install --target x86_64-unknown-linux-musl --path .
 RUN cargo build --release
+RUN cargo build --bin create_admin
+
+COPY ./scripts/wait-for-db.sh .
 
 FROM rust:alpine
 RUN apk update -q && apk add netcat-openbsd curl postgresql-dev build-base -q
@@ -56,7 +59,8 @@ COPY --from=builder /usr/src/dashercontrol/certs/cert.key /usr/src/dashercontrol
 
 # binary
 COPY --from=builder /usr/src/dashercontrol/target/release/dasher_control /usr/src/dashercontrol/dasher_control
+COPY --from=builder /usr/src/dashercontrol/target/release/create_admin /usr/src/dashercontrol/create_admin
 
-HEALTHCHECK CMD ( curl -f https://localhost:8080/ || exit 1)
+HEALTHCHECK CMD ( curl -f https://localhost:8080/ || curl -f http://localhost:8080/ || exit 1)
 
 CMD ["/bin/sh", "/usr/src/dashercontrol/wait-for-db.sh", "database:5432", "-q", "--", "/usr/src/dashercontrol/dasher_control"]

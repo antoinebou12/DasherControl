@@ -37,18 +37,17 @@ Preview look 0.1.2
 - [X] Simple Start and Manage Docker Containers
 - [X] CI/CD
 - [X] User Auth
+- [X] Install App with Docker/Docker-Compose
 
 # In Progress
 - [ ] Customise Theme and Change Background
 - [ ] Logging
 - [ ] Canvas applets
 - [ ] Terminal ssh web
-- [ ] Install App with Docker/Docker-Compose
 - [ ] Tests
 
 ## TODO
 - [ ] Documentation
-- [ ] RTMP IP Camera Client
 - [ ] User Auth (OAUTH@ Github)
 - [ ] Save docker-compose/container info in the database
 - [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
@@ -76,16 +75,14 @@ cargo run --bin create_admin
 cargo run
 ```
 
-### Docker  (W.I.P)
+### Docker
 ```
-docker build -t antoinebou13/DasherControl .
-docker run antoinebou13/DasherControl
+DOCKER_BUILDKIT=1 docker build -t antoinebou13/dashercontrol .
 ```
 
-
-### Docker-compose (W.I.P)
+### Docker-compose
 ```
-docker-compose up -d
+DOCKER_BUILDKIT=1 docker-compose up -d --build && docker-compose logs
 ```
 
 ## Run tests

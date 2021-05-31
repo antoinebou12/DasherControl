@@ -71,28 +71,47 @@ fn get_connection() -> PgConnection {
 }
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let email = &args[1];
+    let username = &args[2];
+    let password = &args[3];
+
     let conn = get_connection();
 
     // Create Admin tenant change if you want to
-    diesel::insert_into(tenants::table)
+    match diesel::insert_into(tenants::table)
         .values(NewTenant {
             id: 0,
-            email: "admin@admin.com".to_string(),
-            name: "admin".to_string(),
-            username: "Admin".to_string(),
-            password: hash("root", DEFAULT_COST).unwrap(),
+            email: email.to_string(),
+            name: username.to_string(),
+            username: username.to_string(),
+            password: hash(password, DEFAULT_COST).unwrap(),
             role: "Admin".to_string(),
             created_at: Local::now().naive_local(),
-        }).execute(&conn).unwrap();
+        }).execute(&conn) {
+        Ok(created) => println!("created email: {}, username: {}, password: {}", email, username, password),
+        Err(e) => {
+            println!("already exist");
+            std::process::exit(0);
+        }
+    };
 
     // Create the Tenant config for the tenant
-    diesel::insert_into(tenant_configuration::table)
+    match diesel::insert_into(tenant_configuration::table)
         .values(NewTenantConfiguration {
             id: 0,
             tenant_id: 0,
             config: DBJsonType(json!({}))
         })
-        .execute(&conn).unwrap();
+        .execute(&conn) {
+        Ok(created) => println!("create config"),
+        Err(e) => {
+            println!("already exist");
+            std::process::exit(0);
+        }
+    }
+    std::process::exit(0)
 }
 
 
