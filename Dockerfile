@@ -1,11 +1,12 @@
-FROM rustlang/rust:nightly as builder
+FROM jdrouet/rust-nightly:stretch-slim-20201230 as builder
 
 WORKDIR /usr/src
 
 # Install basic rust (musl) and postgres lib
 RUN apt-get update -y -q && apt-get dist-upgrade -y -q
-RUN apt-get install -y -q cmake make g++ build-essential libpq-dev pkg-config libssl-dev musl-tools curl
+RUN apt-get install -y -q cmake make g++ build-essential libpq-dev pkg-config libssl-dev musl-tools curl netcat libdbus-1-dev
 #RUN rustup target add x86_64-unknown-linux-musl
+RUN rustup default nightly && rustup update
 RUN cargo install diesel_cli --no-default-features --features postgres
 
 # create new tmp project

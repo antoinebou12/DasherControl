@@ -34,6 +34,7 @@ wait_for_db() {
     result=$?
     if [ $result -eq 0 ] ; then
       if [ $# -gt 0 ] ; then
+        echo `which diesel`
         diesel migration run
         if [ $? != 0 ]; then
           echo "$0: Failed to run database migrations" >&2

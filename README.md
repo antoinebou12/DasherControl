@@ -50,7 +50,7 @@ Preview look 0.1.2
 - [ ] Documentation
 - [ ] User Auth (OAUTH@ Github)
 - [ ] Save docker-compose/container info in the database
-- [ ] Nginx Config Generator for reverse Proxy and SSL (maybe trafik)
+- [ ] Caddy Config Generator for reverse Proxy and SSL
 - [ ] Export and import of containers and workspaces
 - [ ] Flooting Windows
 
