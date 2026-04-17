@@ -1,28 +1,34 @@
 <template>
   <div class="shortcut-setting center content-inputs">
-    <n-space vertical :size="9" class="shortcut-setting__stack">
-      <n-input v-model:value="link" data-testid="shortcut-link" placeholder="link" size="small" round />
-      <n-input v-model:value="img_link" data-testid="shortcut-image-url" placeholder="image URL" size="small" round />
-      <n-input v-model:value="title" data-testid="shortcut-title" placeholder="title" size="small" round />
-      <n-input
-        v-model:value="description"
+    <div class="shortcut-setting__stack d-flex flex-column ga-2">
+      <v-text-field v-model="link" data-testid="shortcut-link" label="link" variant="outlined" density="compact" hide-details />
+      <v-text-field
+        v-model="img_link"
+        data-testid="shortcut-image-url"
+        label="image URL"
+        variant="outlined"
+        density="compact"
+        hide-details
+      />
+      <v-text-field v-model="title" data-testid="shortcut-title" label="title" variant="outlined" density="compact" hide-details />
+      <v-textarea
+        v-model="description"
         data-testid="shortcut-description"
-        placeholder="description"
-        type="textarea"
-        round
-        :autosize="{ minRows: 4, maxRows: 10 }"
+        label="description"
+        variant="outlined"
+        density="compact"
+        rows="4"
+        auto-grow
+        hide-details
         class="shortcut-setting__desc"
       />
-    </n-space>
+    </div>
   </div>
 </template>
 
 <script>
-import { NInput, NSpace } from "naive-ui";
-
 export default {
   name: "ShortcutSetting",
-  components: { NInput, NSpace },
   data() {
     return {
       link: "",

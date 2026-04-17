@@ -1,34 +1,91 @@
 <template>
   <div class="menubar">
-    <n-button size="tiny" quaternary :type="editor.isActive('bold') ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleBold().run())">
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('bold') ? 'flat' : 'tonal'"
+      :color="editor.isActive('bold') ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleBold().run())"
+    >
       <i class="bx bx-bold" />
-    </n-button>
-    <n-button size="tiny" quaternary :type="editor.isActive('italic') ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleItalic().run())">
+    </v-btn>
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('italic') ? 'flat' : 'tonal'"
+      :color="editor.isActive('italic') ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleItalic().run())"
+    >
       <i class="bx bx-italic" />
-    </n-button>
-    <n-button size="tiny" quaternary :type="editor.isActive('strike') ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleStrike().run())">
+    </v-btn>
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('strike') ? 'flat' : 'tonal'"
+      :color="editor.isActive('strike') ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleStrike().run())"
+    >
       <i class="bx bx-strikethrough" />
-    </n-button>
-    <n-button size="tiny" quaternary :type="editor.isActive('code') ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleCode().run())">
+    </v-btn>
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('code') ? 'flat' : 'tonal'"
+      :color="editor.isActive('code') ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleCode().run())"
+    >
       <i class="bx bx-code" />
-    </n-button>
-    <n-button size="tiny" quaternary :type="editor.isActive('heading', { level: 1 }) ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleHeading({ level: 1 }).run())">H1</n-button>
-    <n-button size="tiny" quaternary :type="editor.isActive('heading', { level: 2 }) ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleHeading({ level: 2 }).run())">H2</n-button>
-    <n-button size="tiny" quaternary :type="editor.isActive('bulletList') ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleBulletList().run())">
+    </v-btn>
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('heading', { level: 1 }) ? 'flat' : 'tonal'"
+      :color="editor.isActive('heading', { level: 1 }) ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleHeading({ level: 1 }).run())"
+    >
+      H1
+    </v-btn>
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('heading', { level: 2 }) ? 'flat' : 'tonal'"
+      :color="editor.isActive('heading', { level: 2 }) ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleHeading({ level: 2 }).run())"
+    >
+      H2
+    </v-btn>
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('bulletList') ? 'flat' : 'tonal'"
+      :color="editor.isActive('bulletList') ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleBulletList().run())"
+    >
       <i class="bx bx-list-ul" />
-    </n-button>
-    <n-button size="tiny" quaternary :type="editor.isActive('orderedList') ? 'primary' : 'default'" @click="run(() => editor.chain().focus().toggleOrderedList().run())">
+    </v-btn>
+    <v-btn
+      size="x-small"
+      class="menubar-btn"
+      :variant="editor.isActive('orderedList') ? 'flat' : 'tonal'"
+      :color="editor.isActive('orderedList') ? 'primary' : undefined"
+      @click="run(() => editor.chain().focus().toggleOrderedList().run())"
+    >
       <i class="bx bx-list-ol" />
-    </n-button>
-    <n-button size="tiny" quaternary @click="run(() => editor.chain().focus().setHorizontalRule().run())">hr</n-button>
-    <n-button size="tiny" quaternary @click="run(() => editor.chain().focus().undo().run())"><i class="bx bx-undo" /></n-button>
-    <n-button size="tiny" quaternary @click="run(() => editor.chain().focus().redo().run())"><i class="bx bx-redo" /></n-button>
+    </v-btn>
+    <v-btn size="x-small" class="menubar-btn" variant="tonal" @click="run(() => editor.chain().focus().setHorizontalRule().run())">
+      hr
+    </v-btn>
+    <v-btn size="x-small" class="menubar-btn" variant="tonal" @click="run(() => editor.chain().focus().undo().run())">
+      <i class="bx bx-undo" />
+    </v-btn>
+    <v-btn size="x-small" class="menubar-btn" variant="tonal" @click="run(() => editor.chain().focus().redo().run())">
+      <i class="bx bx-redo" />
+    </v-btn>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Editor } from "@tiptap/core";
-import { NButton } from "naive-ui";
 
 defineProps<{
   editor: Editor;
@@ -42,11 +99,16 @@ defineProps<{
   flex-wrap: wrap;
   gap: 4px;
   margin-bottom: 6px;
+}
 
-  :deep(.n-button) {
-    background-color: var(--fg);
-    color: var(--bg);
-    border: var(--bg) 1px solid;
-  }
+.menubar-btn {
+  min-width: 2rem;
+  background-color: var(--applet-fg, var(--fg)) !important;
+  color: var(--applet-bg, var(--bg)) !important;
+  border: 1px solid var(--applet-border, var(--bg)) !important;
+}
+
+.menubar-btn.v-btn--variant-flat {
+  color: #fff !important;
 }
 </style>

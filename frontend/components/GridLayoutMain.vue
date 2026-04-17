@@ -1,35 +1,34 @@
 <template>
   <div class="grid-layout-container">
     <GridEditMenu :grid-layout="gridSelf" />
-    <GridLayout
-        ref="gridLayout"
-        v-model:layout="dockedLayout"
-        :col-num="12"
-        :row-height="24"
-        :is-draggable="draggable"
-        :is-resizable="resizable"
-        :responsive="responsive"
-        :vertical-compact="verticalCompact"
-        :use-css-transforms="useCssTransforms"
-        :margin="[1, 1]"
+    <WorkspaceGrid
+      v-model:layout="dockedLayout"
+      :col-num="12"
+      :row-height="24"
+      :is-draggable="draggable"
+      :is-resizable="resizable"
+      :responsive="responsive"
+      :vertical-compact="verticalCompact"
+      :use-css-transforms="useCssTransforms"
+      :margin="[1, 1]"
     >
       <GridItemApplet
-          v-for="item in dockedLayout"
-          :key="item.i"
-          :static="item.static"
-          :x="item.x"
-          :y="item.y"
-          :w="item.w"
-          :h="item.h"
-          :i="item.i"
-          :appletData="item.appletData"
-          :extra="item.extra"
-          :id="item.i"
-          ref=""
-          @removeItem="removeItem"
-          @popOut="onPopOut">
-      </GridItemApplet>
-    </GridLayout>
+        v-for="item in dockedLayout"
+        :key="item.i"
+        :static="item.static"
+        :x="item.x"
+        :y="item.y"
+        :w="item.w"
+        :h="item.h"
+        :i="item.i"
+        :applet-data="item.appletData"
+        :extra="item.extra"
+        :id="item.i"
+        ref=""
+        @remove-item="removeItem"
+        @pop-out="onPopOut"
+      />
+    </WorkspaceGrid>
     <FloatingAppletPanel
         v-for="item in floatingLayout"
         :key="'float-' + item.i"
@@ -45,9 +44,9 @@
 <script>
 import { watch } from "vue";
 import { storeToRefs } from "pinia";
-import { GridLayout, GridItem } from "vue-grid-layout";
 import GridItemApplet from "./GridItemApplet.vue";
 import GridEditMenu from "./GridEditMenu.vue";
+import WorkspaceGrid from "./WorkspaceGrid.vue";
 import FloatingAppletPanel from "./FloatingAppletPanel.vue";
 import Applet from "./applets/Applet.vue"
 import axios from "axios";
@@ -61,12 +60,11 @@ import { useWorkspaceContextStore } from "../stores/workspaceContext";
 export default {
   name: "GridLayoutMain",
   components: {
-    GridLayout,
-    GridItem,
+    WorkspaceGrid,
     GridEditMenu,
     GridItemApplet,
     FloatingAppletPanel,
-    Applet
+    Applet,
   },
   data: () => ({
     layout: [],

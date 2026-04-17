@@ -1,25 +1,33 @@
 <template>
   <div class="metric-applet">
-    <n-h3 style="margin: 0 0 12px">CPU &amp; load</n-h3>
+    <h3 class="text-h6 ma-0 mb-3">CPU &amp; load</h3>
 
-    <n-grid :cols="2" :x-gap="12" :y-gap="12" responsive="screen">
-      <n-gi>
-        <n-statistic label="CPU usage" :value="formatPercent(metrics?.cpu_usage_percent)" />
-      </n-gi>
-      <n-gi>
-        <n-statistic label="Processes" :value="metrics?.process_count ?? '—'" />
-      </n-gi>
-    </n-grid>
+    <v-row dense>
+      <v-col cols="12" sm="6">
+        <div class="text-caption text-medium-emphasis">CPU usage</div>
+        <div class="text-h6">{{ formatPercent(metrics?.cpu_usage_percent) }}</div>
+      </v-col>
+      <v-col cols="12" sm="6">
+        <div class="text-caption text-medium-emphasis">Processes</div>
+        <div class="text-h6">{{ metrics?.process_count ?? "—" }}</div>
+      </v-col>
+    </v-row>
 
-    <div v-if="metrics?.cpus?.length" class="cpu-cores" style="margin-top: 12px">
+    <div v-if="metrics?.cpus?.length" class="cpu-cores mt-3">
       <div v-for="(c, i) in metrics.cpus" :key="i" class="cpu-row">
         <span class="cpu-name">{{ c.name }}</span>
-        <n-progress type="line" :percentage="clampPercent(c.usage_percent)" :height="8" :show-indicator="false" />
+        <v-progress-linear
+          :model-value="clampPercent(c.usage_percent)"
+          color="primary"
+          height="8"
+          rounded
+          class="cpu-bar"
+        />
         <span class="cpu-meta">{{ formatPercent(c.usage_percent) }} @ {{ c.frequency_mhz }} MHz</span>
       </div>
     </div>
 
-    <div class="section-label" style="margin-top: 14px">Load average</div>
+    <div class="section-label mt-4">Load average</div>
     <div class="muted">
       {{ metrics?.load_average_one?.toFixed?.(2) ?? "—" }} /
       {{ metrics?.load_average_five?.toFixed?.(2) ?? "—" }} /
@@ -31,16 +39,18 @@
 </template>
 
 <script>
-import { NGi, NGrid, NH3, NProgress, NStatistic } from "naive-ui";
 import systemMetricsMixin from "../SystemMonitor/systemMetricsMixin.js";
 
 export default {
   name: "CpuMetrics",
-  components: { NGi, NGrid, NH3, NProgress, NStatistic },
   mixins: [systemMetricsMixin],
 };
 </script>
 
 <style lang="scss" scoped>
 @import "../SystemMonitor/systemMetricsApplet.scss";
+
+.cpu-bar {
+  min-width: 0;
+}
 </style>

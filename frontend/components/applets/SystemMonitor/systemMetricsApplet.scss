@@ -47,3 +47,21 @@
   text-align: right;
   opacity: 0.85;
 }
+
+.metric-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.metric-table th,
+.metric-table td {
+  border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.metric-table th {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}

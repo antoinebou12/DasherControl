@@ -1,8 +1,4 @@
-import { createDiscreteApi, darkTheme } from "naive-ui";
-
-const { notification } = createDiscreteApi(["notification"], {
-  configProviderProps: { theme: darkTheme },
-});
+import { pushSnackbar, type SnackbarTone } from "./snackbarState";
 
 export function createNotification(
   _self: unknown,
@@ -11,7 +7,17 @@ export function createNotification(
   color = "dark",
 ) {
   const content = String(description ?? "");
-  if (color === "danger") notification.error({ title, content, duration: 4500 });
-  else if (color === "success") notification.success({ title, content, duration: 2500 });
-  else notification.create({ title, content, duration: 3500 });
+  let tone: SnackbarTone = "info";
+  let ms = 3500;
+  if (color === "danger") {
+    tone = "error";
+    ms = 4500;
+  } else if (color === "success") {
+    tone = "success";
+    ms = 2500;
+  } else if (color === "primary") {
+    tone = "info";
+    ms = 3500;
+  }
+  pushSnackbar(title, content, tone, ms);
 }

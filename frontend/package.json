@@ -10,6 +10,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "@tiptap/extension-placeholder": "^2.10.4",
     "@tiptap/starter-kit": "^2.10.4",
     "@tiptap/vue-3": "^2.10.4",
@@ -20,12 +21,12 @@
     "@xterm/xterm": "^5.5.0",
     "axios": "^1.7.9",
     "js-cookie": "^3.0.5",
-    "naive-ui": "^2.40.1",
     "pinia": "^2.2.6",
     "socket.io-client": "^4.8.1",
     "three": "^0.172.0",
     "vue": "^3.5.13",
-    "vue-grid-layout": "^3.0.0-beta1"
+    "vue-grid-layout": "^3.0.0-beta1",
+    "vuetify": "^3.7.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
@@ -33,6 +34,7 @@
     "sass": "^1.83.0",
     "typescript": "~5.7.2",
     "vite": "^6.0.7",
+    "vite-plugin-vuetify": "^2.1.0",
     "vue-tsc": "^2.2.0"
   }
 }

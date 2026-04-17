@@ -1,47 +1,64 @@
 <template>
   <div class="metric-applet">
-    <n-space vertical size="large">
-      <n-space justify="space-between" align="center" wrap>
-        <n-h3 style="margin: 0">Host metrics (all)</n-h3>
-        <n-button :loading="speedTestLoading" type="primary" size="small" @click="runSpeedTest">
+    <div class="d-flex flex-column ga-4">
+      <div class="d-flex flex-wrap align-center justify-space-between ga-2">
+        <h3 class="text-h6 ma-0">Host metrics (all)</h3>
+        <v-btn color="primary" size="small" :loading="speedTestLoading" @click="runSpeedTest">
           Run network speed test
-        </n-button>
-      </n-space>
+        </v-btn>
+      </div>
 
-      <n-alert v-if="speedTestResult != null" type="info" closable @close="speedTestResult = null">
-        Download: {{ formatMbps(speedTestResult.megabits_per_second) }} · {{ formatBytes(speedTestResult.bytes_downloaded) }} in
+      <v-alert
+        v-if="speedTestResult != null"
+        type="info"
+        density="compact"
+        variant="tonal"
+        closable
+        @click:close="speedTestResult = null"
+      >
+        Download: {{ formatMbps(speedTestResult.megabits_per_second) }} ·
+        {{ formatBytes(speedTestResult.bytes_downloaded) }} in
         {{ speedTestResult.duration_ms }} ms
-      </n-alert>
-      <n-alert v-if="speedTestError != null" type="error" closable @close="speedTestError = null">
+      </v-alert>
+      <v-alert
+        v-if="speedTestError != null"
+        type="error"
+        density="compact"
+        variant="tonal"
+        closable
+        @click:close="speedTestError = null"
+      >
         {{ speedTestError }}
-      </n-alert>
+      </v-alert>
 
-      <n-grid :cols="2" :x-gap="12" :y-gap="12" responsive="screen">
-        <n-gi>
-          <n-statistic label="CPU usage" :value="formatPercent(metrics?.cpu_usage_percent)" />
-        </n-gi>
-        <n-gi>
-          <n-statistic label="Processes" :value="metrics?.process_count ?? '—'" />
-        </n-gi>
-      </n-grid>
+      <v-row dense>
+        <v-col cols="12" sm="6">
+          <div class="text-caption text-medium-emphasis">CPU usage</div>
+          <div class="text-h6">{{ formatPercent(metrics?.cpu_usage_percent) }}</div>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <div class="text-caption text-medium-emphasis">Processes</div>
+          <div class="text-h6">{{ metrics?.process_count ?? "—" }}</div>
+        </v-col>
+      </v-row>
 
       <div v-if="metrics?.cpus?.length" class="cpu-cores">
         <div v-for="(c, i) in metrics.cpus" :key="i" class="cpu-row">
           <span class="cpu-name">{{ c.name }}</span>
-          <n-progress type="line" :percentage="clampPercent(c.usage_percent)" :height="8" :show-indicator="false" />
+          <v-progress-linear
+            :model-value="clampPercent(c.usage_percent)"
+            color="primary"
+            height="8"
+            rounded
+            class="cpu-bar"
+          />
           <span class="cpu-meta">{{ formatPercent(c.usage_percent) }} @ {{ c.frequency_mhz }} MHz</span>
         </div>
       </div>
 
       <div>
         <div class="section-label">Memory</div>
-        <n-progress
-          type="line"
-          :percentage="memoryPercent"
-          :height="12"
-          :indicator-placement="'inside'"
-          :rail-style="{ background: 'rgba(128,128,128,0.2)' }"
-        />
+        <v-progress-linear :model-value="memoryPercent" color="primary" height="12" rounded class="mb-1" />
         <div class="muted">
           {{ formatBytes(metrics?.memory_used_bytes) }} / {{ formatBytes(metrics?.memory_total_bytes) }} · swap
           {{ formatBytes(metrics?.swap_used_bytes) }} / {{ formatBytes(metrics?.swap_total_bytes) }}
@@ -61,7 +78,7 @@
 
       <div v-if="metrics?.gpu">
         <div class="section-label">GPU (NVIDIA)</div>
-        <n-space vertical size="small">
+        <div class="d-flex flex-column ga-1">
           <div>{{ metrics.gpu.name }}</div>
           <div class="muted">
             Utilization {{ metrics.gpu.gpu_utilization_percent }}% · VRAM util {{ metrics.gpu.memory_utilization_percent }}% ·
@@ -71,13 +88,13 @@
             Clocks MHz — graphics {{ metrics.gpu.graphics_clock_mhz ?? "—" }}, SM {{ metrics.gpu.sm_clock_mhz ?? "—" }}, mem
             {{ metrics.gpu.memory_clock_mhz ?? "—" }}
           </div>
-        </n-space>
+        </div>
       </div>
       <div v-else class="muted">No NVIDIA GPU data (NVML unavailable).</div>
 
       <div>
         <div class="section-label">Disks</div>
-        <n-table v-if="metrics?.disks?.length" :single-line="false" size="small">
+        <table v-if="metrics?.disks?.length" class="metric-table">
           <thead>
             <tr>
               <th>Mount</th>
@@ -94,13 +111,13 @@
               <td>{{ formatBytes(d.total_bytes) }}</td>
             </tr>
           </tbody>
-        </n-table>
+        </table>
         <div v-else class="muted">No disk data.</div>
       </div>
 
       <div>
         <div class="section-label">Network (since last poll)</div>
-        <n-table v-if="metrics?.network_interfaces?.length" :single-line="false" size="small">
+        <table v-if="metrics?.network_interfaces?.length" class="metric-table">
           <thead>
             <tr>
               <th>Interface</th>
@@ -115,24 +132,26 @@
               <td>{{ n.transmitted_bytes_per_sec.toFixed(0) }}</td>
             </tr>
           </tbody>
-        </n-table>
+        </table>
         <div v-else class="muted">No interfaces.</div>
       </div>
-    </n-space>
+    </div>
   </div>
 </template>
 
 <script>
-import { NAlert, NButton, NGi, NGrid, NH3, NProgress, NSpace, NStatistic, NTable } from "naive-ui";
 import systemMetricsMixin from "./systemMetricsMixin.js";
 
 export default {
   name: "SystemMonitor",
-  components: { NAlert, NButton, NGi, NGrid, NH3, NProgress, NSpace, NStatistic, NTable },
   mixins: [systemMetricsMixin],
 };
 </script>
 
 <style lang="scss" scoped>
 @import "./systemMetricsApplet.scss";
+
+.cpu-bar {
+  min-width: 0;
+}
 </style>

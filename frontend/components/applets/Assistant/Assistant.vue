@@ -1,46 +1,57 @@
 <template>
   <div class="assistant-applet">
     <div class="assistant-toolbar">
-      <n-select
-        v-model:value="provider"
-        :options="providerOptions"
-        size="small"
-        style="width: 160px"
+      <v-select
+        v-model="provider"
+        :items="providerOptions"
+        item-title="label"
+        item-value="value"
+        density="compact"
+        variant="outlined"
+        hide-details
+        class="assistant-provider"
       />
-      <n-input
-        v-model:value="model"
-        size="small"
+      <v-text-field
+        v-model="model"
+        density="compact"
+        variant="outlined"
+        hide-details
         placeholder="Model (optional)"
-        style="flex: 1; min-width: 120px"
+        class="assistant-model flex-grow-1"
       />
-      <n-switch v-model:value="includeMetrics" size="small">
-        <template #checked>Stats</template>
-        <template #unchecked>Stats</template>
-      </n-switch>
+      <v-switch v-model="includeMetrics" color="primary" density="compact" hide-details inset class="assistant-stats">
+        <template #label>
+          <span class="text-caption">Stats</span>
+        </template>
+      </v-switch>
     </div>
-    <n-scrollbar class="assistant-messages" trigger="hover">
+    <div class="assistant-messages">
       <div v-for="(m, idx) in messages" :key="idx" :class="['msg', m.role]">
         <span class="msg-role">{{ m.role }}</span>
         <pre class="msg-body">{{ m.content }}</pre>
       </div>
       <div v-if="!messages.length" class="empty">Ask about applets, server metrics, or Caddyfile generation.</div>
-    </n-scrollbar>
+    </div>
     <div class="assistant-input-row">
-      <n-input
-        v-model:value="draft"
-        type="textarea"
+      <v-textarea
+        v-model="draft"
+        variant="outlined"
+        density="comfortable"
+        hide-details
+        rows="2"
+        auto-grow
+        max-rows="6"
         placeholder="Message…"
-        :autosize="{ minRows: 2, maxRows: 6 }"
+        class="flex-grow-1"
         @keydown.enter.exact.prevent="send"
       />
-      <n-button type="primary" :loading="loading" :disabled="!draft.trim()" @click="send">Send</n-button>
+      <v-btn color="primary" :loading="loading" :disabled="!draft.trim()" @click="send">Send</v-btn>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import axios from "axios";
-import { NButton, NInput, NScrollbar, NSelect, NSwitch } from "naive-ui";
 import { onMounted, ref } from "vue";
 import { useAssistantSettingsStore, type AssistantProviderId } from "../../../stores/assistantSettings";
 import { useUserStore } from "../../../stores/user";
@@ -163,6 +174,16 @@ async function send() {
   align-items: center;
   margin-bottom: 8px;
 }
+.assistant-provider {
+  flex: 0 0 160px;
+  min-width: 140px;
+}
+.assistant-model {
+  min-width: 120px;
+}
+.assistant-stats {
+  flex-shrink: 0;
+}
 .assistant-messages {
   flex: 1;
   min-height: 120px;
@@ -170,6 +191,7 @@ async function send() {
   border-radius: 8px;
   padding: 8px;
   margin-bottom: 8px;
+  overflow: auto;
 }
 .msg {
   margin-bottom: 12px;

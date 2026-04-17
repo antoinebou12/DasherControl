@@ -1,32 +1,24 @@
 <template>
   <div class="caddy-configurator">
-    <n-grid :cols="2" :x-gap="12" :y-gap="12">
-      <n-gi>
-        <n-form-item label="Hostname">
-          <n-input v-model:value="hostname" placeholder="app.example.com" />
-        </n-form-item>
-      </n-gi>
-      <n-gi>
-        <n-form-item label="Upstream">
-          <n-input v-model:value="upstream" placeholder="127.0.0.1:8080" />
-        </n-form-item>
-      </n-gi>
-      <n-gi>
-        <n-form-item label="TLS email (optional)">
-          <n-input v-model:value="tlsEmail" placeholder="you@example.com" />
-        </n-form-item>
-      </n-gi>
-      <n-gi>
-        <n-form-item label="Path prefix (optional)">
-          <n-input v-model:value="pathPrefix" placeholder="api" />
-        </n-form-item>
-      </n-gi>
-    </n-grid>
-    <n-space align="center" class="row-actions">
-      <n-checkbox v-model:checked="encode">encode zstd gzip</n-checkbox>
-      <n-button type="primary" :loading="loading" @click="generate">Generate</n-button>
-      <n-button quaternary :disabled="!output" @click="copyOutput">Copy</n-button>
-    </n-space>
+    <v-row dense>
+      <v-col cols="12" md="6">
+        <v-text-field v-model="hostname" label="Hostname" placeholder="app.example.com" variant="outlined" density="compact" hide-details="auto" />
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-text-field v-model="upstream" label="Upstream" placeholder="127.0.0.1:8080" variant="outlined" density="compact" hide-details="auto" />
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-text-field v-model="tlsEmail" label="TLS email (optional)" placeholder="you@example.com" variant="outlined" density="compact" hide-details="auto" />
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-text-field v-model="pathPrefix" label="Path prefix (optional)" placeholder="api" variant="outlined" density="compact" hide-details="auto" />
+      </v-col>
+    </v-row>
+    <div class="d-flex flex-wrap align-center ga-3 row-actions">
+      <v-checkbox v-model="encode" label="encode zstd gzip" density="compact" hide-details />
+      <v-btn color="primary" :loading="loading" @click="generate">Generate</v-btn>
+      <v-btn variant="text" :disabled="!output" @click="copyOutput">Copy</v-btn>
+    </div>
     <textarea v-model="output" class="caddy-output" rows="12" placeholder="Caddyfile output…" readonly />
     <p v-if="error" class="error">{{ error }}</p>
   </div>
@@ -34,21 +26,11 @@
 
 <script>
 import axios from "axios";
-import {
-  NButton,
-  NCheckbox,
-  NFormItem,
-  NGi,
-  NGrid,
-  NInput,
-  NSpace,
-} from "naive-ui";
 import { useUserStore } from "../../../stores/user";
 import { createNotification } from "../../../utils";
 
 export default {
   name: "CaddyConfigurator",
-  components: { NButton, NCheckbox, NFormItem, NGi, NGrid, NInput, NSpace },
   data() {
     return {
       hostname: "",
@@ -118,23 +100,21 @@ export default {
   .row-actions {
     margin: 12px 0;
   }
-  .error {
-    color: #f87171;
-    font-size: 0.85rem;
-    margin-top: 8px;
-  }
   .caddy-output {
     width: 100%;
-    margin-top: 8px;
-    background: var(--bg);
-    color: var(--fg);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    padding: 8px;
-    font-family: ui-monospace, monospace;
-    font-size: 0.85rem;
-    resize: vertical;
     box-sizing: border-box;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--fg) 22%, transparent);
+    background: color-mix(in srgb, var(--bg) 92%, var(--fg));
+    color: var(--fg);
+  }
+  .error {
+    color: #f87171;
+    margin-top: 8px;
+    font-size: 13px;
   }
 }
 </style>

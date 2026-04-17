@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import vuetify from "vite-plugin-vuetify";
 
 function copyTeraTemplates() {
   return {
@@ -16,7 +17,11 @@ function copyTeraTemplates() {
 }
 
 export default defineConfig({
-  plugins: [vue(), copyTeraTemplates()],
+  plugins: [
+    vue(),
+    vuetify({ autoImport: true }),
+    copyTeraTemplates(),
+  ],
   root: __dirname,
   publicDir: "public",
   resolve: {

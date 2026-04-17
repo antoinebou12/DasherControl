@@ -4,6 +4,7 @@ use rocket::serde::json::{json, Json};
 use serde_json::Value;
 
 use crate::db::DbConn;
+use crate::tenants::error::MyError;
 use crate::tenants::model::{AuthTenant, RegisterTenant, RegisterTenantNoRole, Tenant, TenantInfo};
 use crate::tenants::token::*;
 
@@ -85,11 +86,24 @@ pub async fn login(
     conn: DbConn,
     auth_tenant: Json<AuthTenant>,
     jar: &CookieJar<'_>,
-) -> Result<Json<TenantInfo>, Status> {
+) -> Result<Json<TenantInfo>, (Status, Json<Value>)> {
+    const AUTH_FAIL: &str = "Invalid email or password.";
+
     if jar.get_private("session-token").is_none() {
         let tenant = match auth_tenant.login(&conn) {
             Ok(tenant) => tenant,
-            Err(_) => return Err(Status::Conflict),
+            Err(e) => {
+                return match e {
+                    MyError::NotFoundTenant(_) | MyError::WrongPassword(_) => Err((
+                        Status::Unauthorized,
+                        Json(json!({ "error": AUTH_FAIL })),
+                    )),
+                    _ => Err((
+                        Status::InternalServerError,
+                        Json(json!({ "error": "Login failed. Try again later." })),
+                    )),
+                };
+            }
         };
 
         let token = create_token(
@@ -118,7 +132,17 @@ pub async fn login(
                 email: claims.email,
                 username: claims.username,
             })),
-            Err(_) => Err(Status::Conflict),
+            Err(_) => {
+                let mut c = Cookie::new("session-token", "");
+                c.set_path("/");
+                jar.remove_private(c);
+                Err((
+                    Status::Unauthorized,
+                    Json(json!({
+                        "error": "Session expired or invalid. Please log in again."
+                    })),
+                ))
+            }
         }
     }
 }

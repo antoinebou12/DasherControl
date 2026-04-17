@@ -1,21 +1,22 @@
 <template>
-  <div class="canvas-setting">
-    <n-form-item label="Mode" label-placement="left">
-      <n-select
-        v-model:value="canvasMode"
-        :options="modeOptions"
-        style="min-width: 200px"
-      />
-    </n-form-item>
+  <div class="canvas-setting d-flex align-center ga-3 flex-wrap">
+    <span class="text-body-2 text-medium-emphasis">Mode</span>
+    <v-select
+      v-model="canvasMode"
+      :items="modeOptions"
+      item-title="label"
+      item-value="value"
+      variant="outlined"
+      density="compact"
+      hide-details
+      min-width="200"
+    />
   </div>
 </template>
 
 <script>
-import { NFormItem, NSelect } from "naive-ui";
-
 export default {
   name: "CanvasSetting",
-  components: { NFormItem, NSelect },
   data() {
     return {
       canvasMode: "three",

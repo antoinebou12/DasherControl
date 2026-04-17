@@ -1,60 +1,74 @@
 <template>
   <div v-if="token !== ''" class="workspace-selector-container">
-    <span class="toggle-hide" @click="isVisible = !isVisible">
-      <i :class="isVisible ? 'bx bx-up-arrow' : 'bx bx-down-arrow'" class="bx" />
-    </span>
-    <n-card v-if="isVisible" size="small" class="workspace-card workspace-card--dark" title="Workspaces">
-      <n-scrollbar style="max-height: 220px">
-        <n-list hoverable clickable>
-          <n-list-item
+    <v-btn
+      class="toggle-hide"
+      icon
+      size="small"
+      variant="text"
+      aria-label="Toggle workspace list"
+      @click="isVisible = !isVisible"
+    >
+      <v-icon :icon="isVisible ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+    </v-btn>
+    <v-expand-transition>
+      <v-card v-if="isVisible" class="workspace-card mt-2" variant="outlined" rounded="lg">
+        <v-card-title class="text-subtitle-1 py-2">Workspaces</v-card-title>
+        <v-divider />
+        <v-list density="compact" class="workspace-list py-0" max-height="220" scrollable>
+          <v-list-item
             v-for="workspace in workspaces"
             :key="workspace.id"
-            :class="{ selected: selected.id === workspace.id }"
+            :active="selected.id === workspace.id"
+            color="primary"
+            rounded="md"
+            class="mb-1"
             @click="selectWorkspace(workspace)"
           >
-            <n-thing :title="workspace.name">
-              <template #avatar>
-                <span
-                  v-if="workspace.workspace_icon && !isBoxicon(workspace.workspace_icon)"
-                  class="ws-avatar ws-avatar--emoji"
-                >{{ workspace.workspace_icon }}</span>
-                <i
-                  v-else-if="workspace.workspace_icon"
-                  class="ws-avatar bx"
-                  :class="boxiconClasses(workspace.workspace_icon)"
-                />
-                <i v-else class="ws-avatar bx bx-grid-alt ws-avatar--muted" />
-              </template>
-              <template #header-extra>
-                <n-button
-                  quaternary
-                  size="tiny"
-                  class="ws-delete-btn"
-                  aria-label="Delete workspace"
-                  @click.stop="deleteWorkspace(workspace.id)"
-                >
-                  <i class="bx bx-x" />
-                </n-button>
-              </template>
-            </n-thing>
-          </n-list-item>
-        </n-list>
-      </n-scrollbar>
-      <n-input
-        v-model:value="workspaceName"
-        class="workspace-name-input"
-        placeholder="Press Enter to save name"
-        round
-        size="small"
-        @keyup.enter="editWorkspaceName"
-      />
-    </n-card>
+            <template #prepend>
+              <span
+                v-if="workspace.workspace_icon && !isBoxicon(workspace.workspace_icon)"
+                class="ws-avatar ws-avatar--emoji"
+              >{{ workspace.workspace_icon }}</span>
+              <i
+                v-else-if="workspace.workspace_icon"
+                class="ws-avatar bx"
+                :class="boxiconClasses(workspace.workspace_icon)"
+              />
+              <i v-else class="ws-avatar bx bx-grid-alt ws-avatar--muted" />
+            </template>
+            <v-list-item-title>{{ workspace.name }}</v-list-item-title>
+            <template #append>
+              <v-btn
+                icon
+                size="x-small"
+                variant="text"
+                color="error"
+                aria-label="Delete workspace"
+                @click.stop="deleteWorkspace(workspace.id)"
+              >
+                <v-icon icon="mdi-close" size="small" />
+              </v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
+        <v-card-text class="pt-2 pb-3">
+          <v-text-field
+            v-model="workspaceName"
+            placeholder="Press Enter to save name"
+            density="compact"
+            variant="outlined"
+            hide-details
+            rounded="pill"
+            @keyup.enter="editWorkspaceName"
+          />
+        </v-card-text>
+      </v-card>
+    </v-expand-transition>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import { NButton, NCard, NInput, NList, NListItem, NScrollbar, NThing } from "naive-ui";
 import { mapState } from "pinia";
 import { useUserStore } from "../stores/user";
 import { createNotification } from "../utils";
@@ -62,7 +76,6 @@ import { boxiconClassList, isBoxiconClass } from "../utils/workspaceTheme";
 
 export default {
   name: "WorkspaceSelector",
-  components: { NButton, NCard, NInput, NList, NListItem, NScrollbar, NThing },
   data() {
     return {
       selected: { name: "", id: -1 },
@@ -160,56 +173,18 @@ export default {
 }
 .toggle-hide {
   position: absolute;
-  top: 56px;
-  right: 24px;
-  cursor: pointer;
-  color: var(--ui-chrome-fg);
+  top: 8px;
+  right: 4px;
+  z-index: 1;
 }
 .workspace-card {
-  margin-top: 8px;
   background: var(--ui-chrome-bg) !important;
-  border: 1px solid var(--ui-chrome-border) !important;
+  border-color: var(--ui-chrome-border) !important;
   color: var(--ui-chrome-fg) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  overflow: hidden;
 }
-.workspace-card--dark :deep(.n-card-header) {
-  background: rgba(0, 0, 0, 0.22) !important;
-  padding: 10px 14px !important;
-  border-bottom: 1px solid var(--ui-chrome-border) !important;
-}
-.workspace-card :deep(.n-card-header) {
-  color: var(--ui-chrome-fg) !important;
-  font-weight: 600;
-}
-.workspace-card :deep(.n-card__content) {
-  padding: 8px 10px 0 !important;
-}
-.selected {
-  background: color-mix(in srgb, var(--ui-accent) 16%, transparent) !important;
-  outline: 1px solid color-mix(in srgb, var(--ui-accent) 45%, transparent);
-  border-radius: 6px;
-}
-.workspace-name-input {
-  margin-top: 10px;
-  margin-bottom: 4px;
-}
-.workspace-name-input :deep(.n-input) {
-  --n-color: rgba(255, 255, 255, 0.06) !important;
-  --n-color-focus: rgba(255, 255, 255, 0.09) !important;
-  --n-text-color: var(--ui-chrome-fg) !important;
-  --n-placeholder-color: rgba(244, 244, 245, 0.45) !important;
-  --n-border: 1px solid var(--ui-chrome-border) !important;
-  --n-border-hover: 1px solid color-mix(in srgb, var(--ui-accent) 35%, var(--ui-chrome-border)) !important;
-  --n-border-focus: 1px solid var(--ui-accent) !important;
-  --n-height: 36px !important;
-}
-.workspace-card :deep(.ws-delete-btn:hover) {
-  --n-text-color: var(--ui-danger) !important;
-  color: var(--ui-danger) !important;
-}
-.workspace-card :deep(.ws-delete-btn .bx) {
-  font-size: 1.1rem;
+.workspace-list {
+  background: transparent;
 }
 .ws-avatar {
   font-size: 1.25rem;

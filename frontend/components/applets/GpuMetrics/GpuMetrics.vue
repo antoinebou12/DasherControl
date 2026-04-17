@@ -1,6 +1,6 @@
 <template>
   <div class="metric-applet">
-    <n-h3 style="margin: 0 0 12px">GPU (NVIDIA)</n-h3>
+    <h3 class="text-h6 ma-0 mb-3">GPU (NVIDIA)</h3>
 
     <template v-if="metrics?.gpu">
       <div>{{ metrics.gpu.name }}</div>
@@ -18,12 +18,10 @@
 </template>
 
 <script>
-import { NH3 } from "naive-ui";
 import systemMetricsMixin from "../SystemMonitor/systemMetricsMixin.js";
 
 export default {
   name: "GpuMetrics",
-  components: { NH3 },
   mixins: [systemMetricsMixin],
 };
 </script>

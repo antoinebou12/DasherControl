@@ -1,61 +1,61 @@
 <template>
   <div class="create-applet-container grid dc-create-panel">
-    <n-card size="small" bordered class="dc-create-card" :segmented="{ content: true }">
-      <div class="select-applet-form">
-        <n-space justify="space-between" align="start" wrap :size="12" class="select-applet-form__row">
-          <div
-            class="catalog-wrap"
-            data-testid="create-applet-select"
-            role="region"
-            aria-label="Applet catalog"
-          >
-            <n-collapse v-model:expanded-names="expandedNames" :accordion="false" class="dc-applet-catalog">
-              <n-collapse-item
-                v-for="cat in createPickerCatalog"
-                :key="cat.categoryKey"
-                :title="cat.categoryLabel"
-                :name="cat.categoryKey"
-              >
-                <div class="applet-row-list">
-                  <n-button
-                    v-for="a in cat.applets"
-                    :key="a.id"
-                    text
-                    block
-                    size="small"
-                    class="applet-row"
-                    :class="{ 'applet-row--selected': appletName === a.id }"
-                    data-testid="create-applet-catalog-item"
-                    :aria-pressed="appletName === a.id"
-                    @click="pickApplet(a.id)"
-                  >
-                    {{ a.label }}
-                  </n-button>
-                </div>
-              </n-collapse-item>
-            </n-collapse>
+    <v-card class="dc-create-card" variant="outlined" rounded="lg">
+      <v-card-text>
+        <div class="select-applet-form">
+          <div class="select-applet-form__row d-flex flex-wrap align-start justify-space-between ga-3">
+            <div
+              class="catalog-wrap"
+              data-testid="create-applet-select"
+              role="region"
+              aria-label="Applet catalog"
+            >
+              <v-expansion-panels v-model="expandedNames" multiple variant="accordion" class="dc-applet-catalog">
+                <v-expansion-panel v-for="cat in createPickerCatalog" :key="cat.categoryKey" :value="cat.categoryKey">
+                  <v-expansion-panel-title class="text-body-2 font-weight-semibold">
+                    {{ cat.categoryLabel }}
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text class="pa-0">
+                    <div class="applet-row-list">
+                      <v-btn
+                        v-for="a in cat.applets"
+                        :key="a.id"
+                        variant="text"
+                        block
+                        size="small"
+                        class="applet-row justify-start"
+                        :class="{ 'applet-row--selected': appletName === a.id }"
+                        data-testid="create-applet-catalog-item"
+                        :aria-pressed="appletName === a.id"
+                        @click="pickApplet(a.id)"
+                      >
+                        {{ a.label }}
+                      </v-btn>
+                    </div>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </div>
+            <v-btn color="primary" data-testid="create-applet-add" aria-label="Add applet" @click="newApplet">
+              Add
+            </v-btn>
           </div>
-          <n-button type="primary" data-testid="create-applet-add" aria-label="Add applet" @click="newApplet">
-            Add
-          </n-button>
-        </n-space>
-        <n-space justify="center" :size="0" class="select-applet-form__settings">
-          <component :is="settingForm" ref="settingForm" />
-        </n-space>
-      </div>
-    </n-card>
+          <div class="select-applet-form__settings d-flex justify-center mt-3">
+            <component :is="settingForm" ref="settingForm" />
+          </div>
+        </div>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
 <script>
-import { NButton, NCard, NCollapse, NCollapseItem, NSpace } from "naive-ui";
 import { createNotification } from "../../../utils";
 import CreateNewSetting from "./CreateNewSetting.vue";
 import { getAppletDescriptor, getCreatePickerCatalog } from "../appletRegistryCore.js";
 
 export default {
   name: "CreateNew",
-  components: { NButton, NCard, NCollapse, NCollapseItem, NSpace },
   data() {
     return {
       appletName: "",
@@ -111,14 +111,9 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   background: var(--surface-glass) !important;
-  border: 1px solid var(--create-border) !important;
+  border-color: var(--create-border) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  --n-border-color: var(--create-border) !important;
-}
-
-.dc-create-card :deep(.n-card__content) {
-  padding: 14px 14px 16px !important;
 }
 
 .select-applet-form {
@@ -168,46 +163,16 @@ export default {
   width: 100%;
 }
 
-.create-applet-container :deep(.dc-applet-catalog.n-collapse) {
-  --n-title-text-color: rgba(17, 24, 39, 0.85);
-  --n-text-color: #111827;
-  --n-divider-color: var(--create-border);
-}
-
-.create-applet-container :deep(.dc-applet-catalog .n-collapse-item) {
-  margin: 0;
-}
-
-.create-applet-container :deep(.dc-applet-catalog .n-collapse-item__header) {
+.create-applet-container :deep(.dc-applet-catalog .v-expansion-panel-title) {
+  min-height: 40px;
   padding: 8px 12px;
   font-size: 13px;
   font-weight: 600;
   background: color-mix(in srgb, var(--create-panel-bg) 55%, transparent);
+  color: rgba(17, 24, 39, 0.85);
 }
 
-.create-applet-container :deep(.dc-applet-catalog .n-collapse-item__content-wrapper) {
+.create-applet-container :deep(.dc-applet-catalog .v-expansion-panel-text__wrapper) {
   border-top: 1px solid var(--create-border);
-}
-
-.create-applet-container :deep(.dc-applet-catalog .n-collapse-item__content-inner) {
-  padding-top: 0;
-  padding-bottom: 4px;
-}
-
-.create-applet-container :deep(.n-input) {
-  --n-color: var(--create-surface-solid) !important;
-  --n-text-color: #111827 !important;
-  --n-placeholder-color: rgba(17, 24, 39, 0.45) !important;
-  --n-border: 1px solid var(--create-border) !important;
-  --n-border-hover: 1px solid color-mix(in srgb, var(--ui-accent) 40%, var(--create-border)) !important;
-  --n-border-focus: 1px solid var(--ui-accent) !important;
-}
-
-.create-applet-container :deep(.n-button.n-button--primary-type) {
-  --n-color: var(--ui-accent) !important;
-  --n-color-hover: var(--ui-accent-hover) !important;
-  --n-color-pressed: var(--ui-accent-pressed) !important;
-  --n-text-color: #ffffff !important;
-  --n-border: none !important;
 }
 </style>

@@ -1,10 +1,12 @@
 <template>
   <div class="center docker-manager-containers">
     <div class="docker-toolbar">
-      <n-button quaternary size="small" @click="triggerImportZip">
-        <i class="bx bx-import" />
+      <v-btn size="small" variant="text" @click="triggerImportZip">
+        <template #prepend>
+          <i class="bx bx-import" />
+        </template>
         Import zip
-      </n-button>
+      </v-btn>
       <input
         ref="importZipInput"
         type="file"
@@ -13,7 +15,7 @@
         @change="onImportZipSelected"
       />
     </div>
-    <n-table :single-line="false" size="small" class="docker-table">
+    <table class="metric-table docker-table">
       <thead>
         <tr>
           <th class="quick-status-col" />
@@ -24,6 +26,7 @@
           <th>Status</th>
           <th>IP</th>
           <th>Port</th>
+          <th class="export-col">Export</th>
         </tr>
       </thead>
       <tbody>
@@ -34,12 +37,12 @@
               <i :class="get_status_theme(tr.status)" class="bx bxs-circle" />
             </div>
             <div class="quick-control">
-              <n-button v-if="get_status(tr.status)" quaternary size="tiny" @click="stop_container(tr.id)">
+              <v-btn v-if="get_status(tr.status)" icon size="x-small" variant="text" @click="stop_container(tr.id)">
                 <i class="bx bx-stop" />
-              </n-button>
-              <n-button v-if="!get_status(tr.status)" quaternary size="tiny" @click="restart_container(tr.id)">
+              </v-btn>
+              <v-btn v-if="!get_status(tr.status)" icon size="x-small" variant="text" @click="restart_container(tr.id)">
                 <i class="bx bx-play" />
-              </n-button>
+              </v-btn>
             </div>
           </td>
           <td>{{ tr.id }}</td>
@@ -52,25 +55,23 @@
             <a class="port-link" @click.prevent="openContainer(tr)">{{ tr.public_port }}</a>
           </td>
           <td class="export-col">
-            <n-button quaternary size="tiny" title="Export filesystem zip" @click="export_container_zip(tr)">
+            <v-btn icon size="x-small" variant="text" title="Export filesystem zip" @click="export_container_zip(tr)">
               <i class="bx bx-archive" />
-            </n-button>
+            </v-btn>
           </td>
         </tr>
       </tbody>
-    </n-table>
+    </table>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import { NButton, NTable } from "naive-ui";
 import { useUserStore } from "../../../stores/user";
 import { createNotification } from "../../../utils";
 
 export default {
   name: "DockerManager",
-  components: { NButton, NTable },
   data() {
     return {
       statusInterval: null,
@@ -207,6 +208,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../SystemMonitor/systemMetricsApplet.scss";
+
 .docker-manager-containers {
   background: var(--bg);
   color: var(--fg);

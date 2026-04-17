@@ -1,47 +1,64 @@
 <template>
-  <n-modal v-model:show="show" preset="card" title="Login" class="dc-modal" :style="{ width: '420px' }">
-    <n-spin :show="loading">
-      <n-space vertical size="large">
-        <form @submit.prevent="submitLogIn">
-          <n-space vertical size="large">
-            <n-input v-model:value="username" placeholder="Email / Username" size="large">
-              <template #prefix><i class="bx bxs-user" /></template>
-            </n-input>
-            <n-input
-              v-model:value="password"
-              type="password"
-              show-password-on="click"
-              placeholder="Password"
-              size="large"
+  <v-dialog v-model="show" max-width="460" transition="dialog-bottom-transition">
+    <v-card rounded="lg">
+      <v-card-title class="text-h6">Login</v-card-title>
+      <v-card-text>
+        <v-form @submit.prevent="submitLogIn">
+          <div class="d-flex flex-column ga-3">
+            <v-text-field
+              v-model="username"
+              label="Email / Username"
+              variant="outlined"
+              density="comfortable"
+              autocomplete="username"
+              hide-details="auto"
             >
-              <template #prefix><i class="bx bxs-lock" /></template>
-            </n-input>
-            <n-space justify="space-between" align="center">
-              <n-checkbox v-model:checked="remember">Remember me</n-checkbox>
+              <template #prepend-inner>
+                <i class="bx bxs-user" aria-hidden="true" />
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-model="password"
+              label="Password"
+              type="password"
+              variant="outlined"
+              density="comfortable"
+              autocomplete="current-password"
+              hide-details="auto"
+            >
+              <template #prepend-inner>
+                <i class="bx bxs-lock" aria-hidden="true" />
+              </template>
+            </v-text-field>
+            <div class="d-flex align-center justify-space-between flex-wrap ga-2">
+              <v-checkbox v-model="remember" label="Remember me" density="compact" hide-details />
               <a class="dc-muted" href="#">Forgot password?</a>
-            </n-space>
-            <n-button type="primary" attr-type="submit" block size="large">Sign in</n-button>
-          </n-space>
-        </form>
-        <n-divider>or continue with</n-divider>
-        <n-space vertical size="small">
-          <n-button block size="large" quaternary @click="startOAuth('google')">
-            <template #icon><i class="bx bxl-google" /></template>
+            </div>
+            <v-btn type="submit" color="primary" size="large" block :loading="loading">Sign in</v-btn>
+          </div>
+        </v-form>
+        <v-divider class="my-4">or continue with</v-divider>
+        <div class="d-flex flex-column ga-2">
+          <v-btn block size="large" variant="tonal" @click="startOAuth('google')">
+            <template #prepend>
+              <i class="bx bxl-google" />
+            </template>
             Google
-          </n-button>
-          <n-button block size="large" quaternary @click="startOAuth('github')">
-            <template #icon><i class="bx bxl-github" /></template>
+          </v-btn>
+          <v-btn block size="large" variant="tonal" @click="startOAuth('github')">
+            <template #prepend>
+              <i class="bx bxl-github" />
+            </template>
             GitHub
-          </n-button>
-        </n-space>
-      </n-space>
-    </n-spin>
-  </n-modal>
+          </v-btn>
+        </div>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
 import axios from "axios";
-import { NButton, NCheckbox, NDivider, NInput, NModal, NSpin, NSpace } from "naive-ui";
 import { ref } from "vue";
 import { useUserStore } from "../stores/user";
 import { createNotification, formatAxiosError } from "../utils";

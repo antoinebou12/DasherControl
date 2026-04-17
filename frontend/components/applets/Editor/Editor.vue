@@ -90,9 +90,13 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .editor-container {
+  background: var(--applet-bg, #ffffff);
+  color: var(--applet-fg, #111827);
   box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px,
     rgb(0 0 0 / 5%) 0px 4px 6px -2px;
-  border: 1px solid black;
+  border: 1px solid var(--applet-border, #e5e7eb);
+  border-radius: 8px;
+  padding: 8px;
 
   .editor-content {
     overflow-wrap: break-word;

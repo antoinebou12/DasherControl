@@ -1,25 +1,22 @@
 <template>
   <div class="shortcut-container">
     <a :href="link" class="shortcut-link">
-      <n-card class="shortcut-card" :bordered="false">
-        <template #header>
-          <h3>{{ title }}</h3>
-        </template>
-        <template #cover>
-          <img :src="img_link" alt="" class="shortcut-cover" />
-        </template>
-        <p class="shortcut-desc">{{ description }}</p>
-      </n-card>
+      <v-card class="shortcut-card" flat>
+        <v-card-title class="py-2">
+          <h3 class="text-h6">{{ title }}</h3>
+        </v-card-title>
+        <v-img :src="img_link" alt="" cover height="320" class="shortcut-cover" />
+        <v-card-text>
+          <p class="shortcut-desc">{{ description }}</p>
+        </v-card-text>
+      </v-card>
     </a>
   </div>
 </template>
 
 <script>
-import { NCard } from "naive-ui";
-
 export default {
   name: "Shortcut",
-  components: { NCard },
   props: {
     link: { type: String, default: "" },
     img_link: { type: String, default: "https://source.unsplash.com/random" },
@@ -48,16 +45,8 @@ export default {
     transform: unset !important;
     height: 600px;
 
-    :deep(.n-card-cover) {
-      border-radius: 0;
-    }
-
     .shortcut-cover {
-      transform: unset !important;
       border-radius: 0;
-      width: 100%;
-      object-fit: cover;
-      max-height: 320px;
     }
 
     h3 {

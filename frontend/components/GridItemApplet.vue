@@ -162,14 +162,13 @@ export default {
   color: var(--applet-fg);
 }
 
-.vue-grid-item .grid-item-main :deep(.n-input),
-.vue-grid-item .grid-item-main :deep(.n-base-selection) {
-  --n-text-color: var(--applet-fg) !important;
+.vue-grid-item .grid-item-main :deep(.v-field__input),
+.vue-grid-item .grid-item-main :deep(.v-select .v-field) {
+  color: var(--applet-fg);
 }
 
-.vue-grid-item .grid-item-main :deep(.dc-create-panel .n-input),
-.vue-grid-item .grid-item-main :deep(.dc-create-panel .n-base-selection) {
-  --n-text-color: #111827 !important;
+.vue-grid-item .grid-item-main :deep(.dc-create-panel .v-field__input) {
+  color: #111827;
 }
 
 .vue-draggable-handle {

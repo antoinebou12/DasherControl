@@ -1,15 +1,12 @@
 <template>
   <div class="center content-inputs">
-    <n-input v-model:value="src" placeholder="URL" style="max-width: 420px; width: 100%" />
+    <v-text-field v-model="src" label="URL" variant="outlined" density="comfortable" hide-details class="iframe-url-field" />
   </div>
 </template>
 
 <script>
-import { NInput } from "naive-ui";
-
 export default {
   name: "IFrameSetting",
-  components: { NInput },
   data() {
     return {
       src: "",
@@ -21,5 +18,9 @@ export default {
 <style scoped>
 .content-inputs {
   padding: 8px;
+}
+.iframe-url-field {
+  max-width: 420px;
+  width: 100%;
 }
 </style>

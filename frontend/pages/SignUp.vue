@@ -1,27 +1,45 @@
 <template>
-  <n-modal v-model:show="show" preset="card" title="Sign up" :style="{ width: '440px' }">
-    <form @submit.prevent="submitSignUp">
-      <n-space vertical size="large">
-        <n-input v-model:value="name" placeholder="Name" size="large" />
-        <n-input v-model:value="email" placeholder="Email" size="large" />
-        <n-input v-model:value="username" placeholder="Username" size="large" />
-        <n-input v-model:value="password" type="password" show-password-on="click" placeholder="Password" size="large" />
-        <n-input
-          v-model:value="password_confirmation"
-          type="password"
-          show-password-on="click"
-          placeholder="Confirm password"
-          size="large"
-        />
-        <n-button type="primary" attr-type="submit" block size="large">Create account</n-button>
-      </n-space>
-    </form>
-  </n-modal>
+  <v-dialog v-model="show" max-width="480" transition="dialog-bottom-transition">
+    <v-card rounded="lg">
+      <v-card-title class="text-h6">Sign up</v-card-title>
+      <v-card-text>
+        <v-form @submit.prevent="submitSignUp">
+          <div class="d-flex flex-column ga-3">
+            <v-text-field v-model="name" label="Name" variant="outlined" density="comfortable" hide-details="auto" />
+            <v-text-field v-model="email" label="Email" variant="outlined" density="comfortable" hide-details="auto" />
+            <v-text-field
+              v-model="username"
+              label="Username"
+              variant="outlined"
+              density="comfortable"
+              hide-details="auto"
+            />
+            <v-text-field
+              v-model="password"
+              label="Password"
+              type="password"
+              variant="outlined"
+              density="comfortable"
+              hide-details="auto"
+            />
+            <v-text-field
+              v-model="password_confirmation"
+              label="Confirm password"
+              type="password"
+              variant="outlined"
+              density="comfortable"
+              hide-details="auto"
+            />
+            <v-btn type="submit" color="primary" size="large" block>Create account</v-btn>
+          </div>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
 import axios, { isAxiosError } from "axios";
-import { NButton, NInput, NModal, NSpace } from "naive-ui";
 import { ref } from "vue";
 import { createNotification } from "../utils";
 

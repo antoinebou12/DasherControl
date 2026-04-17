@@ -1,21 +1,35 @@
 <template>
   <div class="metric-applet">
-    <n-space vertical size="medium">
-      <n-space justify="space-between" align="center" wrap>
-        <n-h3 style="margin: 0">Network</n-h3>
-        <n-button :loading="speedTestLoading" type="primary" size="small" @click="runSpeedTest">Run speed test</n-button>
-      </n-space>
+    <div class="d-flex flex-column ga-3">
+      <div class="d-flex flex-wrap align-center justify-space-between ga-2">
+        <h3 class="text-h6 ma-0">Network</h3>
+        <v-btn color="primary" size="small" :loading="speedTestLoading" @click="runSpeedTest">Run speed test</v-btn>
+      </div>
 
-      <n-alert v-if="speedTestResult != null" type="info" closable @close="speedTestResult = null">
+      <v-alert
+        v-if="speedTestResult != null"
+        type="info"
+        density="compact"
+        variant="tonal"
+        closable
+        @click:close="speedTestResult = null"
+      >
         {{ formatMbps(speedTestResult.megabits_per_second) }} · {{ formatBytes(speedTestResult.bytes_downloaded) }} in
         {{ speedTestResult.duration_ms }} ms
-      </n-alert>
-      <n-alert v-if="speedTestError != null" type="error" closable @close="speedTestError = null">
+      </v-alert>
+      <v-alert
+        v-if="speedTestError != null"
+        type="error"
+        density="compact"
+        variant="tonal"
+        closable
+        @click:close="speedTestError = null"
+      >
         {{ speedTestError }}
-      </n-alert>
+      </v-alert>
 
       <div class="section-label">Interfaces (since last poll)</div>
-      <n-table v-if="metrics?.network_interfaces?.length" :single-line="false" size="small">
+      <table v-if="metrics?.network_interfaces?.length" class="metric-table">
         <thead>
           <tr>
             <th>Interface</th>
@@ -30,19 +44,17 @@
             <td>{{ n.transmitted_bytes_per_sec.toFixed(0) }}</td>
           </tr>
         </tbody>
-      </n-table>
+      </table>
       <div v-else class="muted">No interfaces.</div>
-    </n-space>
+    </div>
   </div>
 </template>
 
 <script>
-import { NAlert, NButton, NH3, NSpace, NTable } from "naive-ui";
 import systemMetricsMixin from "../SystemMonitor/systemMetricsMixin.js";
 
 export default {
   name: "NetworkMetrics",
-  components: { NAlert, NButton, NH3, NSpace, NTable },
   mixins: [systemMetricsMixin],
 };
 </script>

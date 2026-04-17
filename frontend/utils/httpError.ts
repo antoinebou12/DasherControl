@@ -17,7 +17,11 @@ export function formatAxiosError(error: unknown): string {
       }
     }
     if (status === 500) return "Server error. Try again later.";
-    if (status === 409) return "Invalid credentials or account conflict.";
+    if (status === 401) {
+      // Body may be missing; object branch above usually already returned { error }.
+      return "Unauthorized.";
+    }
+    if (status === 409) return "Resource conflict.";
     if (status) return `Request failed (${status}).`;
     if (error.message) return error.message;
   }

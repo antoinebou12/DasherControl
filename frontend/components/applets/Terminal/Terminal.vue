@@ -2,7 +2,7 @@
   <div class="terminal-applet">
     <div class="connect-bar">
       <div v-if="!token" class="dc-session-bar">
-        <n-button size="small" type="primary" @click="openDasherLogin">Login</n-button>
+        <v-btn size="small" color="primary" @click="openDasherLogin">Login</v-btn>
         <span class="dc-session-bar__text">
           Sign in for a DasherControl session. Server-side SSH is <strong>Admin only</strong>.
         </span>
@@ -48,7 +48,6 @@ import { Terminal } from "@xterm/xterm";
 import { AttachAddon } from "@xterm/addon-attach";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
-import { NButton } from "naive-ui";
 import { mapState } from "pinia";
 
 import { useUserStore } from "../../../stores/user";
@@ -56,7 +55,6 @@ import { createNotification } from "../../../utils";
 
 export default {
   name: "Terminal",
-  components: { NButton },
   inject: {
     dcOpenLogin: { from: "dcOpenLogin", default: () => () => undefined },
   },

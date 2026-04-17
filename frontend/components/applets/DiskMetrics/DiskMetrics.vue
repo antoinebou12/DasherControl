@@ -1,8 +1,8 @@
 <template>
   <div class="metric-applet">
-    <n-h3 style="margin: 0 0 12px">Disks</n-h3>
+    <h3 class="text-h6 ma-0 mb-3">Disks</h3>
 
-    <n-table v-if="metrics?.disks?.length" :single-line="false" size="small">
+    <table v-if="metrics?.disks?.length" class="metric-table">
       <thead>
         <tr>
           <th>Mount</th>
@@ -19,18 +19,16 @@
           <td>{{ formatBytes(d.total_bytes) }}</td>
         </tr>
       </tbody>
-    </n-table>
+    </table>
     <div v-else class="muted">No disk data.</div>
   </div>
 </template>
 
 <script>
-import { NH3, NTable } from "naive-ui";
 import systemMetricsMixin from "../SystemMonitor/systemMetricsMixin.js";
 
 export default {
   name: "DiskMetrics",
-  components: { NH3, NTable },
   mixins: [systemMetricsMixin],
 };
 </script>
