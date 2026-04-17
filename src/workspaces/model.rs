@@ -1,10 +1,14 @@
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, deserialize, serialize, update};
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, deserialize, serialize};
+use serde::{Deserialize, Serialize};
 
 use crate::schema::applets;
 use crate::schema::workspaces;
 use crate::tenants::error::MyError;
 use crate::schema::applets::dsl::{workspace_id, id as aid};
-use crate::schema::workspaces::dsl::{tenant_id, id as wid, display_order, name};
+use crate::schema::workspaces::dsl::{
+    accent_color, background_image_url, bg_color, display_order, fg_color, name, panel_color,
+    tenant_id, theme_preset, workspace_icon, id as wid,
+};
 use diesel::backend::Backend;
 use diesel::deserialize::FromSql;
 use serde_json::Value;
@@ -25,7 +29,13 @@ pub struct Applet {
     pub height: i32,
     pub editable: bool,
     pub applet_data: DBJsonType,
-    pub workspace_id: i32
+    pub workspace_id: i32,
+    pub is_floating: bool,
+    pub float_left: Option<i32>,
+    pub float_top: Option<i32>,
+    pub float_width: Option<i32>,
+    pub float_height: Option<i32>,
+    pub float_z: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Insertable, PartialEq)]
@@ -38,7 +48,19 @@ pub struct NewApplet {
     pub height: i32,
     pub editable: bool,
     pub applet_data: DBJsonType,
-    pub workspace_id: i32
+    pub workspace_id: i32,
+    #[serde(default)]
+    pub is_floating: bool,
+    #[serde(default)]
+    pub float_left: Option<i32>,
+    #[serde(default)]
+    pub float_top: Option<i32>,
+    #[serde(default)]
+    pub float_width: Option<i32>,
+    #[serde(default)]
+    pub float_height: Option<i32>,
+    #[serde(default)]
+    pub float_z: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -49,7 +71,19 @@ pub struct NewAppletNoWorkspace {
     pub width: i32,
     pub height: i32,
     pub editable: bool,
-    pub applet_data: DBJsonType
+    pub applet_data: DBJsonType,
+    #[serde(default)]
+    pub is_floating: bool,
+    #[serde(default)]
+    pub float_left: Option<i32>,
+    #[serde(default)]
+    pub float_top: Option<i32>,
+    #[serde(default)]
+    pub float_width: Option<i32>,
+    #[serde(default)]
+    pub float_height: Option<i32>,
+    #[serde(default)]
+    pub float_z: Option<i32>,
 }
 
 impl Applet {
@@ -63,7 +97,13 @@ impl Applet {
                 height: new_applet.height,
                 editable: new_applet.editable,
                 applet_data: new_applet.applet_data,
-                workspace_id: new_applet.workspace_id
+                workspace_id: new_applet.workspace_id,
+                is_floating: new_applet.is_floating,
+                float_left: new_applet.float_left,
+                float_top: new_applet.float_top,
+                float_width: new_applet.float_width,
+                float_height: new_applet.float_height,
+                float_z: new_applet.float_z,
             })
             .get_result(conn)?);
     }
@@ -84,17 +124,31 @@ impl Applet {
         return Ok(diesel::update(applets::table.filter(aid.eq(change_applet.id)))
             .set(Applet {
                 id: change_applet.id,
-                name: change_applet.name,
+                name: change_applet.name.clone(),
                 position_x: change_applet.position_x,
                 position_y: change_applet.position_y,
                 width: change_applet.width,
                 height: change_applet.height,
                 editable: change_applet.editable,
-                applet_data: change_applet.applet_data,
-                workspace_id: change_applet.workspace_id
+                applet_data: change_applet.applet_data.clone(),
+                workspace_id: change_applet.workspace_id,
+                is_floating: change_applet.is_floating,
+                float_left: change_applet.float_left,
+                float_top: change_applet.float_top,
+                float_width: change_applet.float_width,
+                float_height: change_applet.float_height,
+                float_z: change_applet.float_z,
             })
             .get_result(conn)?);
     }
+}
+
+fn default_theme_preset() -> String {
+    "dracula".to_string()
+}
+
+fn default_workspace_icon() -> String {
+    String::new()
 }
 
 #[derive(Debug, Serialize, Deserialize, Identifiable, Clone, Queryable)]
@@ -104,6 +158,13 @@ pub struct Workspace {
     pub display_order: i32,
     pub name: String,
     pub tenant_id: i32,
+    pub workspace_icon: String,
+    pub theme_preset: String,
+    pub bg_color: Option<String>,
+    pub fg_color: Option<String>,
+    pub accent_color: Option<String>,
+    pub panel_color: Option<String>,
+    pub background_image_url: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Insertable)]
@@ -112,6 +173,15 @@ pub struct NewWorkspace {
     pub display_order: i32,
     pub name: String,
     pub tenant_id: i32,
+    #[serde(default = "default_workspace_icon")]
+    pub workspace_icon: String,
+    #[serde(default = "default_theme_preset")]
+    pub theme_preset: String,
+    pub bg_color: Option<String>,
+    pub fg_color: Option<String>,
+    pub accent_color: Option<String>,
+    pub panel_color: Option<String>,
+    pub background_image_url: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -120,7 +190,16 @@ pub struct WorkspaceWithApplets {
     pub display_order: i32,
     pub name: String,
     pub tenant_id: i32,
-    pub applets: Vec<NewAppletNoWorkspace>
+    #[serde(default = "default_workspace_icon")]
+    pub workspace_icon: String,
+    #[serde(default = "default_theme_preset")]
+    pub theme_preset: String,
+    pub bg_color: Option<String>,
+    pub fg_color: Option<String>,
+    pub accent_color: Option<String>,
+    pub panel_color: Option<String>,
+    pub background_image_url: Option<String>,
+    pub applets: Vec<NewAppletNoWorkspace>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -128,14 +207,32 @@ pub struct NewWorkspaceWithApplets {
     pub display_order: i32,
     pub name: String,
     pub tenant_id: i32,
-    pub applets: Vec<NewAppletNoWorkspace>
+    #[serde(default = "default_workspace_icon")]
+    pub workspace_icon: String,
+    #[serde(default = "default_theme_preset")]
+    pub theme_preset: String,
+    pub bg_color: Option<String>,
+    pub fg_color: Option<String>,
+    pub accent_color: Option<String>,
+    pub panel_color: Option<String>,
+    pub background_image_url: Option<String>,
+    pub applets: Vec<NewAppletNoWorkspace>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WorkspaceNoIDWithApplets {
     pub display_order: i32,
     pub name: String,
-    pub applets: Vec<NewAppletNoWorkspace>
+    #[serde(default = "default_workspace_icon")]
+    pub workspace_icon: String,
+    #[serde(default = "default_theme_preset")]
+    pub theme_preset: String,
+    pub bg_color: Option<String>,
+    pub fg_color: Option<String>,
+    pub accent_color: Option<String>,
+    pub panel_color: Option<String>,
+    pub background_image_url: Option<String>,
+    pub applets: Vec<NewAppletNoWorkspace>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -143,7 +240,24 @@ pub struct WorkspaceNoTenantWithApplets {
     pub id: i32,
     pub display_order: i32,
     pub name: String,
-    pub applets: Vec<NewAppletNoWorkspace>
+    /// Omitted in JSON keeps the previous icon.
+    #[serde(default)]
+    pub workspace_icon: Option<String>,
+    /// Omitted in JSON keeps the previous preset.
+    #[serde(default)]
+    pub theme_preset: Option<String>,
+    /// Omitted keeps the previous value; explicit `null` clears the override.
+    #[serde(default)]
+    pub bg_color: Option<String>,
+    #[serde(default)]
+    pub fg_color: Option<String>,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+    #[serde(default)]
+    pub panel_color: Option<String>,
+    #[serde(default)]
+    pub background_image_url: Option<String>,
+    pub applets: Vec<NewAppletNoWorkspace>,
 }
 
 
@@ -154,7 +268,14 @@ impl Workspace {
             .values(NewWorkspace {
                 display_order: new_workspace.display_order,
                 name: new_workspace.name,
-                tenant_id: new_workspace.tenant_id
+                tenant_id: new_workspace.tenant_id,
+                workspace_icon: new_workspace.workspace_icon,
+                theme_preset: new_workspace.theme_preset,
+                bg_color: new_workspace.bg_color,
+                fg_color: new_workspace.fg_color,
+                accent_color: new_workspace.accent_color,
+                panel_color: new_workspace.panel_color,
+                background_image_url: new_workspace.background_image_url,
             })
             .get_result(conn)?);
     }
@@ -164,14 +285,18 @@ impl Workspace {
     }
 
     pub fn update(conn: &PgConnection, update_workspace: Workspace) -> Result<Workspace, MyError> {
-        return Ok(diesel::update(
-            workspaces::table.filter(wid.eq(update_workspace.id)))
-            .set(
-                (
-                    display_order.eq(update_workspace.display_order),
-                    name.eq(update_workspace.name),
-                ))
-
+        return Ok(diesel::update(workspaces::table.filter(wid.eq(update_workspace.id)))
+            .set((
+                display_order.eq(update_workspace.display_order),
+                name.eq(update_workspace.name),
+                workspace_icon.eq(update_workspace.workspace_icon.clone()),
+                theme_preset.eq(update_workspace.theme_preset.clone()),
+                bg_color.eq(update_workspace.bg_color.clone()),
+                fg_color.eq(update_workspace.fg_color.clone()),
+                accent_color.eq(update_workspace.accent_color.clone()),
+                panel_color.eq(update_workspace.panel_color.clone()),
+                background_image_url.eq(update_workspace.background_image_url.clone()),
+            ))
             .get_result(conn)?);
     }
 
@@ -196,7 +321,14 @@ impl Workspace {
         let add_workspace = NewWorkspace {
             display_order: new_workspace.display_order,
             name: new_workspace.name,
-            tenant_id: new_workspace.tenant_id
+            tenant_id: new_workspace.tenant_id,
+            workspace_icon: new_workspace.workspace_icon,
+            theme_preset: new_workspace.theme_preset,
+            bg_color: new_workspace.bg_color,
+            fg_color: new_workspace.fg_color,
+            accent_color: new_workspace.accent_color,
+            panel_color: new_workspace.panel_color,
+            background_image_url: new_workspace.background_image_url,
         };
         let workspace = Workspace::create(conn, add_workspace)?;
         for new_applet in new_workspace.applets {
@@ -208,7 +340,13 @@ impl Workspace {
                 height: new_applet.height,
                 editable: new_applet.editable,
                 applet_data: new_applet.applet_data,
-                workspace_id: workspace.id
+                workspace_id: workspace.id,
+                is_floating: new_applet.is_floating,
+                float_left: new_applet.float_left,
+                float_top: new_applet.float_top,
+                float_width: new_applet.float_width,
+                float_height: new_applet.float_height,
+                float_z: new_applet.float_z,
             };
             let _applets = Applet::create(conn, new_applet_workspace_id);
         }
@@ -221,7 +359,14 @@ impl Workspace {
             id: update_workspace.id,
             display_order: update_workspace.display_order,
             name: update_workspace.name,
-            tenant_id: update_workspace.tenant_id
+            tenant_id: update_workspace.tenant_id,
+            workspace_icon: update_workspace.workspace_icon,
+            theme_preset: update_workspace.theme_preset,
+            bg_color: update_workspace.bg_color,
+            fg_color: update_workspace.fg_color,
+            accent_color: update_workspace.accent_color,
+            panel_color: update_workspace.panel_color,
+            background_image_url: update_workspace.background_image_url,
         };
         let workspace = Workspace::update(conn, change_workspace)?;
         let mut current_applets = Applet::all_applets_by_workspace(conn, update_workspace.id).unwrap();
@@ -239,7 +384,13 @@ impl Workspace {
                     height: change_applet.height,
                     editable: change_applet.editable,
                     applet_data: change_applet.applet_data,
-                    workspace_id: workspace.id
+                    workspace_id: workspace.id,
+                    is_floating: change_applet.is_floating,
+                    float_left: change_applet.float_left,
+                    float_top: change_applet.float_top,
+                    float_width: change_applet.float_width,
+                    float_height: change_applet.float_height,
+                    float_z: change_applet.float_z,
                 };
                 let _applets = Applet::create(conn, new_applet_workspace_id);
             } else {
@@ -253,7 +404,13 @@ impl Workspace {
                         height: change_applet.height,
                         editable: change_applet.editable,
                         applet_data: change_applet.applet_data,
-                        workspace_id: update_workspace.id
+                        workspace_id: update_workspace.id,
+                        is_floating: change_applet.is_floating,
+                        float_left: change_applet.float_left,
+                        float_top: change_applet.float_top,
+                        float_width: change_applet.float_width,
+                        float_height: change_applet.float_height,
+                        float_z: change_applet.float_z,
                     };
                     let _applets = Applet::update(conn, change_applet_workspace_id);
             }

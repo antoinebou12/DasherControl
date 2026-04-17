@@ -1,41 +1,21 @@
-[global]
+[default]
 template_dir = "frontend/dist/templates"
-
-[development]
 address = "0.0.0.0"
 port = 8080
-# workers = [number of cpus * 2]
 keep_alive = 5
-read_timeout = 5
-write_timeout = 5
-log = "normal"
-# secret_key = [randomly generated at launch]
-limits = { forms = 32768 }
+limits = { forms = "32KiB", "data-form" = "576MiB", file = "576MiB" }
+log_level = "normal"
+# Base64-encoded 256-bit key for private cookies (dev only — set ROCKET_SECRET_KEY in production).
+secret_key = "dHBh5Uh_cK1T7m-mzQU4zpGkZI9R-uR9OTOJI_B3uEQ="
 
-[staging]
-address = "0.0.0.0"
-port = 9081
-# workers = [number of cpus * 2]
-keep_alive = 5
-read_timeout = 5
-write_timeout = 5
-log = "normal"
-# secret_key = [randomly generated at launch]
-limits = { forms = 32768 }
-
-[production]
+[release]
 address = "0.0.0.0"
 port = 8080
-#workers = [number of cpus * 2]
 keep_alive = 5
-read_timeout = 5
-write_timeout = 5
-log = "critical"
-#secret_key = [randomly generated at launch]
-limits = { forms = 32768 }
-tls = { certs = "certs/cert.crt", key = "certs/cert.key" }
+limits = { forms = "32KiB", "data-form" = "576MiB", file = "576MiB" }
+log_level = "critical"
+secret_key = "dHBh5Uh_cK1T7m-mzQU4zpGkZI9R-uR9OTOJI_B3uEQ="
 
-
-#[global.databases]
-#postgres_db = { url = "postgres://postgres:root@localhost/diesel" }
-
+[release.tls]
+certs = "certs/cert.crt"
+key = "certs/cert.key"

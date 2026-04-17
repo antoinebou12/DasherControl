@@ -14,3 +14,6 @@ frontend/node_modules
 frontend/dist
 
 .idea
+
+# mdBook output (built in CI or locally)
+/book/

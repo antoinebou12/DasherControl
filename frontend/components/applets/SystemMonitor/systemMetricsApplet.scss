@@ -1,0 +1,49 @@
+.metric-applet {
+  background: var(--bg);
+  color: var(--fg);
+  padding: 12px;
+  text-align: left;
+  overflow: auto;
+  max-height: 100%;
+}
+
+.section-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.muted {
+  color: var(--fg);
+  opacity: 0.75;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.muted.small {
+  font-size: 11px;
+}
+
+.cpu-cores {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cpu-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.cpu-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cpu-meta {
+  text-align: right;
+  opacity: 0.85;
+}

@@ -8,8 +8,8 @@
         <span v-if="showTitle" class="title">{{ getTitle() }}</span>
         <div ref="draggableHandle" class="vue-draggable-handle" style="height: 24px;">
           <span class="remove-item" @click="removeItem()"><i class="bx bx-x"/></span>
-          <span v-if="appletName == 'IFrame'" class="open-new-tab-item" @click="openNewTab()"><i class="bx bx-export"/></span>
-          <span v-if="appletName == 'IFrame'" class="reload-iframe" @click="reload()"><i class="bx bx-refresh"/></span>
+          <span v-if="appletToolbar.showOpenInNewTab" class="open-new-tab-item" @click="openNewTab()"><i class="bx bx-export"/></span>
+          <span v-if="appletToolbar.showReload" class="reload-iframe" @click="reload()"><i class="bx bx-refresh"/></span>
         </div>
         <div ref="gridItemMain" class="grid-item-main no-drag">
           <Applet ref="applet" @changeApplet="changeApplet" :appletName="appletName" v-bind="currentAppletData"></Applet>
@@ -21,6 +21,7 @@
 <script>
 import {GridItem} from "vue-grid-layout"
 import Applet from "./applets/Applet.vue"
+import { getAppletDescriptor, normalizeAppletId } from "./applets/appletRegistryCore.js"
 
 export default {
   name: "GridItemApplet",
@@ -40,6 +41,12 @@ export default {
       title: this.extra.title || "Title",
       showTitle: false,
     }
+  },
+  computed: {
+    appletToolbar() {
+      const d = getAppletDescriptor(normalizeAppletId(this.appletName))
+      return d && d.toolbar ? d.toolbar : {}
+    },
   },
   watch : {
     appletData: function(newVal) {

@@ -1,0 +1,6 @@
+ALTER TABLE applets DROP COLUMN IF EXISTS float_z;
+ALTER TABLE applets DROP COLUMN IF EXISTS float_height;
+ALTER TABLE applets DROP COLUMN IF EXISTS float_width;
+ALTER TABLE applets DROP COLUMN IF EXISTS float_top;
+ALTER TABLE applets DROP COLUMN IF EXISTS float_left;
+ALTER TABLE applets DROP COLUMN IF EXISTS is_floating;

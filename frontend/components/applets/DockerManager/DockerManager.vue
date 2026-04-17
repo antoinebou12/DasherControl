@@ -1,224 +1,267 @@
 <template>
   <div class="center docker-manager-containers">
-  <vs-table>
-    <template #thead>
-      <vs-tr>
-        <vs-th class="quick-status-col">
-        </vs-th>
-        <vs-th>
-          ID
-        </vs-th>
-        <vs-th>
-          Name
-        </vs-th>
-        <vs-th>
-          Image
-        </vs-th>
-        <vs-th>
-          State
-        </vs-th>
-        <vs-th>
-          Status
-        </vs-th>
-        <vs-th>
-          IP
-        </vs-th>
-        <vs-th>
-          Public Port
-        </vs-th>
-      </vs-tr>
-    </template>
-    <template #tbody>
-      <vs-tr
-          :key="i"
-          v-for="(tr, i) in containers"
-          :data="tr">
-        <vs-td>
-          <div class="quick-status">
-            <i class="bx bxs-server"></i>
-            <i :class="get_status_theme(tr.status)" class="bx bxs-circle"></i>
-          </div>
-          <div class="quick-control">
-            <vs-button @click="stop_container(tr.id)" v-if="get_status(tr.status)">
-              <i class="bx bx-stop"></i>
-            </vs-button>
-            <vs-button @click="restart_container(tr.id)" v-if="!get_status(tr.status)">
-              <i class="bx bx-play"></i>
-            </vs-button>
-          </div>
-        </vs-td>
-        <vs-td>
-          {{ tr.id }}
-        </vs-td>
-        <vs-td>
-          {{ tr.name }}
-        </vs-td>
-        <vs-td>
-          {{ tr.image }}
-        </vs-td>
-        <vs-td>
-          {{ tr.state }}
-        </vs-td>
-        <vs-td>
-          {{ tr.status }}
-        </vs-td>
-        <vs-td>
-          {{ tr.ip }}
-        </vs-td>
-        <vs-td>
-          <a @click="openContainer(tr)">{{ tr.public_port }}</a>
-        </vs-td>
-      </vs-tr>
-    </template>
-    <template #notFound>
-      <span></span>
-    </template>
-  </vs-table>
+    <div class="docker-toolbar">
+      <n-button quaternary size="small" @click="triggerImportZip">
+        <i class="bx bx-import" />
+        Import zip
+      </n-button>
+      <input
+        ref="importZipInput"
+        type="file"
+        accept=".zip,application/zip"
+        class="docker-import-input"
+        @change="onImportZipSelected"
+      />
+    </div>
+    <n-table :single-line="false" size="small" class="docker-table">
+      <thead>
+        <tr>
+          <th class="quick-status-col" />
+          <th>ID</th>
+          <th>Name</th>
+          <th>Image</th>
+          <th>State</th>
+          <th>Status</th>
+          <th>IP</th>
+          <th>Port</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="tr in containers" :key="tr.id" :class="{ 'tr-selected': false }">
+          <td>
+            <div class="quick-status">
+              <i class="bx bxs-server" />
+              <i :class="get_status_theme(tr.status)" class="bx bxs-circle" />
+            </div>
+            <div class="quick-control">
+              <n-button v-if="get_status(tr.status)" quaternary size="tiny" @click="stop_container(tr.id)">
+                <i class="bx bx-stop" />
+              </n-button>
+              <n-button v-if="!get_status(tr.status)" quaternary size="tiny" @click="restart_container(tr.id)">
+                <i class="bx bx-play" />
+              </n-button>
+            </div>
+          </td>
+          <td>{{ tr.id }}</td>
+          <td>{{ tr.name }}</td>
+          <td>{{ tr.image }}</td>
+          <td>{{ tr.state }}</td>
+          <td>{{ tr.status }}</td>
+          <td>{{ tr.ip }}</td>
+          <td>
+            <a class="port-link" @click.prevent="openContainer(tr)">{{ tr.public_port }}</a>
+          </td>
+          <td class="export-col">
+            <n-button quaternary size="tiny" title="Export filesystem zip" @click="export_container_zip(tr)">
+              <i class="bx bx-archive" />
+            </n-button>
+          </td>
+        </tr>
+      </tbody>
+    </n-table>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-
+import { NButton, NTable } from "naive-ui";
+import { useUserStore } from "../../../stores/user";
+import { createNotification } from "../../../utils";
 
 export default {
   name: "DockerManager",
+  components: { NButton, NTable },
   data() {
     return {
       statusInterval: null,
       containers: [],
-      token: '',
-    }
+    };
   },
   created() {
     this.get_container();
-    this.get_token();
     this.statusInterval = setInterval(() => {
       this.get_container();
-    }, 1000)
+    }, 1000);
   },
-  updated() {
-    this.get_container();
-  },
-  beforeDestroy() {
-    clearInterval(this.statusInterval);
+  beforeUnmount() {
+    if (this.statusInterval) clearInterval(this.statusInterval);
   },
   methods: {
+    authHeaders() {
+      const t = useUserStore().token;
+      return t ? { Authorization: `Bearer ${t}` } : {};
+    },
     get_container() {
       axios({
-        method: 'get',
-        url: '/containers/api/docker_list',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        method: "get",
+        url: "/containers/api/docker_list",
+        headers: { "Content-Type": "application/json" },
       }).then((response) => {
-        this.containers = []
-        if (response.data.length != 0) {
-          for (let i = 0; i < response.data.length; i++) {
-            let ports = (response.data[i]["Ports"].length == 0 ? [{"Ip": "Host", "PublicPort": "X"}]: response.data[i]["Ports"]);
-            this.containers.push({
-              id: response.data[i].Id.slice(0, 11),
-              name: response.data[i].Names[0].replace("/", ""),
-              image: response.data[i].Image,
-              state: response.data[i].State,
-              status: response.data[i].Status,
-              ip: ports[0]["Ip"] || window.location.hostname.replace("www.", ""),
-              public_port: ports[0]["PublicPort"] || "X"
-            })
-          }
+        this.containers = [];
+        const rows = response.data || [];
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const name0 = (row.names && row.names[0]) || row.id || "";
+          const fullId = row.id || "";
+          this.containers.push({
+            fullId,
+            id: fullId.slice(0, 12),
+            name: String(name0).replace("/", ""),
+            image: row.image || "",
+            state: row.state || "",
+            status: row.status || "",
+            ip: typeof window !== "undefined" ? window.location.hostname.replace("www.", "") : "",
+            public_port: "X",
+          });
         }
       });
     },
     get_status(status) {
-      if (status.includes("Up")) {
-        return true
-      } else {
-        return false
-      }
+      return String(status || "").includes("Up");
     },
     get_status_theme(status) {
-      if (this.get_status(status)) {
-        return "up-docker"
-      } else {
-        return "down-docker"
-      }
-    },
-    get_token(){
-      if (this.token == '') {
-        axios({
-          method: 'get',
-          url: '/tenants/api/token',
-        }).then((response) => {
-          this.token = response.data
-          return this.token
-        })
-      } else {
-        return this.token
-      }
+      return this.get_status(status) ? "up-docker" : "down-docker";
     },
     stop_container(id) {
-      this.get_container()
       axios({
-        method: 'post',
-        headers: {
-          Authorization: `Bearer ${this.get_token()}`
-        },
-        url: '/containers/api/stop/' + id,
-      }).then((response) => {
-        this.get_container()
-      })
+        method: "post",
+        headers: this.authHeaders(),
+        url: "/containers/api/stop/" + encodeURIComponent(id),
+      }).then(() => {
+        this.get_container();
+      });
     },
     restart_container(id) {
-      this.get_container()
       axios({
-        method: 'post',
-        headers: {
-          Authorization: `Bearer ${this.get_token()}`
-        },
-        url: '/containers/api/restart/' + id,
-      }).then((response) => {
-        this.get_container()
+        method: "post",
+        headers: this.authHeaders(),
+        url: "/containers/api/restart/" + encodeURIComponent(id),
+      }).then(() => {
+        this.get_container();
+      });
+    },
+    export_container_zip(tr) {
+      const id = tr.fullId;
+      if (!id) return;
+      axios({
+        method: "get",
+        url: "/containers/api/docker_export_zip/" + encodeURIComponent(id),
+        headers: { ...this.authHeaders() },
+        responseType: "blob",
       })
+        .then((response) => {
+          const blob = new Blob([response.data], { type: "application/zip" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `dasher-docker-${id.slice(0, 12)}.zip`;
+          a.click();
+          URL.revokeObjectURL(url);
+          createNotification(this, "Export", "Saved zip download started.", "success");
+        })
+        .catch((err) => {
+          const msg =
+            err.response?.data instanceof Blob
+              ? "Export failed (check permissions / Docker)."
+              : err.message || "Export failed.";
+          createNotification(this, "Export failed", msg, "danger");
+        });
+    },
+    triggerImportZip() {
+      const el = this.$refs.importZipInput;
+      if (el) el.click();
+    },
+    onImportZipSelected(ev) {
+      const input = ev.target;
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append("file", file);
+      axios
+        .post("/containers/api/docker_import_zip", fd, {
+          headers: { ...this.authHeaders() },
+        })
+        .then((res) => {
+          const r = res.data || {};
+          const ref = r.image_ref || "";
+          createNotification(this, "Import", ref ? `Image ${ref}` : "Image imported.", "success");
+          this.get_container();
+        })
+        .catch((err) => {
+          createNotification(
+            this,
+            "Import failed",
+            err.response?.data?.message || err.message || "Import failed.",
+            "danger",
+          );
+        })
+        .finally(() => {
+          input.value = "";
+        });
     },
     openContainer(containerData) {
-      this.$emit('openContainer', containerData)
-    }
-  }
-}
+      this.$emit("openContainer", containerData);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-.docker-manager-containers{
+.docker-manager-containers {
   background: var(--bg);
   color: var(--fg);
 
+  .docker-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .docker-import-input {
+    display: none;
+  }
+
+  .export-col {
+    width: 48px;
+    text-align: center;
+  }
+
   .quick-status-col {
-    width: 10px
+    width: 10px;
   }
 
   .tr-selected {
-    background: rgba(var(--vs-color), 0.1);
-    color: rgba(var(-vs-color), 0.1)
+    background: rgba(var(--vs-color, 189, 147, 249), 0.1);
+    color: rgba(var(--vs-color, 189, 147, 249), 0.8);
   }
   .quick-status {
-    display:inline-block;
+    display: inline-block;
     position: relative;
     margin: 10px;
     .bxs-server {
-      font-size: 30px
+      font-size: 30px;
     }
     .bxs-circle {
-      position:absolute;
+      position: absolute;
       bottom: 0;
       right: 0;
       margin: -3px -6px;
     }
-    .down-docker{
-      color: red;
-    }
-    .up-docker {
-      color: green;
-    }
+  }
+  .quick-control {
+    display: inline-flex;
+    gap: 4px;
+    vertical-align: middle;
+  }
+  .port-link {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .up-docker {
+    color: #4ade80;
+  }
+  .down-docker {
+    color: #f87171;
   }
 }
 </style>

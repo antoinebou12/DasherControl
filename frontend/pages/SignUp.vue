@@ -1,151 +1,54 @@
 <template>
-  <div class="signup">
-    <div class="center">
-      <vs-dialog v-model="show" class="dialog-login">
-        <template #header>
-          <h4 class="not-margin">
-            <b>SignUp</b>
-          </h4>
-        </template>
-        <div class="signup-form">
-          <vs-input type="name" v-model="name" placeholder="Name">
-          </vs-input>
-          <vs-input v-model="email" placeholder="Email">
-            <template #icon>
-              @
-            </template>
-          </vs-input>
-          <vs-input type="username" v-model="username" placeholder="Username">
-            <template #icon>
-              <i class='bx bxs-user'></i>
-            </template>
-          </vs-input>
-          <vs-input type="password" v-model="password" placeholder="Password">
-            <template #icon>
-              <i class='bx bxs-lock'></i>
-            </template>
-          </vs-input>
-          <vs-input type="password" v-model="password_confirmation" placeholder="Confirm Password"
-                    v-on:keyup.enter="submitSignUp()">
-            <template #icon>
-              <i class='bx bxs-lock'></i>
-            </template>
-          </vs-input>
-        </div>
-        <template #footer>
-          <div class="footer-dialog">
-            <vs-button block @click="submitSignUp()">
-              Sign Up
-            </vs-button>
-          </div>
-        </template>
-      </vs-dialog>
-    </div>
-  </div>
+  <n-modal v-model:show="show" preset="card" title="Sign up" :style="{ width: '440px' }">
+    <n-space vertical size="large">
+      <n-input v-model:value="name" placeholder="Name" size="large" />
+      <n-input v-model:value="email" placeholder="Email" size="large" />
+      <n-input v-model:value="username" placeholder="Username" size="large" />
+      <n-input v-model:value="password" type="password" show-password-on="click" placeholder="Password" size="large" />
+      <n-input
+        v-model:value="password_confirmation"
+        type="password"
+        show-password-on="click"
+        placeholder="Confirm password"
+        size="large"
+        @keyup.enter="submitSignUp"
+      />
+      <n-button type="primary" block size="large" @click="submitSignUp">Create account</n-button>
+    </n-space>
+  </n-modal>
 </template>
 
-
-<script>
+<script setup lang="ts">
 import axios from "axios";
+import { NButton, NInput, NModal, NSpace } from "naive-ui";
+import { ref } from "vue";
 
-export default {
-  name: "SignUp",
-  data: () => ({
-    show: false,
-    name: '',
-    username: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-  }),
-  methods: {
-    showDialog() {
-      this.show = true;
+const show = ref(false);
+const name = ref("");
+const username = ref("");
+const email = ref("");
+const password = ref("");
+const password_confirmation = ref("");
+
+defineExpose({
+  showDialog: () => {
+    show.value = true;
+  },
+});
+
+async function submitSignUp() {
+  await axios.post(
+    "/tenants/api/create",
+    {
+      name: name.value,
+      email: email.value,
+      username: username.value,
+      role: "tenant",
+      password: password.value,
+      password_confirmation: password_confirmation.value,
     },
-    submitSignUp() {
-      axios({
-        method: 'post',
-        url: '/tenants/api/create',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: {
-          name: this.name,
-          email: this.email,
-          username: this.username,
-          password: this.password,
-          password_confirmation: this.password_confirmation,
-        }
-      });
-    }
-  }
-};
+    { headers: { "Content-Type": "application/json" } },
+  );
+  show.value = false;
+}
 </script>
-
-<style lang="scss">
-.dialog-title {
-  margin: 0px;
-  font-weight: normal;
-  padding: 10px;
-}
-
-.signup-form {
-  width: 100%;
-
-  .flex {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    a {
-      font-size: 0.8rem;
-      opacity: 0.7;
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-  }
-
-  .vs-checkbox-label {
-    font-size: 0.8rem;
-  }
-
-  .vs-input-content {
-    margin: 10px 0px;
-    width: calc(100%);
-
-    .vs-input {
-      width: 100%;
-      background: var(--bg);
-      color: var(--fg);
-    }
-  }
-}
-
-.footer-dialog {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  width: calc(100%);
-
-  .new {
-    margin: 20px 0px 0px;
-    padding: 0px;
-    font-size: 0.7rem;
-
-    a {
-      margin-left: 6px;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .vs-button {
-    margin: 0px;
-  }
-}
-</style>

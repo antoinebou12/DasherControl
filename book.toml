@@ -1,0 +1,9 @@
+[book]
+authors = ["Antoine Boucher"]
+language = "en"
+multilingual = false
+src = "docs/src"
+title = "DasherControl"
+
+[build]
+build-dir = "book"

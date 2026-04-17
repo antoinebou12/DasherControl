@@ -2,6 +2,7 @@ use bcrypt::{DEFAULT_COST, hash, verify};
 use std::io::Write;
 use uuid::Uuid;
 use chrono::{Local, NaiveDateTime};
+use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, QueryResult, RunQueryDsl, select, serialize, deserialize};
@@ -13,14 +14,13 @@ use diesel::pg::Pg;
 
 use crate::schema::{tenants, tenant_configuration};
 use crate::schema::login_history;
-use crate::schema::tenants::dsl::{username, email, login_session, id as tid};
+use crate::schema::tenants::dsl::{username, email, login_session, id as tid, oauth_provider, oauth_subject};
 use crate::schema::tenant_configuration::dsl::tenant_id as t_id;
 use crate::tenants::error::MyError;
 use crate::tenants::token::Claims;
 use diesel::deserialize::FromSql;
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
-#[table_name = "tenants"]
+#[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct Tenant {
     #[serde(skip)]
     pub id: i32,
@@ -33,6 +33,8 @@ pub struct Tenant {
     pub created_at: NaiveDateTime,
     #[serde(skip)]
     pub login_session: String,
+    pub oauth_provider: Option<String>,
+    pub oauth_subject: Option<String>,
 }
 
 impl Tenant {
@@ -95,8 +97,56 @@ impl Tenant {
         }
     }
 
+    pub fn find_by_oauth(provider: &str, subject: &str, conn: &PgConnection) -> Option<Tenant> {
+        tenants::table
+            .filter(oauth_provider.eq(provider))
+            .filter(oauth_subject.eq(subject))
+            .get_result::<Tenant>(conn)
+            .ok()
+    }
+
+    pub fn username_taken(name: &str, conn: &PgConnection) -> bool {
+        tenants::table
+            .filter(username.eq(name))
+            .select(tid)
+            .first::<i32>(conn)
+            .is_ok()
+    }
+
+    pub fn link_oauth_account(
+        tenant_id: i32,
+        provider: &str,
+        subject: &str,
+        conn: &PgConnection,
+    ) -> QueryResult<usize> {
+        diesel::update(tenants::table.find(tenant_id))
+            .set((
+                oauth_provider.eq(Some(provider.to_string())),
+                oauth_subject.eq(Some(subject.to_string())),
+            ))
+            .execute(conn)
+    }
+
+    pub fn establish_login_session(&mut self, conn: &PgConnection) -> Result<(), MyError> {
+        if let Some(login_history) = LoginHistory::create(&self.username, conn) {
+            if !LoginHistory::save_login_history(login_history, conn) {
+                return Err(MyError::LoginHistoryError(
+                    "Error saving login history".to_string(),
+                ));
+            }
+            let session = Tenant::generate_login_session();
+            Tenant::update_login_session_to_db(&self.username, &session, conn);
+            self.login_session = session;
+            Ok(())
+        } else {
+            Err(MyError::LoginHistoryError(
+                "Error with login history".to_string(),
+            ))
+        }
+    }
+
     pub fn generate_login_session() -> String {
-        Uuid::new_v4().to_simple().to_string()
+        Uuid::new_v4().to_string().replace('-', "")
     }
 
     pub fn update_login_session_to_db(name: &str, session: &str, conn: &PgConnection) -> bool {
@@ -122,7 +172,20 @@ pub struct NewTenant {
     pub created_at: NaiveDateTime,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Insertable)]
+#[table_name = "tenants"]
+pub struct NewOAuthTenant {
+    pub email: String,
+    pub name: String,
+    pub username: String,
+    pub password: String,
+    pub role: String,
+    pub created_at: NaiveDateTime,
+    pub oauth_provider: String,
+    pub oauth_subject: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct RegisterTenantNoRole {
     pub email: String,
     pub name: String,
@@ -132,7 +195,7 @@ pub struct RegisterTenantNoRole {
     pub password_confirmation: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct RegisterTenant {
     pub email: String,
     pub name: String,
@@ -175,7 +238,7 @@ impl RegisterTenant {
 }
 
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct AuthTenant {
     pub email: String,
     pub username: String,
@@ -202,21 +265,11 @@ impl AuthTenant {
         let valid = verify(&self.password, &tenant.password).unwrap();
 
         if valid {
-            if let Some(login_history) = LoginHistory::create(&tenant.username, conn) {
-                if !LoginHistory::save_login_history(login_history, conn) {
-                    return Err(MyError::LoginHistoryError("Error saving login history".to_string()));
-                }
-                let session = Tenant::generate_login_session();
-                Tenant::update_login_session_to_db(&tenant.username, &session, conn);
-                tenant.login_session = session;
-                return Ok(tenant);
-            }
+            tenant.establish_login_session(conn)?;
+            Ok(tenant)
         } else {
-            return Err(MyError::LoginHistoryError("Error with login history".to_string()));
+            Err(MyError::WrongPassword("Wrong Password".to_string()))
         }
-        return Err(MyError::WrongPassword(
-            "Wrong Password".to_string(),
-        ));
     }
 }
 
@@ -315,3 +368,9 @@ impl ToSql<Varchar, Pg> for DBJsonType {
 #[derive(AsExpression, Debug, Deserialize, Serialize, FromSqlRow)]
 #[sql_type = "Varchar"]
 pub struct DBJsonType(Value);
+
+impl DBJsonType {
+    pub fn from_json(value: Value) -> Self {
+        Self(value)
+    }
+}

@@ -1,30 +1,33 @@
-
 <template>
-  <div id="app" vs-theme="dark">
-    <Main msg=""/>
+  <div id="app" class="dc-root">
+    <Main msg="" />
   </div>
 </template>
 
-<script>
-import Main from './pages/Main.vue'
+<script setup lang="ts">
+import { onMounted } from "vue";
+import Main from "./pages/Main.vue";
+import { useUserStore } from "./stores/user";
+import { createNotification } from "./utils";
 
-export default {
-  name: 'app',
-  components: {
-    Main
-  },
-  created() {
-    this.$store.dispatch('getToken')
-  },
-  methods: {
+const user = useUserStore();
+onMounted(async () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("oauth_error")) {
+    createNotification(null, "Sign-in failed", "OAuth could not complete. Check server logs and OAuth app settings.", "danger");
+    params.delete("oauth_error");
+    const next = `${window.location.pathname}${params.toString() ? `?${params}` : ""}${window.location.hash}`;
+    window.history.replaceState({}, "", next);
   }
-}
+  await user.getToken();
+  if (user.token) await user.refreshProfile();
+});
 </script>
 
 <style lang="scss">
 @font-face {
-  font-family: 'Poppins';
-  src: url('public/fonts/Poppins-Regular.ttf');
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf");
   font-weight: normal;
   font-style: normal;
 }
@@ -38,10 +41,11 @@ export default {
 }
 html {
   background: var(--bg);
-  font-family: 'Poppins';
+  font-family: "Poppins", system-ui, sans-serif;
 }
-#app {
+#app,
+.dc-root {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
 }
 </style>

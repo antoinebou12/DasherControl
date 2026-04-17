@@ -2,6 +2,7 @@
 
 pub mod model;
 pub mod handler;
+pub mod oauth;
 pub mod router;
 pub mod error;
 pub mod token;

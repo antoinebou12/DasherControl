@@ -1,240 +1,109 @@
 <template>
   <div ref="editorContainer" class="editor-container">
-    <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-      <div class="menubar">
-        <vs-button
-          class="menubar__button"
-          :active="isActive.bold()"
-          @click="commands.bold">
-          <i class="bx bx-bold"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.italic()"
-          @click="commands.italic">
-          <i class="bx bx-italic"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.strike()"
-          @click="commands.strike">
-          <i class="bx bx-strikethrough"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.underline()"
-          @click="commands.underline">
-          <i class="bx bx-underline"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.code()"
-          @click="commands.code">
-          <i class="bx bx-code"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.paragraph()"
-          @click="commands.paragraph">
-          <i class="bx bx-paragraph"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.heading({ level: 1 })"
-          @click="commands.heading({ level: 1 })"
-        >
-          H1
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.heading({ level: 2 })"
-          @click="commands.heading({ level: 2 })"
-        >
-          H2
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.heading({ level: 3 })"
-          @click="commands.heading({ level: 3 })">
-          H3
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.bullet_list()"
-          @click="commands.bullet_list">
-          <i class="bx bx-list-ul"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.ordered_list()"
-          @click="commands.ordered_list">
-          <i class="bx bx-list-ol"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.blockquote()"
-          @click="commands.blockquote"
-        >
-          <i class="bx bxs-quote-alt-right"/>
-        </vs-button>
-
-        <vs-button
-          class="menubar__button"
-          :active="isActive.code_block()"
-          @click="commands.code_block"
-        >
-          <i class="bx bx-code-block"/>
-        </vs-button>
-
-        <vs-button class="menubar__button" @click="commands.horizontal_rule">
-          hr
-        </vs-button>
-
-        <vs-button class="menubar__button" @click="commands.undo">
-          <i class="bx bx-undo"/>
-        </vs-button>
-
-        <vs-button class="menubar__button" @click="commands.redo">
-          <i class="bx bx-redo"/>
-        </vs-button>
-      </div>
-    </editor-menu-bar>
-
-    <editor-content ref="editorContent" class="editor-content" :editor="editor" />
+    <editor-menubar v-if="editor" :editor="editor" :run="run" />
+    <editor-content class="editor-content" :editor="editor" />
   </div>
 </template>
 
-<script>
-import { Editor, EditorContent, EditorMenuBar } from "tiptap";
-import {
-  Blockquote,
-  CodeBlock,
-  HardBreak,
-  Heading,
-  HorizontalRule,
-  OrderedList,
-  BulletList,
-  ListItem,
-  TodoItem,
-  TodoList,
-  Bold,
-  Code,
-  Italic,
-  Link,
-  Strike,
-  Underline,
-  History,
-  Image
-} from "tiptap-extensions";
+<script setup lang="ts">
+import type { Editor } from "@tiptap/core";
+import { EditorContent, useEditor } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
+import EditorMenubar from "./EditorMenubar.vue";
+import { getCurrentInstance, onBeforeUnmount, ref, watch } from "vue";
 
-export default {
-  name: "Editor",
-  components: {
-    EditorContent,
-    EditorMenuBar
+const props = defineProps<{
+  name?: string;
+  textContent?: string;
+}>();
+
+const editorContainer = ref<HTMLElement | null>(null);
+const instance = getCurrentInstance();
+
+function saveToParents(ed?: Editor | null) {
+  const e = ed ?? editor.value;
+  if (!e) return;
+  const htmlText = e.getHTML();
+  const proxy = instance?.proxy as any;
+  const p = proxy?.$parent;
+  if (p?.$attrs) p.$attrs.textContent = htmlText;
+  const grid = p?.$parent?.$parent?.$parent;
+  if (grid?.currentAppletData) {
+    grid.currentAppletData.textContent = htmlText;
+  }
+}
+
+function resizeAfterBlur(ed: Editor) {
+  const proxy = instance?.proxy as any;
+  const contentEl = ed.view.dom as HTMLElement;
+  if (!editorContainer.value || !contentEl) return;
+  editorContainer.value.style.height = `${100 + contentEl.offsetHeight}px`;
+  const gridItemMain = proxy?.$parent?.$parent?.$parent?.$refs?.gridItemMain as HTMLElement | undefined;
+  const draggableHandle = proxy?.$parent?.$parent?.$parent?.$refs?.draggableHandle as HTMLElement | undefined;
+  if (gridItemMain && contentEl.offsetHeight > gridItemMain.offsetHeight && draggableHandle) {
+    draggableHandle.style.height = "auto";
+    setTimeout(() => {
+      draggableHandle.style.height = "24px";
+    }, 1);
+  }
+}
+
+const editor = useEditor({
+  extensions: [StarterKit],
+  content: props.textContent || "",
+  onUpdate: () => saveToParents(),
+  editorProps: {
+    handleDOMEvents: {
+      blur: () => {
+        const ed = editor.value;
+        if (ed) {
+          resizeAfterBlur(ed);
+          saveToParents(ed);
+        }
+        return false;
+      },
+    },
   },
-  props: {
-    name: String,
-    textContent: { type: String, default: ""}
-  },
-  data() {
-    var self = this;
-    return {
-      editor: new Editor({
-        onUpdate({}) {
-          self.save()
-        },
-        onBlur({}) {
-          // hack to fix issue with draggable
-          self.$refs.editorContainer.style.height = (100 + self.$refs.editorContent.$el.offsetHeight).toString() + "px";
-          if (self.$parent.$parent.$parent.$refs.gridItemMain.offsetHeight < self.$refs.editorContent.$el.offsetHeight) {
-            self.$parent.$parent.$parent.$refs.draggableHandle.style.height = "auto";
-            setTimeout(() => {
-              self.$parent.$parent.$parent.$refs.draggableHandle.style.height = "24px";
-            }, 1);
-          }
-        },
-        extensions: [
-          new Blockquote(),
-          new BulletList(),
-          new CodeBlock(),
-          new HardBreak(),
-          new Heading({levels: [1, 2, 3]}),
-          new HorizontalRule(),
-          new ListItem(),
-          new OrderedList(),
-          new TodoItem(),
-          new TodoList(),
-          new Link(),
-          new Bold(),
-          new Code(),
-          new Italic(),
-          new Strike(),
-          new Underline(),
-          new History(),
-          new Image()
-        ],
-      }),
+});
+
+function run(fn: () => void) {
+  fn();
+  saveToParents();
+}
+
+watch(
+  () => props.textContent,
+  (v) => {
+    const ed = editor.value;
+    if (!ed) return;
+    const next = v || "";
+    if (next !== ed.getHTML()) {
+      ed.commands.setContent(next, false);
     }
   },
-  created() {
-    this.editor.setContent(this.textContent || "")
-  },
-  beforeDestroy() {
-    this.editor.destroy();
-  },
-  methods: {
-    save(){
-      let htmlText = this.editor.getHTML()
-      // GridItem
-      this.$parent.$attrs["textContent"] = htmlText || "";
-      // GridItemApplet
-      this.$parent.$parent.$parent.currentAppletData["textContent"] = htmlText || "";
-    },
-  }
-};
+);
+
+onBeforeUnmount(() => {
+  editor.value?.destroy();
+});
 </script>
 
 <style lang="scss" scoped>
-.menubar {
-  display: flex;
-
-  .menubar__button {
-    background-color: var(--fg);
-    color: var(--bg);
-    border: var(--bg) 1px;
-  }
-}
 .editor-container {
   box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px,
     rgb(0 0 0 / 5%) 0px 4px 6px -2px;
   border: 1px solid black;
-
-  button {
-    border-radius: 0px;
-  }
 
   .editor-content {
     overflow-wrap: break-word;
     word-wrap: break-word;
     word-break: break-word;
 
-    * {
+    :deep(*) {
       caret-color: currentColor;
     }
 
-    pre {
+    :deep(pre) {
       padding: 0.7rem 1rem;
       border-radius: 5px;
       background: var(--bg);
@@ -247,7 +116,7 @@ export default {
       }
     }
 
-    p code {
+    :deep(p code) {
       padding: 0.2rem 0.4rem;
       border-radius: 5px;
       font-size: 0.8rem;
@@ -256,22 +125,22 @@ export default {
       color: rgba(var(--fg-rgb), 0.8);
     }
 
-    ul,
-    ol {
+    :deep(ul),
+    :deep(ol) {
       padding-left: 1rem;
     }
 
-    li > p,
-    li > ol,
-    li > ul {
+    :deep(li > p),
+    :deep(li > ol),
+    :deep(li > ul) {
       margin: 0;
     }
 
-    a {
+    :deep(a) {
       color: inherit;
     }
 
-    blockquote {
+    :deep(blockquote) {
       border-left: 3px solid rgba(var(--bg-rgb), 0.1);
       color: rgba(var(--bg-rgb), 0.8);
       padding-left: 0.8rem;
@@ -282,68 +151,9 @@ export default {
       }
     }
 
-    img {
+    :deep(img) {
       max-width: 100%;
       border-radius: 3px;
-    }
-
-    table {
-      border-collapse: collapse;
-      table-layout: fixed;
-      width: 100%;
-      margin: 0;
-      overflow: hidden;
-
-      td,
-      th {
-        min-width: 1em;
-        border: 2px solid var(--fg-rgb);
-        padding: 3px 5px;
-        vertical-align: top;
-        box-sizing: border-box;
-        position: relative;
-        > * {
-          margin-bottom: 0;
-        }
-      }
-
-      th {
-        font-weight: bold;
-        text-align: left;
-      }
-
-      .selectedCell:after {
-        z-index: 2;
-        position: absolute;
-        content: "";
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        background: rgba(200, 200, 255, 0.4);
-        pointer-events: none;
-      }
-
-      .column-resize-handle {
-        position: absolute;
-        right: -2px;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        z-index: 20;
-        background-color: #adf;
-        pointer-events: none;
-      }
-    }
-
-    .tableWrapper {
-      margin: 1em 0;
-      overflow-x: auto;
-    }
-
-    .resize-cursor {
-      cursor: ew-resize;
-      cursor: col-resize;
     }
   }
 }

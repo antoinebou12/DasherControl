@@ -1,23 +1,25 @@
 <template>
   <div class="center content-inputs">
-    <vs-input ref="src" v-model="src" placeholder="link"></vs-input>
+    <n-input v-model:value="src" placeholder="URL" style="max-width: 420px; width: 100%" />
   </div>
 </template>
 
 <script>
+import { NInput } from "naive-ui";
+
 export default {
   name: "IFrameSetting",
+  components: { NInput },
   data() {
     return {
-      src: ''
-    }
+      src: "",
+    };
   },
-  methods: {
-  }
-
-}
+};
 </script>
 
 <style scoped>
-
+.content-inputs {
+  padding: 8px;
+}
 </style>

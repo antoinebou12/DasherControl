@@ -2,37 +2,38 @@ use std::env;
 use std::ops::Deref;
 
 use diesel::pg::PgConnection;
-use dotenv::dotenv;
-use rocket::{Outcome, Request};
+use diesel::r2d2::{self, ConnectionManager};
+use dotenvy::dotenv;
 use rocket::http::Status;
-use rocket::request::{self, FromRequest};
-use rocket::State;
-use rocket_contrib::databases::diesel;
-use diesel::r2d2::ConnectionManager;
-use diesel::r2d2;
+use rocket::request::{FromRequest, Outcome};
+use rocket::Request;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 fn database_url() -> String {
     dotenv().ok();
-    return env::var("DATABASE_URL").expect("DATABASE_URL must be set")
+    env::var("DATABASE_URL").expect("DATABASE_URL must be set")
 }
 
 pub fn init_pool() -> Pool {
     let manager = ConnectionManager::<PgConnection>::new(database_url());
-    return Pool::new(manager).expect("db pool");
+    Pool::new(manager).expect("db pool")
 }
 
 pub struct DbConn(pub r2d2::PooledConnection<ConnectionManager<PgConnection>>);
 
-impl<'a, 'r> FromRequest<'a, 'r> for DbConn {
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for DbConn {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<DbConn, Self::Error> {
-        let pool = request.guard::<State<Pool>>()?;
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        let pool = match req.rocket().state::<Pool>() {
+            Some(p) => p,
+            None => return Outcome::Error((Status::InternalServerError, ())),
+        };
         match pool.get() {
             Ok(conn) => Outcome::Success(DbConn(conn)),
-            Err(_) => Outcome::Failure((Status::ServiceUnavailable, ())),
+            Err(_) => Outcome::Error((Status::ServiceUnavailable, ())),
         }
     }
 }
@@ -44,4 +45,3 @@ impl Deref for DbConn {
         &self.0
     }
 }
-

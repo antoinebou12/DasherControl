@@ -1,8 +1,8 @@
-use rocket::local::Client;
-use rocket::http::Status;
+use rocket::local::blocking::Client;
+
 use crate::create_rocket;
 
 #[test]
 fn workspaces_routes() {
-    let client = Client::new(create_rocket()).unwrap();
+    let _client = Client::tracked(create_rocket()).expect("rocket");
 }

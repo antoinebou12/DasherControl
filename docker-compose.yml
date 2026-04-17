@@ -1,32 +1,35 @@
-version: '3.9'
 services:
-    dashercontrol:
-        build: .
-        image: antoine13/dashercontrol
-        container_name: dashercontrol
-        ports:
-            - 8080:8080
-        environment:
-            - CSRF_TOKEN_KEY=E078C5E8743F4F4E14CED526A60B2C99
-            - DATABASE_URL=postgres://postgres:root@database/diesel
-            - ROCKET_ENV=production
-#        volumes:
-#            - ./certs:/usr/src/dashercontrol/certs
-        links:
-            - database
-    database:
-        image: postgres
-        container_name: dashercontrol_db
-        hostname: dashercontrol_db
-        expose:
-            - 5432
-        volumes:
-            - pgdata:/var/lib/postgresql/data/pgdata
-        environment:
-            POSTGRES_PASSWORD: root
-            POSTGRES_USER: postgres
-            POSTGRES_DB: diesel
-            PGDATA: /var/lib/postgresql/data/pgdata
+  dashercontrol:
+    build: .
+    image: antoine13/dashercontrol
+    container_name: dashercontrol
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-root}@database:5432/diesel
+      ROCKET_PROFILE: release
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:16-alpine
+    container_name: dashercontrol_db
+    hostname: database
+    expose:
+      - "5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: diesel
+      PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d diesel"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
 
 volumes:
-    pgdata: {}
+  pgdata: {}

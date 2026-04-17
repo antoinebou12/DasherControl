@@ -1,20 +1,13 @@
-use crate::workspaces::handler::static_rocket_route_info_for_create_workspace;
-use crate::workspaces::handler::static_rocket_route_info_for_create_applet;
-use crate::workspaces::handler::static_rocket_route_info_for_get_applets_in_workspace;
-use crate::workspaces::handler::static_rocket_route_info_for_create_workspace_with_applets;
-use crate::workspaces::handler::static_rocket_route_info_for_get_workspaces;
-use crate::workspaces::handler::static_rocket_route_info_for_update_workspace;
-use crate::workspaces::handler::static_rocket_route_info_for_delete_workspace_with_applets;
-
+use crate::workspaces::handler;
 
 pub fn create_workspaces_routes() -> Vec<rocket::Route> {
-    return routes![
-            create_workspace,
-            create_applet,
-            get_applets_in_workspace,
-            create_workspace_with_applets,
-            get_workspaces,
-            update_workspace,
-            delete_workspace_with_applets
-        ];
+    routes![
+        handler::create_workspace,
+        handler::create_applet,
+        handler::get_applets_in_workspace,
+        handler::create_workspace_with_applets,
+        handler::get_workspaces,
+        handler::update_workspace,
+        handler::delete_workspace_with_applets,
+    ]
 }

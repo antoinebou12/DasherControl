@@ -5,31 +5,42 @@ authors = ["Antoine Boucher <antoine.bou13@gmail.com>"]
 keywords = ["rocket", "tilling", "vue", "web-server", "dashercontrol", "dashboard"]
 license = "MIT"
 categories = ["dashboard", "server", "web"]
-edition = "2018"
+edition = "2021"
+rust-version = "1.75"
 default-run = "dasher_control"
+autobins = false
 
+[[bin]]
+name = "dasher_control"
+path = "src/main.rs"
+
+[[bin]]
+name = "create_admin"
+path = "src/bin/create_admin.rs"
 
 [dependencies]
-rocket = { version = "0.4.7", features = ["tls"] }
-rocket_contrib = { version="0.4.5", features=["json", "tera_templates", "diesel_postgres_pool"] }
-rocket_codegen = "0.4.7"
-serde = { version = "1.0.104", features = ["derive"] }
-serde_derive = "1.0.99"
-serde_json = "1.0.40"
-diesel = { version = ">=1.4.8", features = ["postgres", "r2d2", "chrono", "serde_json"] }
-chrono = { version = "0.4.10", features = ["serde"] }
-dotenv = "0.15.0"
-jsonwebtoken = "5.0.1"
-bcrypt = "0.8.0"
+rocket = { version = "0.5.1", features = ["json", "secrets", "tls"] }
+rocket_dyn_templates = { version = "0.2.0", features = ["tera"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+diesel = { version = "1.4.8", features = ["postgres", "r2d2", "chrono", "serde_json"] }
+chrono = { version = "0.4", features = ["serde"] }
+dotenvy = "0.15"
+jsonwebtoken = "9"
+bcrypt = "0.15"
 csrf = "0.4.0"
-shiplift = "0.7"
-tokio={ version="1.4.0", features = ["macros", "rt-multi-thread"] }
-tokio-tungstenite = "0.13.0"
-log = "0.4"
-fern = "0.5"
-futures = "0.3.13"
-futures-util = { version = "0.3", default-features = false, features = ["async-await", "sink", "std"] }
-uuid = { version="0.8.2", features = ["serde", "v4"] }
-ssh2 = { version="0.9.1" }
-openssl = { version="0.10.33", features=["vendored"]}
-
+bollard = "0.18"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "io-util", "net", "fs"] }
+rocket_ws = "0.1.1"
+russh = "0.50.4"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["env-filter", "fmt", "ansi", "std"] }
+futures-util = { version = "0.3", default-features = false, features = ["std", "io"] }
+uuid = { version = "1", features = ["serde", "v4"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+urlencoding = "2.1"
+sysinfo = "0.31"
+nvml-wrapper = "0.10"
+bytes = "1"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+tempfile = "3"

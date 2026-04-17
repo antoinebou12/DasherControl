@@ -1,10 +1,8 @@
 #[macro_use] extern crate diesel;
-extern crate serde;
-#[macro_use] extern crate serde_derive;
 
+use serde::{Deserialize, Serialize};
 
-
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use std::env;
 
 use chrono::{Local, NaiveDateTime};
@@ -40,6 +38,8 @@ table! {
         role -> Varchar,
         created_at -> Timestamp,
         login_session -> Varchar,
+        oauth_provider -> Nullable<Varchar>,
+        oauth_subject -> Nullable<Varchar>,
     }
 }
 
@@ -73,9 +73,20 @@ fn get_connection() -> PgConnection {
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let email = &args[1];
-    let username = &args[2];
-    let password = &args[3];
+    let (email, username, password) = if args.len() >= 4 {
+        (args[1].clone(), args[2].clone(), args[3].clone())
+    } else {
+        eprintln!(
+            "Usage: create_admin [email] [username] [password]\n\
+             No arguments: creating default dev admin (change in production):\n\
+               email=admin@localhost username=admin password=admin"
+        );
+        (
+            "admin@localhost".to_string(),
+            "admin".to_string(),
+            "admin".to_string(),
+        )
+    };
 
     let conn = get_connection();
 
@@ -83,15 +94,15 @@ fn main() {
     match diesel::insert_into(tenants::table)
         .values(NewTenant {
             id: 0,
-            email: email.to_string(),
-            name: username.to_string(),
-            username: username.to_string(),
-            password: hash(password, DEFAULT_COST).unwrap(),
+            email: email.clone(),
+            name: username.clone(),
+            username: username.clone(),
+            password: hash(&password, DEFAULT_COST).unwrap(),
             role: "Admin".to_string(),
             created_at: Local::now().naive_local(),
         }).execute(&conn) {
-        Ok(created) => println!("created email: {}, username: {}, password: {}", email, username, password),
-        Err(e) => {
+        Ok(_) => println!("Created admin: email={}, username={}", email, username),
+        Err(_) => {
             println!("already exist");
             std::process::exit(0);
         }
@@ -105,8 +116,8 @@ fn main() {
             config: DBJsonType(json!({}))
         })
         .execute(&conn) {
-        Ok(created) => println!("create config"),
-        Err(e) => {
+        Ok(_) => println!("create config"),
+        Err(_) => {
             println!("already exist");
             std::process::exit(0);
         }

@@ -1,120 +1,50 @@
 <template>
-  <div class="center navbar">
-    <vs-navbar
-        center
-        v-model="active"
-        color="dark">
-      <template #left>
-        <img src="/public/imgs/favicon/favicon-32x32.png" alt=""/>
-      </template>
-      <template #right>
-        <vs-navbar-item  v-if="is_login" class="vs-navbar-item" @click="set_active('Settings')" id="settings" index="1">
-            <i class="bx bx-cog"></i>
-        </vs-navbar-item>
-        <vs-button v-if="!is_login" flat @click="set_active('Login')">Login</vs-button>
-        <vs-button v-if="!is_login" @click="set_active('SignUp')">Sign Up</vs-button>
-        <vs-button v-if="is_login"  flat @click="logout()">Logout</vs-button>
-      </template>
-    </vs-navbar>
-  </div>
+  <header class="dc-navbar">
+    <div class="dc-navbar__left">
+      <img src="/imgs/favicon/favicon-32x32.png" alt="" width="28" height="28" />
+    </div>
+    <div class="dc-navbar__right">
+      <n-button v-if="isLogin" quaternary circle @click="emit('changeActive', 'Settings')">
+        <template #icon><i class="bx bx-cog" /></template>
+      </n-button>
+      <n-button v-if="!isLogin" quaternary @click="emit('changeActive', 'Login')">Login</n-button>
+      <n-button v-if="!isLogin" type="primary" @click="emit('changeActive', 'SignUp')">Sign Up</n-button>
+      <n-button v-if="isLogin" quaternary @click="logout">Logout</n-button>
+    </div>
+  </header>
 </template>
 
-<script>
-import Settings from '../pages/Settings.vue'
+<script setup lang="ts">
 import axios from "axios";
+import { NButton } from "naive-ui";
+import { computed } from "vue";
+import { useUserStore } from "../stores/user";
 
-export default {
-  name: "Navbar",
-  components: {
-    Settings
-  },
-  data() {
-    return {
-      active: "Home",
-      activeSettings: false,
-    }
-  },
-  computed: {
-    is_login: {
-      get: function() {
-        return this.$store.state.user.token !== ""
-      },
-      set : function(newVal) {
-        this.is_login = newVal;
-      }
-    }
-  },
-  methods: {
-    set_active(active) {
-      this.active = active
-      this.$emit("changeActive", active)
-    },
-    logout() {
-      axios({
-        method: 'post',
-        url: '/tenants/api/logout',
-      }).then((response) => {
-        this.$store.commit('setUser', { 'email': '', 'username': ''})
-        this.$store.commit('setToken', '')
-      })
-    }
-  }
-};
+const emit = defineEmits<{ changeActive: [value: string] }>();
+const user = useUserStore();
+const isLogin = computed(() => user.token !== "");
+
+function logout() {
+  axios({ method: "post", url: "/tenants/api/logout" }).then(() => {
+    user.setUser({ email: "", username: "" });
+    user.setToken("");
+  });
+}
 </script>
 
-<style lang="scss">
-.navbar {
+<style scoped lang="scss">
+.dc-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
   margin-bottom: 48px;
-
-  button {
-    border-radius: 0px;
-  }
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--cl);
 }
-.content-tooltip {
-  .body {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-
-    .vs-avatar-content {
-      margin-top: -30px;
-      border: 3px solid var(--vs-theme-layout);
-      box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.1);
-    }
-
-    .text {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      font-size: 0.55rem;
-      padding: 10px;
-      font-weight: normal;
-
-      span {
-        font-weight: bold;
-        font-size: 0.7rem;
-      }
-    }
-  }
-
-  footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  h4 {
-    padding: 8px;
-    margin: 0px;
-    text-align: left;
-  }
-
-  p {
-    text-align: left;
-    margin: 0px;
-    line-height: 1rem;
-    padding: 0px 0px 5px 8px;
-  }
+.dc-navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>
