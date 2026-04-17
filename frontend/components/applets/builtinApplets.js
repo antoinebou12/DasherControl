@@ -33,17 +33,19 @@ const builtins = [
   {
     id: "Editor",
     label: "Editor",
+    category: "content",
     component: Editor,
     settingComponent: CreateNewSetting,
   },
   {
     id: "IFrame",
     label: "IFrame",
+    category: "content",
     component: BorderlessIFrame,
     settingComponent: IFrameSetting,
     applyCreate(parentVm, settingFormRef) {
       if (settingFormRef && settingFormRef.src != null) {
-        parentVm.$attrs.src = settingFormRef.src;
+        parentVm.applyCreateAttrs({ src: settingFormRef.src });
       }
     },
     toolbar: {
@@ -54,90 +56,100 @@ const builtins = [
   {
     id: "Shortcut",
     label: "Shortcut",
+    category: "content",
     component: Shortcut,
     settingComponent: ShortcutSetting,
     applyCreate(parentVm, settingFormRef) {
       if (!settingFormRef) return;
-      if (settingFormRef.link != null) parentVm.$attrs.link = settingFormRef.link;
-      if (settingFormRef.img_link != null) {
-        parentVm.$attrs.img_link = settingFormRef.img_link;
-      }
-      if (settingFormRef.title != null) {
-        parentVm.$attrs.title = settingFormRef.title;
-      }
+      const attrs = {};
+      if (settingFormRef.link != null) attrs.link = settingFormRef.link;
+      if (settingFormRef.img_link != null) attrs.img_link = settingFormRef.img_link;
+      if (settingFormRef.title != null) attrs.title = settingFormRef.title;
       if (settingFormRef.description != null) {
-        parentVm.$attrs.description = settingFormRef.description;
+        attrs.description = settingFormRef.description;
       }
+      parentVm.applyCreateAttrs(attrs);
     },
   },
   {
     id: "DockerManager",
     label: "DockerManager",
+    category: "tools",
     component: DockerManager,
     settingComponent: DockerManagerSetting,
   },
   {
     id: "SystemMonitor",
     label: "Host metrics (all)",
+    category: "metrics",
     component: SystemMonitor,
     settingComponent: CreateNewSetting,
   },
   {
     id: "CpuMetrics",
     label: "CPU & load",
+    category: "metrics",
     component: CpuMetrics,
     settingComponent: CreateNewSetting,
   },
   {
     id: "MemoryMetrics",
     label: "Memory & swap",
+    category: "metrics",
     component: MemoryMetrics,
     settingComponent: CreateNewSetting,
   },
   {
     id: "DiskMetrics",
     label: "Disks",
+    category: "metrics",
     component: DiskMetrics,
     settingComponent: CreateNewSetting,
   },
   {
     id: "NetworkMetrics",
     label: "Network",
+    category: "metrics",
     component: NetworkMetrics,
     settingComponent: CreateNewSetting,
   },
   {
     id: "GpuMetrics",
     label: "GPU (NVIDIA)",
+    category: "metrics",
     component: GpuMetrics,
     settingComponent: CreateNewSetting,
   },
   {
     id: "Terminal",
     label: "Terminal",
+    category: "tools",
     component: Terminal,
     settingComponent: TerminalSetting,
   },
   {
     id: "CaddyConfigurator",
     label: "CaddyConfigurator",
+    category: "tools",
     component: CaddyConfigurator,
     settingComponent: CreateNewSetting,
   },
   {
-    id: "Assistant",
-    label: "AI assistant",
+    id: "Chat",
+    label: "Chat",
+    category: "ai",
     component: Assistant,
     settingComponent: CreateNewSetting,
   },
   {
     id: "Canvas",
     label: "Canvas",
+    category: "content",
     component: Canvas,
     settingComponent: CanvasSetting,
     applyCreate(parentVm, settingFormRef) {
       if (settingFormRef && settingFormRef.canvasMode != null) {
-        parentVm.$attrs.canvasMode = settingFormRef.canvasMode;
+        parentVm.applyCreateAttrs({ canvasMode: settingFormRef.canvasMode });
       }
     },
   },

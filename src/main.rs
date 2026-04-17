@@ -7,6 +7,8 @@ extern crate rocket;
 use std::sync::atomic::AtomicUsize;
 
 use rocket::Request;
+use rocket::serde::json::Json;
+use serde_json::{json, Value};
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::EnvFilter;
 use rocket_dyn_templates::Template;
@@ -40,6 +42,11 @@ async fn not_found(req: &Request<'_>) -> Template {
     )
 }
 
+#[catch(409)]
+fn conflict() -> Json<Value> {
+    Json(json!({ "error": "conflict" }))
+}
+
 pub fn create_rocket() -> rocket::Rocket<rocket::Build> {
     let routes = router::get_routes();
     let tenants_routes = tenants::router::create_tenants_routes();
@@ -65,7 +72,7 @@ pub fn create_rocket() -> rocket::Rocket<rocket::Build> {
         .mount("/assistant", assistant_routes)
         .manage(router::HitCount(AtomicUsize::new(0)))
         .attach(Template::fairing())
-        .register("/", catchers![not_found])
+        .register("/", catchers![not_found, conflict])
 }
 
 fn init_tracing() {

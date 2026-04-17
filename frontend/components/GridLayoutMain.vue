@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { watch } from "vue";
+import { storeToRefs } from "pinia";
 import { GridLayout, GridItem } from "vue-grid-layout";
 import GridItemApplet from "./GridItemApplet.vue";
 import GridEditMenu from "./GridEditMenu.vue";
@@ -50,6 +52,7 @@ import FloatingAppletPanel from "./FloatingAppletPanel.vue";
 import Applet from "./applets/Applet.vue"
 import axios from "axios";
 import { createNotification } from "../utils";
+import { buildGuestDashboardLayout } from "../utils/guestDashboard";
 import { useUserStore } from "../stores/user";
 import { appearancePayloadForApi } from "../utils/workspaceTheme";
 import { useWorkspaceAppearanceStore } from "../stores/workspaceAppearance";
@@ -122,8 +125,29 @@ export default {
   mounted() {
     this.index = this.layout.length;
     this.syncWorkspaceContextStore();
+    const user = useUserStore();
+    const { token, sessionResolved } = storeToRefs(user);
+    this._guestWatchStop = watch(
+      [sessionResolved, token],
+      ([resolved, tok]) => {
+        if (!resolved) return;
+        if (!tok) this.applyGuestDashboard();
+      },
+      { immediate: true }
+    );
+  },
+  beforeUnmount() {
+    if (typeof this._guestWatchStop === "function") this._guestWatchStop();
   },
   methods: {
+    applyGuestDashboard() {
+      this.layout = buildGuestDashboardLayout().map((row) => ({ ...row }));
+      this.index = 2;
+      this.workspace_id = -1;
+      this.workspace_name = "Guest";
+      this.lockGridLayout();
+      this.syncWorkspaceContextStore();
+    },
     syncWorkspaceContextStore() {
       const applets = this.layout.map((it) => ({
         gridId: it.i,
@@ -306,6 +330,9 @@ export default {
     },
     setWorkspaceLayout(id) {
       const self = this;
+      this.draggable = true;
+      this.resizable = true;
+      this.gridlock = false;
       this.layout = []
       this.index = 0
       axios({

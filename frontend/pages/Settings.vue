@@ -6,6 +6,20 @@
     :style="{ width: 'min(640px, 92vw)' }"
     class="settings-modal"
   >
+    <n-alert
+      v-if="!user.token"
+      type="warning"
+      :bordered="false"
+      class="settings-auth-alert"
+      title="Not signed in"
+    >
+      Sign in to sync workspaces and use features that require a session.
+      <n-space style="margin-top: 10px" :size="8">
+        <n-button type="primary" size="small" @click="emit('requestLogin')">Login</n-button>
+        <n-button size="small" @click="emit('requestSignUp')">Sign up</n-button>
+      </n-space>
+    </n-alert>
+
     <p class="user-line">
       <strong>Connected user</strong>:
       {{ user.username || user.email || "Not connected" }}
@@ -159,6 +173,8 @@ import { useUserStore } from "../stores/user";
 import { useWorkspaceAppearanceStore } from "../stores/workspaceAppearance";
 import { THEME_PRESETS } from "../utils/workspaceTheme";
 
+const emit = defineEmits<{ requestLogin: []; requestSignUp: [] }>();
+
 const show = ref(false);
 const activeTab = ref<"workspace" | "ai">("workspace");
 const user = useUserStore();
@@ -277,6 +293,9 @@ defineExpose({
 </script>
 
 <style scoped>
+.settings-auth-alert {
+  margin-bottom: 12px;
+}
 .user-line {
   margin-bottom: 8px;
 }

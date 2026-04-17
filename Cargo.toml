@@ -10,6 +10,10 @@ rust-version = "1.75"
 default-run = "dasher_control"
 autobins = false
 
+# Diesel 1.4 `table!` / derives expand in a way that triggers this on modern rustc; drop when on Diesel 2.x.
+[lints.rust]
+non_local_definitions = "allow"
+
 [[bin]]
 name = "dasher_control"
 path = "src/main.rs"
@@ -44,3 +48,6 @@ nvml-wrapper = "0.10"
 bytes = "1"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 tempfile = "3"
+
+[profile.release]
+strip = true

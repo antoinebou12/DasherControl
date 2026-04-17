@@ -5,21 +5,47 @@
       @selected="workspaceSelector"
       @update-name="updateWorkspace"
     />
-    <div class="grid-edit-menu">
-      <n-button quaternary circle @click="gridLayout.addNewItem()"><i class="bx bx-add-to-queue" /></n-button>
-      <n-button quaternary circle @click="gridLayout.removeItem()"><i class="bx bx-x" /></n-button>
-      <n-button quaternary circle @click="gridLayout.lockGridLayout()"><i class="bx bx-lock-alt" /></n-button>
-      <n-button quaternary circle @click="gridLayout.unlockGridLayout()"><i class="bx bx-lock-open-alt" /></n-button>
-      <n-button quaternary circle @click="saveWorkspace"><i class="bx bx-save" /></n-button>
-      <n-button quaternary circle @click="updateWorkspace"><i class="bx bx-export" /></n-button>
+    <div v-if="token !== ''" class="grid-edit-menu" role="toolbar" aria-label="Workspace layout">
+      <n-button
+        type="primary"
+        circle
+        title="Add applet"
+        aria-label="Add applet to layout"
+        @click="gridLayout.addNewItem()"
+      >
+        <i class="bx bx-add-to-queue grid-edit-menu__icon" aria-hidden="true" />
+      </n-button>
+      <n-button type="primary" circle title="Remove selected" aria-label="Remove selected applet" @click="gridLayout.removeItem()">
+        <i class="bx bx-x grid-edit-menu__icon" aria-hidden="true" />
+      </n-button>
+      <n-button type="primary" circle title="Lock layout" aria-label="Lock layout" @click="gridLayout.lockGridLayout()">
+        <i class="bx bx-lock-alt grid-edit-menu__icon" aria-hidden="true" />
+      </n-button>
+      <n-button type="primary" circle title="Unlock layout" aria-label="Unlock layout" @click="gridLayout.unlockGridLayout()">
+        <i class="bx bx-lock-open-alt grid-edit-menu__icon" aria-hidden="true" />
+      </n-button>
+      <n-button type="primary" circle title="Save workspace" aria-label="Save workspace" @click="saveWorkspace">
+        <i class="bx bx-save grid-edit-menu__icon" aria-hidden="true" />
+      </n-button>
+      <n-button
+        type="primary"
+        circle
+        title="Update / export workspace"
+        aria-label="Update or export workspace"
+        @click="updateWorkspace"
+      >
+        <i class="bx bx-export grid-edit-menu__icon" aria-hidden="true" />
+      </n-button>
     </div>
   </div>
 </template>
 
 <script>
 import { NButton } from "naive-ui";
+import { mapState } from "pinia";
 import WorkspaceSelector from "./WorkspaceSelector.vue";
 import { useWorkspaceAppearanceStore } from "../stores/workspaceAppearance";
+import { useUserStore } from "../stores/user";
 
 export default {
   name: "GridEditMenu",
@@ -29,6 +55,9 @@ export default {
   },
   props: {
     gridLayout: { type: Object, required: true },
+  },
+  computed: {
+    ...mapState(useUserStore, ["token"]),
   },
   data: () => ({
     sidebarActive: true,
@@ -59,10 +88,39 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.grid-edit-menu-container {
+  margin: 0 16px;
+}
+
 .grid-edit-menu {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 8px 0 16px;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 20px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--ui-chrome-border);
+  background: var(--ui-chrome-bg);
+  color: var(--ui-chrome-fg);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.32);
+}
+
+.grid-edit-menu__icon {
+  font-size: 20px;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.grid-edit-menu :deep(.n-button.n-button--primary-type) {
+  --n-color: var(--ui-accent) !important;
+  --n-color-hover: var(--ui-accent-hover) !important;
+  --n-color-pressed: var(--ui-accent-pressed) !important;
+  --n-text-color: #ffffff !important;
+  --n-text-color-hover: #ffffff !important;
+  --n-border: none !important;
+  --n-width: 40px;
+  --n-height: 40px;
+  --n-icon-size: 20px;
 }
 </style>

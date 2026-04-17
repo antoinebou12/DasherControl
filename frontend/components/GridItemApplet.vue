@@ -6,8 +6,18 @@
     <div class="grid-item-content">
       <div class="grid-item-main">
         <span v-if="showTitle" class="title">{{ getTitle() }}</span>
-        <div ref="draggableHandle" class="vue-draggable-handle" style="height: 24px;">
-          <span class="remove-item" @click="removeItem()"><i class="bx bx-x"/></span>
+        <div ref="draggableHandle" class="vue-draggable-handle">
+          <span
+            class="remove-item"
+            title="Remove applet"
+            role="button"
+            tabindex="0"
+            aria-label="Remove applet"
+            @mousedown.stop
+            @click.stop="removeItem()"
+            @keydown.enter.prevent="removeItem()"
+            @keydown.space.prevent="removeItem()"
+          ><i class="bx bx-trash" aria-hidden="true"/></span>
           <span v-if="appletToolbar.showOpenInNewTab" class="open-new-tab-item" @click="openNewTab()"><i class="bx bx-export"/></span>
           <span v-if="appletToolbar.showReload" class="reload-iframe" @click="reload()"><i class="bx bx-refresh"/></span>
         </div>
@@ -68,11 +78,17 @@ export default {
     containerResizedEvent: function (i, newH, newW, newHPx, newWPx) {
     },
     changeApplet() {
-      this.appletData.appletName = this.$refs.applet.currentAppletName;
-      this.currentAppletData.appletName = this.$refs.applet.currentAppletName;
-      for(let key in this.$refs.applet.$attrs){
-        this.currentAppletData[key] = this.$refs.applet.$attrs[key];
+      const inner = this.$refs.applet;
+      if (!inner) return;
+      this.appletData.appletName = inner.currentAppletName;
+      this.currentAppletData.appletName = inner.currentAppletName;
+      const merged = inner.getBindingsForPersist
+        ? inner.getBindingsForPersist()
+        : inner.$attrs;
+      for (const key in merged) {
+        this.currentAppletData[key] = merged[key];
       }
+      if (inner.clearCreateOverrides) inner.clearCreateOverrides();
     },
     removeItem() {
       this.$emit('removeItem', this.id);
@@ -91,23 +107,21 @@ export default {
 .vue-grid-item:not(.vue-grid-placeholder) {
   justify-content: center;
   display: flex;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
-  rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
-  border: 1px solid black;
-  border-radius: 0.5rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border: 2px solid var(--applet-border);
+  border-radius: 8px;
 }
 
 .vue-grid-item {
-  background: var(--fg);
+  background: var(--applet-bg);
 }
 
-
 .vue-grid-item .resizing {
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .vue-grid-item .static {
-  background: #cce;
+  background: var(--applet-bg);
 }
 
 .vue-grid-item .grid-item-content {
@@ -116,7 +130,9 @@ export default {
   margin: auto;
   height: 100%;
   width: 100%;
-  background: var(--fg);
+  background: var(--applet-bg);
+  color: var(--applet-fg);
+  color-scheme: light;
   overflow: hidden;
 }
 
@@ -143,36 +159,65 @@ export default {
 .grid-item-main {
   height: 100%;
   width: 100%;
+  color: var(--applet-fg);
+}
+
+.vue-grid-item .grid-item-main :deep(.n-input),
+.vue-grid-item .grid-item-main :deep(.n-base-selection) {
+  --n-text-color: var(--applet-fg) !important;
+}
+
+.vue-grid-item .grid-item-main :deep(.dc-create-panel .n-input),
+.vue-grid-item .grid-item-main :deep(.dc-create-panel .n-base-selection) {
+  --n-text-color: #111827 !important;
 }
 
 .vue-draggable-handle {
+  position: relative;
   width: 100%;
-  background: var(--cl);
+  height: 26px;
+  min-height: 26px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%), var(--applet-chrome-bg);
   box-sizing: border-box;
   cursor: grab;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   .remove-item{
     position: absolute;
     right: 8px;
-    top: 0px;
+    top: 1px;
     font-size: 18px;
     cursor: pointer;
-    color: var(--fg)
+    color: var(--applet-chrome-fg);
+    opacity: 0.9;
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+      color: #f87171;
+    }
   }
   .open-new-tab-item {
     position: absolute;
     right: 32px;
-    top: 2px;
+    top: 3px;
     font-size: 14px;
     cursor: pointer;
-    color: var(--fg)
+    color: var(--applet-chrome-fg);
+    opacity: 0.9;
+    &:hover {
+      opacity: 1;
+    }
   }
   .reload-iframe {
     position: absolute;
     right: 54px;
-    top: 1px;
+    top: 2px;
     font-size: 16px;
     cursor: pointer;
-    color: var(--fg)
+    color: var(--applet-chrome-fg);
+    opacity: 0.9;
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 

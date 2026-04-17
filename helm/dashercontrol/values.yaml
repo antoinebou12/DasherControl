@@ -1,0 +1,80 @@
+# Default image matches docker-compose (override for private registries).
+image:
+  repository: antoine13/dashercontrol
+  pullPolicy: IfNotPresent
+  tag: "latest"
+  pullSecrets: []
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 256Mi
+
+# When empty, the chart creates a Secret with the keys below.
+# When set, no Secret is created; the Deployment uses this Secret for app credentials.
+existingSecret: ""
+
+# Keys expected in existingSecret (or in the created Secret).
+existingSecretKeys:
+  databaseUrl: database-url
+  csrfTokenKey: csrf-token-key
+  rocketSecretKey: rocket-secret-key
+
+secret:
+  create: true
+  # Dev-length keys; override in production (see .env.example).
+  csrfTokenKey: "01234567890123456789012345678901"
+  rocketSecretKey: "dHBh5Uh/cK1T7m+mzQU4zpGkZI9R+uR9OTOJI/B3uEQ="
+
+# Required when postgresql.enabled is false (unless existingSecret provides database-url).
+databaseUrl: ""
+
+# When postgresql.enabled is false, the image still runs wait-for-db.sh before the binary.
+# Set the TCP host:port that script should wait on (must match your DATABASE_URL).
+externalDatabase:
+  host: ""
+  port: 5432
+
+# In-cluster Postgres. The Service is always named `database` (required by the app image CMD). Use one release per namespace, or disable and set `databaseUrl`.
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16-alpine"
+    pullPolicy: IfNotPresent
+  auth:
+    username: postgres
+    database: diesel
+    # Used by the Postgres Deployment and to build DATABASE_URL for the app.
+    password: "change-me"
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 8Gi
+  resources: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: dashercontrol.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Extra environment variables for the app (list of { name, value } or valueFrom).
+extraEnv: []

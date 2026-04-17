@@ -33,6 +33,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: JWT signing key for compile-time include
+        run: |
+          set -eu
+          if [ ! -s certs/secret.key ]; then head -c16 /dev/urandom > certs/secret.key; fi
+
       - name: Install system dependencies
         run: |
           sudo apt-get update

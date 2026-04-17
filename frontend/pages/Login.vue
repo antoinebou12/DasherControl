@@ -2,24 +2,27 @@
   <n-modal v-model:show="show" preset="card" title="Login" class="dc-modal" :style="{ width: '420px' }">
     <n-spin :show="loading">
       <n-space vertical size="large">
-        <n-input v-model:value="username" placeholder="Email / Username" size="large" @keyup.enter="submitLogIn">
-          <template #prefix><i class="bx bxs-user" /></template>
-        </n-input>
-        <n-input
-          v-model:value="password"
-          type="password"
-          show-password-on="click"
-          placeholder="Password"
-          size="large"
-          @keyup.enter="submitLogIn"
-        >
-          <template #prefix><i class="bx bxs-lock" /></template>
-        </n-input>
-        <n-space justify="space-between" align="center">
-          <n-checkbox v-model:checked="remember">Remember me</n-checkbox>
-          <a class="dc-muted" href="#">Forgot password?</a>
-        </n-space>
-        <n-button type="primary" block size="large" @click="submitLogIn">Sign in</n-button>
+        <form @submit.prevent="submitLogIn">
+          <n-space vertical size="large">
+            <n-input v-model:value="username" placeholder="Email / Username" size="large">
+              <template #prefix><i class="bx bxs-user" /></template>
+            </n-input>
+            <n-input
+              v-model:value="password"
+              type="password"
+              show-password-on="click"
+              placeholder="Password"
+              size="large"
+            >
+              <template #prefix><i class="bx bxs-lock" /></template>
+            </n-input>
+            <n-space justify="space-between" align="center">
+              <n-checkbox v-model:checked="remember">Remember me</n-checkbox>
+              <a class="dc-muted" href="#">Forgot password?</a>
+            </n-space>
+            <n-button type="primary" attr-type="submit" block size="large">Sign in</n-button>
+          </n-space>
+        </form>
         <n-divider>or continue with</n-divider>
         <n-space vertical size="small">
           <n-button block size="large" quaternary @click="startOAuth('google')">
@@ -41,7 +44,7 @@ import axios from "axios";
 import { NButton, NCheckbox, NDivider, NInput, NModal, NSpin, NSpace } from "naive-ui";
 import { ref } from "vue";
 import { useUserStore } from "../stores/user";
-import { createNotification } from "../utils";
+import { createNotification, formatAxiosError } from "../utils";
 
 const emit = defineEmits<{ login: []; signUp: [] }>();
 
@@ -82,8 +85,7 @@ async function submitLogIn() {
     await user.getToken();
     show.value = false;
   } catch (error: unknown) {
-    const ax = error as { response?: { data?: unknown } };
-    createNotification(null, "Bad login", ax.response?.data ?? error, "danger");
+    createNotification(null, "Bad login", formatAxiosError(error), "danger");
   } finally {
     loading.value = false;
   }

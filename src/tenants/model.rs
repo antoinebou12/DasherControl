@@ -208,31 +208,28 @@ pub struct RegisterTenant {
 impl RegisterTenant {
     pub fn validates(self, conn: &PgConnection) ->
     Result<RegisterTenant, MyError> {
-        let tenant = select(
-            exists(
-                tenants::table.filter(email.eq(&self.email)
-                )
-            )
-        ).get_result(*&conn);
+        let email_exists: bool = select(exists(tenants::table.filter(email.eq(&self.email))))
+            .get_result(conn)?;
+        if email_exists {
+            return Err(MyError::EmailExist("Email already registered".to_string()));
+        }
 
-        if tenant.eq(&Ok(true)) {
-            return Err(MyError::WrongPassword(
-                "Wrong Password".to_string(),
-            ));
-        };
+        let username_exists: bool =
+            select(exists(tenants::table.filter(username.eq(&self.username)))).get_result(conn)?;
+        if username_exists {
+            return Err(MyError::UsernameExist("Username already taken".to_string()));
+        }
 
         let password_are_equal = self.password == self.password_confirmation;
-        let password_not_empty = self.password.len() > 0;
+        let password_not_empty = !self.password.is_empty();
         if password_are_equal && password_not_empty {
             Ok(self)
         } else if !password_are_equal {
             Err(MyError::PasswordNotMatch(
-                "Password and Password Confirmation does not match".to_string(),
+                "Password and password confirmation do not match".to_string(),
             ))
         } else {
-            Err(MyError::WrongPassword(
-                "Wrong Password".to_string(),
-            ))
+            Err(MyError::WrongPassword("Password cannot be empty".to_string()))
         }
     }
 }
@@ -262,7 +259,14 @@ impl AuthTenant {
             Err(e) => return Err(MyError::NotFoundTenant(e.to_string()))
         };
 
-        let valid = verify(&self.password, &tenant.password).unwrap();
+        let valid = match verify(&self.password, &tenant.password) {
+            Ok(v) => v,
+            Err(_) => {
+                return Err(MyError::WrongPassword(
+                    "Wrong Password".to_string(),
+                ));
+            }
+        };
 
         if valid {
             tenant.establish_login_session(conn)?;

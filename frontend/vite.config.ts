@@ -24,6 +24,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "."),
     },
   },
+  preview: {
+    port: 4173,
+    strictPort: false,
+    https: false,
+  },
   server: {
     port: 9999,
     https: {},

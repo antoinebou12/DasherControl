@@ -55,8 +55,33 @@ pub async fn files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new(FRONTEND_PATH).join(file)).await.ok()
 }
 
+/// Vite emits hashed bundles under `/assets` at the dist root (not under `/public`).
+#[get("/assets/<file..>")]
+pub async fn dist_assets(file: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new(FRONTEND_PATH).join("assets").join(file))
+        .await
+        .ok()
+}
+
+#[get("/manifest.json")]
+pub async fn dist_manifest() -> Option<NamedFile> {
+    NamedFile::open(Path::new(FRONTEND_PATH).join("manifest.json"))
+        .await
+        .ok()
+}
+
+#[get("/imgs/<file..>")]
+pub async fn dist_imgs(file: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new(FRONTEND_PATH).join("imgs").join(file))
+        .await
+        .ok()
+}
+
 pub fn get_routes() -> Vec<rocket::Route> {
     routes![
+        dist_assets,
+        dist_manifest,
+        dist_imgs,
         files,
         index,
         json,

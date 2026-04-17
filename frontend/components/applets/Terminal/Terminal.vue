@@ -1,6 +1,12 @@
 <template>
   <div class="terminal-applet">
     <div class="connect-bar">
+      <div v-if="!token" class="dc-session-bar">
+        <n-button size="small" type="primary" @click="openDasherLogin">Login</n-button>
+        <span class="dc-session-bar__text">
+          Sign in for a DasherControl session. Server-side SSH is <strong>Admin only</strong>.
+        </span>
+      </div>
       <div class="fields">
         <label>
           Host
@@ -42,12 +48,18 @@ import { Terminal } from "@xterm/xterm";
 import { AttachAddon } from "@xterm/addon-attach";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
+import { NButton } from "naive-ui";
+import { mapState } from "pinia";
 
 import { useUserStore } from "../../../stores/user";
 import { createNotification } from "../../../utils";
 
 export default {
   name: "Terminal",
+  components: { NButton },
+  inject: {
+    dcOpenLogin: { from: "dcOpenLogin", default: () => () => undefined },
+  },
   props: {
     username: { type: String, default: "" },
     password: { type: String, default: "" },
@@ -75,6 +87,7 @@ export default {
     },
   },
   computed: {
+    ...mapState(useUserStore, ["token"]),
     canConnect() {
       return (
         !this.connected &&
@@ -97,6 +110,9 @@ export default {
     this.term?.dispose();
   },
   methods: {
+    openDasherLogin() {
+      this.dcOpenLogin();
+    },
     initTerminal() {
       this.term = new Terminal({ cursorBlink: true, fontFamily: "Consolas, monospace" });
       this.fitAddon = new FitAddon();
@@ -194,6 +210,22 @@ export default {
   padding: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 12px;
+}
+
+.dc-session-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255, 184, 108, 0.12);
+  border: 1px solid rgba(255, 184, 108, 0.35);
+}
+.dc-session-bar__text {
+  line-height: 1.35;
+  opacity: 0.95;
 }
 
 .fields {

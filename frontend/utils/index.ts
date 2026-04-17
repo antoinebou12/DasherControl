@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export { createNotification } from "./notify";
+export { formatAxiosError } from "./httpError";
 
 export function get_tenant_token() {
   axios({

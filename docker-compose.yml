@@ -1,6 +1,8 @@
 services:
   dashercontrol:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: antoine13/dashercontrol
     container_name: dashercontrol
     ports:
@@ -8,6 +10,8 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-root}@database:5432/diesel
       ROCKET_PROFILE: release
+      # Required for JWT/session (see .env.example). Override in `.env` for production.
+      CSRF_TOKEN_KEY: ${CSRF_TOKEN_KEY:-01234567890123456789012345678901}
     depends_on:
       database:
         condition: service_healthy
@@ -29,7 +33,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres -d diesel"]
       interval: 3s
       timeout: 5s
-      retries: 10
+      retries: 20
+      start_period: 120s
 
 volumes:
   pgdata: {}

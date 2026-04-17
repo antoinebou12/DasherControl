@@ -1,0 +1,79 @@
+{{- if and (not .Values.secret.create) (not .Values.existingSecret) -}}
+{{- fail "Set existingSecret when secret.create is false, or enable secret.create" -}}
+{{- end }}
+{{- if and (not .Values.postgresql.enabled) (not .Values.externalDatabase.host) -}}
+{{- fail "Set externalDatabase.host when postgresql.enabled is false (used by wait-for-db.sh)" -}}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dashercontrol.fullname" . }}
+  labels:
+    {{- include "dashercontrol.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dashercontrol.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "dashercontrol.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- if not .Values.postgresql.enabled }}
+          command: ["/bin/sh", "/usr/src/dashercontrol/wait-for-db.sh"]
+          args:
+            - {{ printf "%s:%d" .Values.externalDatabase.host (int .Values.externalDatabase.port) | quote }}
+            - "-q"
+            - "--"
+            - "/usr/src/dashercontrol/dasher_control"
+          {{- end }}
+          env:
+            - name: ROCKET_PROFILE
+              value: "release"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dashercontrol.secretName" . }}
+                  key: {{ .Values.existingSecretKeys.databaseUrl | quote }}
+            - name: CSRF_TOKEN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dashercontrol.secretName" . }}
+                  key: {{ .Values.existingSecretKeys.csrfTokenKey | quote }}
+            - name: ROCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dashercontrol.secretName" . }}
+                  key: {{ .Values.existingSecretKeys.rocketSecretKey | quote }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10

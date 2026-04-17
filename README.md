@@ -139,12 +139,14 @@ Build:
 DOCKER_BUILDKIT=1 docker build -t antoinebou13/dashercontrol .
 ```
 
-Compose (includes Postgres; app receives `DATABASE_URL` in the container):
+Compose (includes Postgres; app receives `DATABASE_URL` in the container). Set `CSRF_TOKEN_KEY` in a `.env` file next to `docker-compose.yml` (see `.env.example`; defaults in compose match dev). Without it, login would fail at runtime.
 
 ```bash
 DOCKER_BUILDKIT=1 docker compose up -d --build
 docker compose logs -f
 ```
+
+BuildKit is recommended: the Dockerfile uses **layer caching** (`cargo fetch` / `npm ci` only rerun when lockfiles change) and **mount caches** for Cargo registry/git on repeat builds. Release binaries are **stripped** (`[profile.release]` in `Cargo.toml`) for a smaller image.
 
 After the stack is up, run migrations and seed admin **inside** the app container (or from a one-off container on the same network), for example:
 
@@ -154,6 +156,29 @@ docker compose exec dashercontrol /usr/src/dashercontrol/create_admin
 ```
 
 Adjust paths if your image layout differs. Ensure `.env` used at image build time matches the compose database URL.
+
+### Kubernetes (Helm)
+
+A minimal chart lives under [`helm/dashercontrol`](helm/dashercontrol). It deploys the app plus an optional in-cluster PostgreSQL service named `database` on port 5432 (matching the image entrypoint). Install:
+
+```bash
+helm lint ./helm/dashercontrol
+helm install dashercontrol ./helm/dashercontrol --namespace dashercontrol --create-namespace \
+  --set postgresql.auth.password='your-db-password' \
+  --set secret.csrfTokenKey='your-32-byte-string' \
+  --set secret.rocketSecretKey='your-base64-rocket-secret'
+```
+
+Use an external database by disabling the bundled Postgres and setting `databaseUrl` plus `externalDatabase.host` (and `externalDatabase.port` if not 5432). The container entrypoint still waits on that TCP address before migrations and startup (see `wait-for-db.sh`).
+
+```bash
+helm upgrade --install dashercontrol ./helm/dashercontrol --namespace dashercontrol --create-namespace \
+  --set postgresql.enabled=false \
+  --set databaseUrl='postgres://user:pass@your-host:5432/diesel' \
+  --set externalDatabase.host=your-host
+```
+
+Enable Ingress and tune images, storage, and extra env in [`helm/dashercontrol/values.yaml`](helm/dashercontrol/values.yaml).
 
 ---
 

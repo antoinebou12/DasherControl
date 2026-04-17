@@ -24,17 +24,21 @@ export default {
   data() {
     return {
       scrolling: "yes",
-      link: this.src,
-    }
+    };
   },
-  methods:{
+  computed: {
+    link() {
+      return this.src || "";
+    },
+  },
+  methods: {
     openNewTab() {
-      window.open(this.link, '_blank').focus()
+      window.open(this.link, "_blank")?.focus();
     },
     reload() {
-      this.$refs.iframe.src += '';
-    }
-  }
+      if (this.$refs.iframe) this.$refs.iframe.src += "";
+    },
+  },
 };
 </script>
 

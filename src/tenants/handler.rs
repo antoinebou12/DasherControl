@@ -1,6 +1,7 @@
 use diesel::result::Error;
 use rocket::http::{Cookie, CookieJar, Status};
-use rocket::serde::json::Json;
+use rocket::serde::json::{json, Json};
+use serde_json::Value;
 
 use crate::db::DbConn;
 use crate::tenants::model::{AuthTenant, RegisterTenant, RegisterTenantNoRole, Tenant, TenantInfo};
@@ -48,7 +49,10 @@ fn error_status(error: Error) -> Status {
 }
 
 #[post("/api/create", format = "json", data = "<tenant>")]
-pub async fn create_tenant(conn: DbConn, tenant: Json<RegisterTenantNoRole>) -> Result<Json<String>, Status> {
+pub async fn create_tenant(
+    conn: DbConn,
+    tenant: Json<RegisterTenantNoRole>,
+) -> Result<Json<String>, (Status, Json<Value>)> {
     let register_tenant_no_role = tenant.into_inner();
     let register_tenant = RegisterTenant {
         email: register_tenant_no_role.email,
@@ -60,11 +64,19 @@ pub async fn create_tenant(conn: DbConn, tenant: Json<RegisterTenantNoRole>) -> 
     };
     let register_tenant = match register_tenant.validates(&conn) {
         Ok(register_tenant) => register_tenant,
-        Err(_) => return Err(Status::Conflict),
+        Err(e) => {
+            return Err((
+                Status::Conflict,
+                Json(json!({ "error": e.to_string() })),
+            ))
+        }
     };
     match Tenant::create(register_tenant, &conn) {
         Ok(_) => Ok(Json("tenant created".to_string())),
-        Err(_) => Err(Status::Conflict),
+        Err(e) => Err((
+            Status::Conflict,
+            Json(json!({ "error": e.to_string() })),
+        )),
     }
 }
 

@@ -1,6 +1,31 @@
-frontend/dist/*
-frontend/node_modules
+# Rust
 target/
-images/
-.github/
-.git/
+**/*.rs.bk
+
+# Frontend (rebuilt in image)
+frontend/node_modules
+frontend/dist
+
+# VCS / CI
+.git
+.github
+.gitignore
+
+# Docs & assets not needed for build
+*.md
+docs
+book
+images
+agent-transcripts
+.cursor
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.idea
+.vscode
+*.swp
+Thumbs.db

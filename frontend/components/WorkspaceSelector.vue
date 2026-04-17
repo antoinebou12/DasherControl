@@ -3,7 +3,7 @@
     <span class="toggle-hide" @click="isVisible = !isVisible">
       <i :class="isVisible ? 'bx bx-up-arrow' : 'bx bx-down-arrow'" class="bx" />
     </span>
-    <n-card v-if="isVisible" size="small" class="workspace-card" title="Workspaces">
+    <n-card v-if="isVisible" size="small" class="workspace-card workspace-card--dark" title="Workspaces">
       <n-scrollbar style="max-height: 220px">
         <n-list hoverable clickable>
           <n-list-item
@@ -26,7 +26,13 @@
                 <i v-else class="ws-avatar bx bx-grid-alt ws-avatar--muted" />
               </template>
               <template #header-extra>
-                <n-button quaternary size="tiny" @click.stop="deleteWorkspace(workspace.id)">
+                <n-button
+                  quaternary
+                  size="tiny"
+                  class="ws-delete-btn"
+                  aria-label="Delete workspace"
+                  @click.stop="deleteWorkspace(workspace.id)"
+                >
                   <i class="bx bx-x" />
                 </n-button>
               </template>
@@ -38,6 +44,8 @@
         v-model:value="workspaceName"
         class="workspace-name-input"
         placeholder="Press Enter to save name"
+        round
+        size="small"
         @keyup.enter="editWorkspaceName"
       />
     </n-card>
@@ -147,7 +155,7 @@ export default {
 
 <style scoped lang="scss">
 .workspace-selector-container {
-  color: var(--fg);
+  color: var(--ui-chrome-fg);
   position: relative;
 }
 .toggle-hide {
@@ -155,16 +163,53 @@ export default {
   top: 56px;
   right: 24px;
   cursor: pointer;
+  color: var(--ui-chrome-fg);
 }
 .workspace-card {
   margin-top: 8px;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--ui-chrome-bg) !important;
+  border: 1px solid var(--ui-chrome-border) !important;
+  color: var(--ui-chrome-fg) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.workspace-card--dark :deep(.n-card-header) {
+  background: rgba(0, 0, 0, 0.22) !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid var(--ui-chrome-border) !important;
+}
+.workspace-card :deep(.n-card-header) {
+  color: var(--ui-chrome-fg) !important;
+  font-weight: 600;
+}
+.workspace-card :deep(.n-card__content) {
+  padding: 8px 10px 0 !important;
 }
 .selected {
-  background: rgba(98, 114, 164, 0.25);
+  background: color-mix(in srgb, var(--ui-accent) 16%, transparent) !important;
+  outline: 1px solid color-mix(in srgb, var(--ui-accent) 45%, transparent);
+  border-radius: 6px;
 }
 .workspace-name-input {
-  margin-top: 8px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+.workspace-name-input :deep(.n-input) {
+  --n-color: rgba(255, 255, 255, 0.06) !important;
+  --n-color-focus: rgba(255, 255, 255, 0.09) !important;
+  --n-text-color: var(--ui-chrome-fg) !important;
+  --n-placeholder-color: rgba(244, 244, 245, 0.45) !important;
+  --n-border: 1px solid var(--ui-chrome-border) !important;
+  --n-border-hover: 1px solid color-mix(in srgb, var(--ui-accent) 35%, var(--ui-chrome-border)) !important;
+  --n-border-focus: 1px solid var(--ui-accent) !important;
+  --n-height: 36px !important;
+}
+.workspace-card :deep(.ws-delete-btn:hover) {
+  --n-text-color: var(--ui-danger) !important;
+  color: var(--ui-danger) !important;
+}
+.workspace-card :deep(.ws-delete-btn .bx) {
+  font-size: 1.1rem;
 }
 .ws-avatar {
   font-size: 1.25rem;
@@ -175,12 +220,14 @@ export default {
   width: 2rem;
   height: 2rem;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--ui-chrome-border);
+  background: var(--ui-chrome-bg);
+  color: var(--ui-chrome-fg);
 }
 .ws-avatar--emoji {
   font-size: 1.1rem;
 }
 .ws-avatar--muted {
-  opacity: 0.45;
+  opacity: 1;
 }
 </style>

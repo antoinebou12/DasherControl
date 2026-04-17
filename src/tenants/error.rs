@@ -10,6 +10,7 @@ pub enum MyError {
     PasswordNotMatch(String),
     WrongPassword(String),
     EmailExist(String),
+    UsernameExist(String),
     NotFoundTenant(String),
     BadToken(String),
     LoginHistoryError(String)
@@ -38,6 +39,7 @@ impl fmt::Display for MyError {
             MyError::PasswordNotMatch(error) => write!(f, "{}", error),
             MyError::WrongPassword(error) => write!(f, "{}", error),
             MyError::EmailExist(error) => write!(f, "{}", error),
+            MyError::UsernameExist(error) => write!(f, "{}", error),
             MyError::NotFoundTenant(error) => write!(f, "{}", error),
             MyError::BadToken(error) => write!(f, "{}", error),
             MyError::LoginHistoryError(error) => write!(f, "{}", error)

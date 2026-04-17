@@ -11,7 +11,17 @@
       <span class="dock-item" title="Dock to grid" @click.stop="dock"><i class="bx bx-dock-left"/></span>
       <span v-if="appletToolbar.showOpenInNewTab" class="open-new-tab-item" @click.stop="openNewTab"><i class="bx bx-export"/></span>
       <span v-if="appletToolbar.showReload" class="reload-iframe" @click.stop="reload"><i class="bx bx-refresh"/></span>
-      <span class="remove-item" @click.stop="removeItem"><i class="bx bx-x"/></span>
+      <span
+        class="remove-item"
+        title="Remove applet"
+        role="button"
+        tabindex="0"
+        aria-label="Remove applet"
+        @mousedown.stop
+        @click.stop="removeItem"
+        @keydown.enter.prevent="removeItem"
+        @keydown.space.prevent="removeItem"
+      ><i class="bx bx-trash" aria-hidden="true"/></span>
     </div>
     <div class="floating-body no-drag">
       <Applet
@@ -105,10 +115,14 @@ export default {
       this.item.appletData.appletName = inner.currentAppletName;
       this.currentAppletData.appletName = inner.currentAppletName;
       this.appletName = inner.currentAppletName || "CreateNew";
-      for (const key in inner.$attrs) {
-        this.item.appletData[key] = inner.$attrs[key];
-        this.currentAppletData[key] = inner.$attrs[key];
+      const merged = inner.getBindingsForPersist
+        ? inner.getBindingsForPersist()
+        : inner.$attrs;
+      for (const key in merged) {
+        this.item.appletData[key] = merged[key];
+        this.currentAppletData[key] = merged[key];
       }
+      if (inner.clearCreateOverrides) inner.clearCreateOverrides();
     },
     startDrag(ev) {
       if (this.gridlock) return;
@@ -152,20 +166,21 @@ export default {
 .floating-applet-shell {
   display: flex;
   flex-direction: column;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px -6px, rgba(0, 0, 0, 0.12) 0px 8px 16px -8px;
-  border: 1px solid black;
-  border-radius: 0.5rem;
-  background: var(--fg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border: 2px solid var(--applet-border);
+  border-radius: 8px;
+  background: var(--applet-bg);
   overflow: hidden;
 }
 
 .floating-header {
   flex: 0 0 28px;
   width: 100%;
-  background: var(--cl);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%), var(--applet-chrome-bg);
   cursor: grab;
   position: relative;
   box-sizing: border-box;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .dock-item {
@@ -174,7 +189,7 @@ export default {
   top: 2px;
   font-size: 18px;
   cursor: pointer;
-  color: var(--fg);
+  color: var(--applet-chrome-fg);
 }
 
 .remove-item {
@@ -183,7 +198,11 @@ export default {
   top: 0px;
   font-size: 18px;
   cursor: pointer;
-  color: var(--fg);
+  color: var(--applet-chrome-fg);
+  &:hover,
+  &:focus-visible {
+    color: #f87171;
+  }
 }
 
 .open-new-tab-item {
@@ -192,7 +211,7 @@ export default {
   top: 2px;
   font-size: 14px;
   cursor: pointer;
-  color: var(--fg);
+  color: var(--applet-chrome-fg);
 }
 
 .reload-iframe {
@@ -201,13 +220,16 @@ export default {
   top: 1px;
   font-size: 16px;
   cursor: pointer;
-  color: var(--fg);
+  color: var(--applet-chrome-fg);
 }
 
 .floating-body {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  color: var(--applet-fg);
+  color-scheme: light;
+  background: var(--applet-bg);
 }
 
 .resize-handle {

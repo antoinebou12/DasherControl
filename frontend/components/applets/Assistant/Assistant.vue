@@ -100,7 +100,7 @@ async function send() {
   const text = draft.value.trim();
   if (!text) return;
   if (!user.token) {
-    createNotification(null, "AI assistant", "Sign in required", "danger");
+    createNotification(null, "Chat", "Sign in required", "danger");
     return;
   }
 
@@ -137,7 +137,7 @@ async function send() {
       (typeof data?.error === "string" && data.error) ||
       (ax.response?.status === 401 ? "Sign in required" : null) ||
       String(err);
-    createNotification(null, "AI assistant", msg, "danger");
+    createNotification(null, "Chat", msg, "danger");
     messages.value = messages.value.slice(0, -1);
   } finally {
     loading.value = false;

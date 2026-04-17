@@ -42,6 +42,52 @@ function pickColor(override: string | null | undefined, fallback: string): strin
   return fallback;
 }
 
+function hexToRgbComponents(hex: string): { r: number; g: number; b: number } | null {
+  const h = hex.replace("#", "").trim();
+  if (h.length === 3) {
+    const r = parseInt(h[0] + h[0], 16);
+    const g = parseInt(h[1] + h[1], 16);
+    const b = parseInt(h[2] + h[2], 16);
+    if ([r, g, b].some((n) => Number.isNaN(n))) return null;
+    return { r, g, b };
+  }
+  if (h.length !== 6) return null;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  if ([r, g, b].some((n) => Number.isNaN(n))) return null;
+  return { r, g, b };
+}
+
+/** Blend accent toward white (lighter hover for primary buttons). */
+export function workspaceAccentHoverFromAccent(accent: string): string {
+  const rgb = hexToRgbComponents(accent);
+  if (!rgb) return accent;
+  const t = 0.18;
+  const r = Math.round(rgb.r + (255 - rgb.r) * t);
+  const g = Math.round(rgb.g + (255 - rgb.g) * t);
+  const b = Math.round(rgb.b + (255 - rgb.b) * t);
+  return `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** Slightly darker for pressed states. */
+export function workspaceAccentPressedFromAccent(accent: string): string {
+  const rgb = hexToRgbComponents(accent);
+  if (!rgb) return accent;
+  const t = 0.12;
+  const r = Math.round(rgb.r * (1 - t));
+  const g = Math.round(rgb.g * (1 - t));
+  const b = Math.round(rgb.b * (1 - t));
+  return `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** Resolved accent (preset + optional override), same chain as --vs-primary. */
+export function resolveWorkspaceAccent(appearance: WorkspaceAppearance): string {
+  const presetName = appearance.theme_preset || "dracula";
+  const base = THEME_PRESETS[presetName] || THEME_PRESETS.dracula;
+  return pickColor(appearance.accent_color, base.accent);
+}
+
 /**
  * Apply workspace appearance to the document (CSS variables + Naive/Vuesax-friendly tokens).
  */
@@ -50,7 +96,7 @@ export function applyWorkspaceThemeToDocument(appearance: WorkspaceAppearance): 
   const base = THEME_PRESETS[presetName] || THEME_PRESETS.dracula;
   const bg = pickColor(appearance.bg_color, base.bg);
   const fg = pickColor(appearance.fg_color, base.fg);
-  const accent = pickColor(appearance.accent_color, base.accent);
+  const accent = resolveWorkspaceAccent(appearance);
   const panel = pickColor(appearance.panel_color, base.panel);
   const bgRgb = hexToRgbTriplet(bg) || "40, 42, 54";
   const fgRgb = hexToRgbTriplet(fg) || "248, 248, 242";
@@ -64,6 +110,9 @@ export function applyWorkspaceThemeToDocument(appearance: WorkspaceAppearance): 
   root.style.setProperty("--fg-rgb", fgRgb);
   root.style.setProperty("--vs-primary", accent);
   root.style.setProperty("--vs-color", hexToRgbTriplet(accent) || "189, 147, 249");
+  root.style.setProperty("--ui-accent", accent);
+  root.style.setProperty("--ui-accent-hover", workspaceAccentHoverFromAccent(accent));
+  root.style.setProperty("--ui-accent-pressed", workspaceAccentPressedFromAccent(accent));
 
   const url = appearance.background_image_url && String(appearance.background_image_url).trim();
   if (url) {

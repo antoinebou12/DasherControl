@@ -6,7 +6,7 @@ keep_alive = 5
 limits = { forms = "32KiB", "data-form" = "576MiB", file = "576MiB" }
 log_level = "normal"
 # Base64-encoded 256-bit key for private cookies (dev only — set ROCKET_SECRET_KEY in production).
-secret_key = "dHBh5Uh_cK1T7m-mzQU4zpGkZI9R-uR9OTOJI_B3uEQ="
+secret_key = "dHBh5Uh/cK1T7m+mzQU4zpGkZI9R+uR9OTOJI/B3uEQ="
 
 [release]
 address = "0.0.0.0"
@@ -14,8 +14,4 @@ port = 8080
 keep_alive = 5
 limits = { forms = "32KiB", "data-form" = "576MiB", file = "576MiB" }
 log_level = "critical"
-secret_key = "dHBh5Uh_cK1T7m-mzQU4zpGkZI9R-uR9OTOJI_B3uEQ="
-
-[release.tls]
-certs = "certs/cert.crt"
-key = "certs/cert.key"
+secret_key = "dHBh5Uh/cK1T7m+mzQU4zpGkZI9R+uR9OTOJI/B3uEQ="

@@ -1,10 +1,18 @@
 <template>
-  <div class="center content-inputs">
-    <n-space vertical style="width: 100%; max-width: 420px">
-      <n-input v-model:value="link" placeholder="link" />
-      <n-input v-model:value="img_link" placeholder="image URL" />
-      <n-input v-model:value="title" placeholder="title" />
-      <n-input v-model:value="description" placeholder="description" type="textarea" />
+  <div class="shortcut-setting center content-inputs">
+    <n-space vertical :size="9" class="shortcut-setting__stack">
+      <n-input v-model:value="link" data-testid="shortcut-link" placeholder="link" size="small" round />
+      <n-input v-model:value="img_link" data-testid="shortcut-image-url" placeholder="image URL" size="small" round />
+      <n-input v-model:value="title" data-testid="shortcut-title" placeholder="title" size="small" round />
+      <n-input
+        v-model:value="description"
+        data-testid="shortcut-description"
+        placeholder="description"
+        type="textarea"
+        round
+        :autosize="{ minRows: 4, maxRows: 10 }"
+        class="shortcut-setting__desc"
+      />
     </n-space>
   </div>
 </template>
@@ -26,8 +34,18 @@ export default {
 };
 </script>
 
-<style scoped>
-.content-inputs {
-  padding: 8px;
+<style scoped lang="scss">
+.shortcut-setting.content-inputs {
+  padding: 4px 4px 0;
+  width: 100%;
+}
+
+.shortcut-setting__stack {
+  width: 100%;
+  max-width: 420px;
+}
+
+.shortcut-setting__desc {
+  min-height: 96px;
 }
 </style>

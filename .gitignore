@@ -10,6 +10,7 @@ Cargo.lock
 **/*.rs.bk
 
 # Custom
+certs/secret.key
 frontend/node_modules
 frontend/dist
 

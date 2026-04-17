@@ -6,6 +6,8 @@ export const useUserStore = defineStore("user", {
     username: "" as string,
     email: "" as string,
     token: "" as string,
+    /** True after the first `getToken()` attempt finishes (avoids flashing guest UI while session is loading). */
+    sessionResolved: false as boolean,
   }),
   actions: {
     setUser(payload: { username: string; email: string }) {
@@ -16,13 +18,18 @@ export const useUserStore = defineStore("user", {
       this.token = token;
     },
     async getToken() {
-      if (this.token !== "") return;
+      if (this.token !== "") {
+        this.sessionResolved = true;
+        return;
+      }
       try {
         const { data } = await axios.get<string>("/tenants/api/token");
         if (data) this.setToken(data);
         else this.setToken("");
       } catch {
         this.setToken("");
+      } finally {
+        this.sessionResolved = true;
       }
     },
     async refreshProfile() {
