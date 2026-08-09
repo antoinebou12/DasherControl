@@ -23,7 +23,7 @@ export default {
   name: "Shortcut",
   props: {
     link: {type: String, default: ""},
-    img_link: {type: String, default: "https://source.unsplash.com/random"},
+    img_link: {type: String, default: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=128&h=128&fit=crop"},
     title: {type: String, default: "Shortcut"},
     description: {type: String, default: ""}
   }
